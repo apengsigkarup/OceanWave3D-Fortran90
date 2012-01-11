@@ -1,0 +1,59 @@
+!!\chapter{Introduction}
+!!\label{cap:Introduction}
+!!\begin{epigraphs}
+!! \qitem{\emph{I have not failed. I've just found ten thousand ways that don't work.}}{{\sc Thomas Edison}}
+!!\end{epigraphs}
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf L}}{IB\_VTK\_IO} is a Fortran library to write and read
+!!(actually only to write) data conforming the VTK standard both binary and ascii. Even though there are many
+!!wrappers/porting of the VTK source code (C++ code), there is not a fortran one. This library is not a porting
+!!or a wrapper of the VTK code, but it only an exporter/importer of the VTK data format written in pure fortran
+!!language (standard Fortran 95 with some extensions of non standard Fortran 2003) that can be used by fortran
+!!coders (yes, there are still a lot of these brave coders...) without mixing fortran with C++ language.
+!!
+!!The library is still in developing and testing, this is first usable release, but there are not all the features
+!!of the stable release (the importer is totaly absent and the exporter is not complete). Surely there are a lot of
+!!bugs and the progamming style is not the best, but the exporter is usable for the 90\% of the VTK data format.
+!!
+!!The \LIBVTKIO is an open source project, it is distribuited under the GPL v3 (see appendix \ref{cap:GPL}). Anyone is
+!!interest to use, to develop or contribuite to \LIBVTKIO is welcome.
+!!
+!!\section*{VTK Standard}
+!!\label{sec:VTK Standard}
+!!VTK, Visualization Toolkit, is an open source software that provides a powerful framework for the computer grafich, for
+!!the images processing and for 3D rendering. It is widely used in the world and so it has a very large comunity of users;
+!!besides the Kitware\footnote{The Kitware homepage can be found here: \href{http://public.kitware.com}{http://public.kitware.com}.}
+!!company provides professional support. The toolkit is written in C++ and a lot of porting/wrappers for Tcl/Tk,
+!!Java and Python are provided; unlucky there aren't wrappers for Fortran.
+!!
+!!Because of its good features the VTK toolkit has been used to develop a large set of open source programs. For my work
+!!the most important family of programs is the scientific visualization programs. A lot of high-quality scientific visualization
+!!tool are available on the web but for me the best is ParaView: I think that it is one of the best scintific visualization
+!!program in the world and it is open source! Paraview is based on VTK.
+!!
+!!\section*{Paraview}
+!!\label{sec:Paraview}
+!!ParaView\footnote{The ParaView homepage can be found here: \href{http://www.paraview.org}{http://www.paraview.org}.}
+!!is an open source software voted to scientific visualization and able to use the power of parallel architectures. It
+!!has an architecture client-server in order to make easy the remote visualization of very large set of data. Because it is based
+!!on VTK it inherits all VTK features. ParaView is very useful for Computational Fluid Dynamics visualizations because it provides
+!!powerful post-processing tools; it provides a very large set of importers for the most used format like Plot3D and HDF (the list
+!!is very large). It is easy to extend ParaView because it supports all the scripting language supported by VTK.
+!!
+!!\section*{LIB\_VTK\_IO}
+!!\label{sec:LIB_VTK_IO}
+!!Even though the VTK toolkit is written in C++ and so it is possible to use it in mixed fortran/c++ code this is not the easiest
+!!way. Fortran is still the best language for high performance computing for scientific purpose, like CFD computing. It necessary a
+!!tool to deal with VTK standard directly by fortran code. The library \LIBVTKIO was made to fill this empty: it is a simple
+!!fortran module able to export native fortran data into VTK data format and to import VTK data into a fortran code (actually this
+!!feature is missing), both in ascii and binary file format.
+!!
+!!The library provides an automatic way to deal with VTK data format: all the formatting processes is nested into the library and
+!!the users comunicate with it by a simple API passing only native fortran data (native fortran scalar, vector and matrix).
+!!
+!!The library \LIBVTKIO is distribuited under the GNU GPL v3 license (see appendix \ref{cap:GPL}). Beyond to the source code there
+!!are some precompiled binaries for GNU-Linux (amd x86, amd x86\_64, intel x86, intel x86\_64) and WindowsXP (amd x86, intel x86).
+!!
+!!Actually the library is still in developing/testing phase (a lot of features are missing); this is not a stable release, but the
+!!exporter is quite complete and its API is quite stable. The exporter is usable and I use it for my work.
+!!
+!!It can be found at: \href{http://stefano.zaghi.googlepages.com/lib\_vtk\_io}{http://stefano.zaghi.googlepages.com/lib\_vtk\_io}.
