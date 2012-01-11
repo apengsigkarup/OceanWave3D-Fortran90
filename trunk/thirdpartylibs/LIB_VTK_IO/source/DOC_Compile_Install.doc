@@ -1,0 +1,152 @@
+!!\chapter{Compile LIB\_VTK\_IO}
+!!\label{cap:Compiling Library}
+!!\minitoc
+!!\vspace*{3mm}
+!!
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf T}}{he} \LIBVTKIO is open source and so anyone is encouraged to use the source
+!!code and to \virgo{patch} it.
+!!
+!!The code is written in Fortran: the standard adopted is the Fortran 95 standard that is a minor upgrade to the Fortran 90 standard
+!!and that is widely supported by the almost all compilers actually available. Unluckily Fortran 95 does not allow the creation of
+!!C-binary file (Fortran inserts some bytes before and after each records despite the C standard) that is the standard adopted by
+!!VTK. Therefore in order to create binary files that are compatible whit VTK standard the only way is to use a non-standard 95
+!!instructions. At today only Fortran 2003 can create C-binary file, but there are not any compilers that completely implement this
+!!standard. In the next year (2008) maybe a new minor upgrade of Fortran standard (unofficial named Fortran 2008) will be born
+!!and so the support to Fortran 2003/2008 probably will be improved. Luckily we need to use only some features of fortran 2003
+!!that are supported by many compilers.
+!!
+!!The Fortran 2003 instructions are focused on the opening of the binary file, in particular in the functions
+!!\MaiuscolettoBS{VTK\_INI} and \MaiuscolettoBS{VTK\_INI\_XML}. In these functions there are opening instructions like the following:
+!!
+!!\begin{boxred}{Fortran 2003 instructions}
+!!\begin{verbatim}
+!!open(unit       = ...,           &
+!!     file       = ...,           &
+!!     form       = ...,           &
+!!     access     = ...,           &
+!!     action     = ...,           &
+!!     convert    = 'BIG_ENDIAN',  &
+!!     recordtype = 'STREAM',      &
+!!     buffered   = 'YES',         &
+!!     iostat     = ...)
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!The specifiers \MaiuscolettoBS{convert}, \MaiuscolettoBS{recordtype} and \MaiuscolettoBS{buffered} are non standard for Fortran 95.
+!!The \MaiuscolettoBS{buffered} specifier is not necessary and so can be commented or eliminated. The specifiers
+!!\MaiuscolettoBS{convert} and \MaiuscolettoBS{recordtype} are instead necessary to write binary file but can be replaced by other
+!!specifiers/instructions. In particular an alternative is opening the file with the specifier
+!!\MaiuscolettoBS{form = BINARY}\footnote{Remember that also the value \MaiuscolettoBS{BINARY} for form specifier is non standard
+!!for Fortran 95.} and using a compiler's option\footnote{Each compilers adopt differents option to achieve conversion of bytes
+!!order (if it allows conversion). See the user guide of your compiler. Intel Fortran allows the conversion both by open specifier
+!!and by compiling option.} to ensure the \MaiuscolettoBS{BIG\_ENDIAN} encoding. \MaiuscolettoBS{BIG\_ENDIAN} encoding is strictly
+!!necessary only for legacy binary file; for XML binary file one can choice also the \MaiuscolettoBS{LITTLE\_ENDIAN} and so the
+!!conversion is not necessary.
+!!
+!!Actually there is also another instruction that is non-standard for Fortran 95: the instruction \MaiuscolettoBS{sizeof}. This
+!!instruction is used to comptuing the number of bytes of the saved data in the XML binary files. Maybe there are others
+!!alternatives that are Fortran 95 compatible but at the moment I have not the time to implement them.
+!!
+!!Before you compile \LIBVTKIO ensure that your compiler allows these Fortran 2003 extensions. I use the Intel Fortran
+!!Compiler\footnote{\href{http://www.intel.com}{http://www.intel.com}.} that is free for non-commercial use and it has a strong
+!!support for Fortran 2003.
+!!
+!!\section{Compile under GNU/Linux}
+!!\label{sec:CompileLinux}
+!!
+!!\LIBVTKIO can be compiled as a stand-alone library or it can be integrated directly in your code. It is a self-contained module
+!!that can be safely included into others fortran codes. There are no any advices for compile \LIBVTKIO excluding the above non
+!!standard instructions.
+!!
+!!For the GNU/Linux users there is available a makefile already set to compile \LIBVTKIO both as static and dynamic library with
+!!Intel Fortran. The makefile has only one option: \MaiuscolettoBS{SHARED}. This variable (default set to \virgo{no}) can assume
+!!two values:
+!!\begin{enumerate1Blu}
+!!\item {\color{RoyalBlue}\MaiuscolettoBS{no}}:  makefile creates a \MaiuscolettoBS{static} library
+!!\item {\color{RoyalBlue}\MaiuscolettoBS{yes}}: makefile creates a \MaiuscolettoBS{dynamic} library
+!!\end{enumerate1Blu}
+!!
+!!\section{Compile under MS Windows}
+!!\label{sec:CompileWin}
+!!
+!!For MS Windows users there is not any support at the moment. As soon as I have the time I will make available a MS Visual Studio
+!!Project to compile \LIBVTKIO with Intel Visual Fortran for Windows.
+!!
+!!\clearpage
+!!
+!!\chapter{Install and Link (Pre)Compiled LIB\_VTK\_IO}
+!!\label{cap:Install and Linking}
+!!\minitoc
+!!
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf T}}{he} \LIBVTKIO is distribuited in two different version (other than source code): the first is a static linking version (extensions are \emph{.a} and \emph{.lib}) and the second is dynamic linking version (extensions are \emph{.so} and \emph{.dll}). The use of these two version is different and it depends on the OS used. The library is been tested only on GNU/Linux (several different distro) and on MS Windows (Windows XP).
+!!
+!!The library is distribuited with two different archive: \MaiuscolettoBS{LIB\_VTK\_IO-bin-x.x}.tar for GNU/Linux systems and
+!!\MaiuscolettoBS{LIB\_VTK\_IO-bin-x.x}.zip for MS Windows systems. Into the archives there is the source code of the library
+!!(\MaiuscolettoBS{LIB\_VTK\_IO}.f90), there are both static and dynamic version of the librabry and there is also this guide
+!!(\MaiuscolettoBS{LIB\_VTK\_IO\_Guide}.pdf).
+!!
+!!\section{GNU/Linux}
+!!
+!!\subsection{Static Library}
+!!\label{sec:Linux Static}
+!!The static version of the precompiled library (\MaiuscolettoBS{LIB\_VTK\_IO}.a) does not require any kind of installations. It is
+!!enough to link against it in the linking phase. It is important to use the interface module \emph{lib\_vtk\_io.mod} distribuited
+!!with the library: this is the interface of the subroutines and functions that constitute the library.
+!!
+!!To use the functions and subroutines of the library it is mandatory to \MaiuscolettoBS{USE} the module. Suppose one has a program
+!!(or subprogram) named \emph{test} that use the library; the correct \MaiuscolettoBS{USE} is:
+!!
+!!\begin{boxred}{The \LIBVTKIO must to be loaded with the USE statement}
+!!\begin{verbatim}
+!!program test
+!!USE LIB_VTK_IO
+!!...
+!!...
+!!...
+!!endprogram test
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!With the instruction \verb|USE LIB\_VTK\_IO| the program \emph{test} can use the functions and subroutines of the library. To
+!!compile, without link, this code one must give the module interface \emph{lib\_vtk\_io.mod} to the compiler:
+!!
+!!\begin{boxred}{Static Compiling Phase}
+!!\begin{verbatim}
+!!ifort -c lib_vtk_io.mod test.f90 -o test.o
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!In this example \emph{ifort} is the Intel Fortran Compiler\footnote{Da aggiungere.} and the \verb|-c| flag compiles preventing
+!! linking; the compiler must \virgo{see} the module interface: the file \emph{lib\_vtk\_io.mod} must be placed in a folder visible
+!!by the compiler.
+!!
+!!In the linking phase one simply give the library to the compiler:
+!!
+!!\begin{boxred}{Static Linking Phase}
+!!\begin{verbatim}
+!!ifort test.o LIB_VTK_IO.a -o test.out
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!The library must be placed in a folder visible by the compiler.
+!!
+!!\subsection{Dynamic Library}
+!!\label{sec:Linux Dynamic}
+!!The dynamic version of the precompiled library must be installed. The operating system must know where is the library so it is
+!!necessary to install the library in a folder where the OS search its shared objects. In the most of the GNU/Linux distro the
+!!folder \emph{/usr/lib/} is scanned to find shared objects. After you have copied the \MaiuscolettoBS{LIB\_VTK\_IO}.so file in
+!!this folder, update the list of the shared objects with the command \verb|ldconfig -v| and the OS is ready to use the library.
+!!
+!!After you set your OS the compiling and linking phase is identical to the previous (remember to you the module interface at
+!!the compiling phase). The only difference is to use the dynamic library at the linking phase:
+!!
+!!\begin{boxred}{Dynamic Linking Phase}
+!!\begin{verbatim}
+!!ifort test.o LIB_VTK_IO.so -o test.out
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\section{MS Windows}
+!!
+!!Unluckily for MS Windows there is not any support at the moment. As soon as I have the time, I make some instructions on how
+!!use \LIBVTKIO with MS Visual Studio and Intel Visual Fortran for MS Windows.

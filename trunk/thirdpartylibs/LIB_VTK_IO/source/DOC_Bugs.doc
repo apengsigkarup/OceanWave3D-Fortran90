@@ -1,0 +1,23 @@
+!!\chapter{Known Bugs}
+!!\label{cap:BUG}
+!!
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf T}}{he} \LIBVTKIO is a very young project and it is a good example of wrong
+!!programming style... It is unstable and not tested. It is used by only one user (... me of course!) and there are a lot of
+!!bugs that are still hidden. At the moment several features are missing (the input functions and the poly-data topology...),
+!!but it is useful to export fortran data to VTK standard, and this goal was the most important for me.
+!!
+!!At today only one main bug was found. Fortran allows the automatic reshape of arrays: as an example 2D array can be
+!!automatically (in the function calling) transformed  to a 1D array with the same number of element of 2D array. The use of
+!!dynamic dispatching had disable this feature: dynamic dispatching use the array-shape information to dectet, at compile-time,
+!!the correct function to be called. So reshape arrays at calling phase is not allowed. In the next release I will fix this bug
+!!introducing the function to reshape arrays between 1D, 2D and 3D arrays.
+!!
+!!A possible, not already found, bug is the non correct kind detection. It is possible that a code uses kind-precision parameter
+!!that does not match the \LIBVTKIO parameters. I never observe this bug but it is possible. To avoid it the simple way is to use
+!!always the \LIBVTKIO kind-precision parameters; if the parameters actually present do not match your necessities, define new
+!!parameters in \LIBVTKIO and redistribuite \LIBVTKIO with your pacth!
+!!
+!!Finally there is a strong inefficiency when saving XML binary file. To write XML binary \LIBVTKIO uses a temporary scratch file
+!!to save binary data while saving all formatting data to the final XML file; only when all XML formatting data have been written
+!!the scratch file is rewinded and the binary data is saved in the final tag of XML file as \MaiuscolettoBS{raw} data. This
+!!algorithm is obviously inefficient. Any tip is welcome!

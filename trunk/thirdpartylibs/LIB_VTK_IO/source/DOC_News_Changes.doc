@@ -1,0 +1,35 @@
+!!\chapter{News and Changes}
+!!\label{cap:NewsChanges}
+!!
+!!\section*{Version v0.2}
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf T}}{he} version v0.2 is the second testing release. From version v0.1 there are
+!!only minor changes; this new version does not introduce new features and does not fix bugs: it is a simple code-cleaning. The
+!!character variables are now case-insensitive; the names of some variables have been changed. The comments have been translated in
+!!English (very poor translation...).
+!!
+!!\begin{boxred}{List of changes from v0.1}
+!!\begin{enumerate1Red}
+!!  \item variable {\color{Maroon}formato} is changed in {\color{Maroon}output\_format} and now appears only in VTK\_INI and
+!!        in VTK\_INI\_XML.
+!!  \item variable {\color{Maroon}nomefile} is changed in {\color{Maroon}filename}.
+!!  \item variable {\color{Maroon}titolo} is changed in {\color{Maroon}title}.
+!!  \item variable {\color{Maroon}topologia} is changed in {\color{Maroon}mesh\_topology} and now appears only in VTK\_INI and
+!!        in VTK\_INI\_XML.
+!!  \item variable {\color{Maroon}NCelle} is changed in {\color{Maroon}NC}.
+!!  \item variable {\color{Maroon}Nnodi} is changed in {\color{Maroon}NN}.
+!!  \item variable {\color{Maroon}tipo} in VTK\_CON and VTK\_CON\_XML is changed in {\color{Maroon}cell\_type}.
+!!  \item variable {\color{Maroon}tipo} in VTK\_DAT and VTK\_DAT\_XML is changed in {\color{Maroon}var\_location}.
+!!  \item variable {\color{Maroon}azione} in VTK\_DAT\_XML is changed in {\color{Maroon}var\_block\_action}.
+!!  \item variable {\color{Maroon}tipo} in VTK\_VAR is changed in {\color{Maroon}vec\_type}.
+!!  \item variable {\color{Maroon}nomevar} is changed in {\color{Maroon}varname}.
+!!\end{enumerate1Red}
+!!\end{boxred}
+!!
+!!The only relevant news in the v0.2 version is about this guide: now the guide is integrated in the code. The code has particular
+!!comments: if the code is processed by the program FortranDOC\footnote{FortranDOC is an open-source fortran code available at:
+!!\href{http://stefano.zaghi.googlepages.com/fortrandoc}{http://stefano.zaghi.googlepages.com/fortrandoc}. This code processing a
+!!free-format fortran code generates a corresponding pretty-latex documentation file of the code structure.} a latex source of
+!!this guide will be made; compiling the latex file with \virgo{pdflatex} you will obtain this guide in PDF.
+!!
+!!\section*{Version v0.1}
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf T}}{he} version v0.1 is the first testing release. There are not news and changes.

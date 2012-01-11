@@ -1,0 +1,214 @@
+!!\section{VTK\_VAR}
+!!
+!!VTK\_VAR is an interface to 8 different functions; there are 3 functions for scalar variables, 3 functions for vectorial
+!!variables and 2 function texture variables.
+!!This function saves the data variables related to geometric mesh. The inputs that must be passed change depending on the data
+!!variables type.
+!!
+!!\subsection{VTK\_VAR SCALAR DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Scalar Data Signature}]
+!!function VTK_VAR(formato,NC_NN,varname,var) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save scalar data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Scalar Data Variables}]
+!!integer(I4P),                     intent(IN):: NC_NN        ! number of nodes or cells
+!!character(*),                     intent(IN):: varname      ! variable name
+!!real(R8P or R4P) or integer(I4P), intent(IN):: var(1:NC_NN) ! variable to be saved
+!!integer(I4P)::                                 E_IO         ! Input/Output inquiring flag: $0$ if IO is done, $> 0$
+!!                                                            ! if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}var}] contains the values of variables in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!Note that the variables \texttt{var} can be passed both as 8-byte real kind, 4-byte real kind and 4-byte integer; the
+!!dynamic displacement interface will call the correct function.
+!!
+!!The following is an example of VTK\_VAR scalar data calling:
+!!
+!!\begin{boxred}{VTK\_VAR Scalar Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!real(4)::               var(1:NC_NN)
+!!...
+!!E_IO = VTK_VAR(NC_NN,'Scalar Data',var)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_VAR REAL VECTORIAL DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Real Vectorial Data Signature}]
+!!function VTK_VAR(tipo,NC_NN,varname,varX,varY,varZ) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save real vectorial data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Real Vectorial Data Variables}]
+!!character(*),     intent(IN):: vec_type      ! vector type: vect = generic vector , norm = normal vector
+!!integer(I4P),     intent(IN):: NC_NN         ! number of nodes or cells
+!!character(*),     intent(IN):: varname       ! variable name
+!!real(R8P or R4P), intent(IN):: varX(1:NC_NN) ! x component of vector
+!!real(R8P or R4P), intent(IN):: varY(1:NC_NN) ! y component of vector
+!!real(R8P or R4P), intent(IN):: varZ(1:NC_NN) ! z component of vector
+!!integer(I4P)::                 E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR variables have the following meaning:
+!!
+!!\begin{description}
+!! \item [{\color{RoyalBlue}tipo}] indicates the type of vector. It can assume the following value:
+!! \begin{enumerateABlu}
+!!  \item \emph{vect} $\rightarrow$ generic vector.
+!!  \item \emph{norm} $\rightarrow$ normal vector of face.
+!! \end{enumerateABlu}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}varX}] contains the values of $X$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}varY}] contains the values of $Y$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}varZ}] contains the values of $Z$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!Note that the variables \texttt{varX,varY,varZ} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function.
+!!
+!!The following is an example of VTK\_VAR real vectorial data calling:
+!!
+!!\begin{boxred}{VTK\_VAR Real Vectorial Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!real(4)::               varX(1:NC_NN)
+!!real(4)::               varZ(1:NC_NN)
+!!real(4)::               varZ(1:NC_NN)
+!!...
+!!E_IO = VTK_VAR('vect',NC_NN,'Real Vectorial Data',...
+!!            ...varX,varY,varZ)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_VAR INTEGER VECTORIAL DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Integer Vectorial Data Signature}]
+!!function VTK_VAR(NC_NN,varname,varX,varY,varZ) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save integer vectorial data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Integer Vectorial Data Variables}]
+!!integer(R4P),   intent(IN):: NC_NN         ! number of nodes or cells
+!!character(*),   intent(IN):: varname       ! variable name
+!!integer(R4P),   intent(IN):: varX(1:NC_NN) ! x component of vector
+!!integer(R4P),   intent(IN):: varY(1:NC_NN) ! y component of vector
+!!integer(R4P),   intent(IN):: varZ(1:NC_NN) ! z component of vector
+!!integer(R4P)::               E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}varX}] contains the values of $X$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}varY}] contains the values of $Y$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}varZ}] contains the values of $Z$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_VAR real vectorial data calling:
+!!
+!!\begin{boxred}{VTK\_VAR Integer Vectorial Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!integer(4)::            varX(1:NC_NN)
+!!integer(4)::            varZ(1:NC_NN)
+!!integer(4)::            varZ(1:NC_NN)
+!!...
+!!E_IO = VTK_VAR(NC_NN,'Integer Vectorial Data', &
+!!               varX,varY,varZ)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_VAR TEXTURE DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Texture Data Signature}]
+!!function VTK_VAR(NC_NN,,dimm,varname,textCoo) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save texture data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Texture Data Variables}]
+!!integer(R4P),     intent(IN):: NC_NN                   ! number of nodes or cells
+!!integer(R4P),     intent(IN):: dimm                    ! texture dimensions
+!!character(*),     intent(IN):: varname                 ! variable name
+!!real(R8P or R4P), intent(IN):: textCoo(1:NC_NN,1:dimm) ! texture
+!!integer(R4P)::                 E_IO                    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+!! \item[{\color{RoyalBlue}dimm}] indicates the dimensions of the texture coordinates. It can assume the value:
+!! \begin{enumerateABlu}
+!!  \item \emph{1} $\rightarrow$ scalar texture.
+!!  \item \emph{2} $\rightarrow$ twodimensional texture.
+!!  \item \emph{3} $\rightarrow$ threedimensional texture.
+!! \end{enumerateABlu}
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}textCoo}] contains the coordinates of texture in each nodes or cells. It is a vector of
+!!                                   $[1:NC\_NN,1:dimm]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!Note that the variable \texttt{textCoo} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function.
+!!
+!!The following is an example of VTK\_VAR texture data calling:
+!!
+!!\begin{boxred}{VTK\_VAR Texture Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!integer(4), parameter:: dimm=2
+!!real(4)::               textCoo(1:NC_NN,1:dimm)
+!!...
+!!E_IO = VTK_VAR(NC_NN,dimm,'Texture Data',textCoo)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
