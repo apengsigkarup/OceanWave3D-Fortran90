@@ -21,12 +21,13 @@ SUBROUTINE OceanWave3DTakeATimeStep
   !
   CALL timeintegration_fsbc
   !
-  ! Check eta_tt to look for spots which may require heavy smoothing.  This feature is turned 
+  ! Check dw/dt to look for spots which may require heavy smoothing.  This feature is turned 
   ! off by setting accel_tol_fact to something larger than 100.  It is off when accel_tol_fact 
   ! does not appear in the input file.  ** Only implemented in 2D -HBB **
   !
   IF(FineGrid%ny==1)THEN
-     CALL LocalSmoothing2D( FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,tstep,fileop(12) )
+     CALL LocalSmoothing2D( FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
+          FineGrid%Nz+GhostGridZ,tstep,fileop(12) )
   END IF
   !
   ! Check for wave breaking at this step and if found update 

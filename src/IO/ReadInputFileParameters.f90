@@ -25,8 +25,9 @@ SUBROUTINE ReadInputFileParameters
 
   WRITE(*,FMT='(A/)') '   PARAMETER INPUT'
   WRITE(*,FMT='(A,I3/)') '   Initial Condition (IC), Predefined : ',IC
-  WRITE(*,FMT='(A,F8.4)') '   Local filtering acceleration limit is: ',accel_tol_fact
-  WRITE(*,FMT='(A//)') ' *g m/s^2.  Based on StreamFunction waves, 5 appears to be a realistic value.'
+  WRITE(*,FMT='(A,F8.4)') '   Local filtering downward vertical acceleration limit is: ', &
+       accel_tol_fact
+  WRITE(*,FMT='(A//)') ' * g m/s^2.  Theoretically breaking should occur between 0.5 and 1.'
 
   GO TO 24
 
