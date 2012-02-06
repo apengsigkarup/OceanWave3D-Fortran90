@@ -17,7 +17,7 @@ Nz_ext = Nz+GhostGridZ
 NULLIFY(Wavefield%E,Wavefield%Ex,Wavefield%Exx,Wavefield%Ey,Wavefield%Eyy,Wavefield%P0)
 NULLIFY(Wavefield%P,Wavefield%Px,Wavefield%Py,Wavefield%W,Wavefield%Qr_x,Wavefield%Mr_t)
 NULLIFY(Wavefield%E_I,Wavefield%Ex_I,Wavefield%Exx_I,Wavefield%Ey_I,Wavefield%Eyy_I)
-NULLIFY(Wavefield%EtatHist)
+NULLIFY(Wavefield%EtatHist, Wavefield%WHist)
 NULLIFY(Wavefield%P_I_s,Wavefield%Px_I_s,Wavefield%Py_I_s,Wavefield%Pz_I_s)
 NULLIFY(Wavefield%E_I_bp,Wavefield%Ex_I_bp,Wavefield%Ey_I_bp)
 NULLIFY(Wavefield%Px_I_bp,Wavefield%Py_I_bp,Wavefield%Pz_I_bp)
@@ -38,7 +38,9 @@ IF (Ny>1) THEN
 	Wavefield%Ey=zero; Wavefield%Eyy=zero; Wavefield%Py=zero
 ENDIF
 
-ALLOCATE(Wavefield%EtatHist(Nx_ext,Ny_ext,3))  ! -hbb Needs extension to 3D.
+ALLOCATE(Wavefield%EtatHist(Nx_ext,Ny_ext,3), Wavefield%WHist(Nx_ext,Ny_ext,3))  ! -hbb Needs extension to 3D.
+! ALLOCATE(Wavefield%WHist(Nx_ext,Ny_ext,3))  ! SIGS
+! Wavefield%WHist=zero;
 
 IF(swenseONOFF==1) THEN !We allocate the incident wavefields values
     ALLOCATE(Wavefield%E_I(Nx_ext,Ny_ext), Wavefield%Et_I(Nx_ext,Ny_ext), Wavefield%P_I_s(Nx_ext,Ny_ext))

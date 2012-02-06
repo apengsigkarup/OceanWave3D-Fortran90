@@ -274,8 +274,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   Wavefield%EtatHist(:,:,3)=Wavefield%EtatHist(:,:,2);  Wavefield%EtatHist(:,:,2)=Wavefield%EtatHist(:,:,1);
   Wavefield%EtatHist(:,:,1)= 1/six*(k1_E+two*k2_E+two*k3_E+k4_E)
   ! Compute the new surface quantities
-  !  Wavefield%E    = Wavefield%E + dt/six*(k1_E+two*k2_E+two*k3_E+k4_E)
-  Wavefield%E    = Wavefield%E + dt*Wavefield%EtatHist(:,:,1)
+  Wavefield%E    = Wavefield%E + dt/six*(k1_E+two*k2_E+two*k3_E+k4_E)
   Wavefield%P    = Wavefield%P + dt/six*(k1_P+two*k2_P+two*k3_P+k4_P)
   RKtime = time+dt
 
@@ -329,5 +328,8 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
 
   CALL VerticalFreeSurfaceVelocity(Wavefield%W,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,PHI, &
        FineGrid%DiffStencils,FineGrid%dsigmanew(:,:,:,5),gamma)
+  
+  Wavefield%WHist(:,:,3)=Wavefield%WHist(:,:,2);  Wavefield%WHist(:,:,2)=Wavefield%WHist(:,:,1);
+  Wavefield%WHist(:,:,1)=Wavefield%W(:,:); 
 
 END SUBROUTINE Runge_Kutta_4

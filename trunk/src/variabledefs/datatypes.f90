@@ -144,7 +144,7 @@ TYPE Wavefield_FS
 	REAL(KIND=long), DIMENSION(:,:), POINTER :: E, Ex, Exx, Ey, Eyy, P, Px, Py, W, P0     ! Scattered wavefield
 	REAL(KIND=long), DIMENSION(:,:), POINTER :: Qr_x, Mr_t     ! Breaking model terms
 	REAL(KIND=long), DIMENSION(:,:), POINTER :: E_I, Ex_I, Exx_I, Ey_I, Eyy_I, Et_I   ! Incident wavefield (free surface)
-        REAL(KIND=long), DIMENSION(:,:,:), POINTER :: EtatHist         ! 
+	REAL(KIND=long), DIMENSION(:,:,:), POINTER :: EtatHist, WHist
 	REAL(KIND=long), DIMENSION(:,:), POINTER :: P_I_s, Pz_I_s, Px_I_s, Py_I_s, Pt_I_s ! Incident wavefield (velocity potential)
 	INTEGER :: nbp ! number boundary points
 	REAL(KIND=long), DIMENSION(:), POINTER   :: E_I_bp, Ex_I_bp, Ey_I_bp                ! Incident wavefield on boundary, FIXME: can be removed
