@@ -332,7 +332,7 @@ SUBROUTINE ReadInputFileParameters
        RandomWave%inc_wave_file
   Go To 33
 32 IF(IncWaveType==2)THEN
-     Print *, 'ReadInputFileParameters:  For IncWaveType==1 we need irregular wave parameters.'
+     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop
   END IF
 33 Continue

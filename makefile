@@ -67,8 +67,8 @@ default:
 Release: FFLAGS = $(OPTFLAGS)
 Release: $(OBJECTSBUILDDIR)
 	@if ls *.mod &> /dev/null; then \
-	mv -v *.mod $(BUILDDIR); \
-	cp -v thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
+	mv -v ./*.mod $(BUILDDIR); \
+	cp -v ./thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
 	fi
 	@echo "*** Starting linking of files for OceanWave3D (Release)... ***"
 	@$(FC) $(FFLAGS) -o $(INSTALLDIR)/$(PROGNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
