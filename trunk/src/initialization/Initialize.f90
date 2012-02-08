@@ -37,8 +37,8 @@ fnt(1:10) = (/ '01','02','03','04','05','06','07','08','09','10' /)
 !         called by the main line.
 ! File 14 is the file 'roller.dat' written to by subroutine detect_breaking
 !         called by the main line.
-
-
+ 
+ 
 RETURN
 
 ! ERROR HANDLING

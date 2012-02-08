@@ -18,8 +18,8 @@ PROGRAM OceanWave3D
   !
   ! Step through time and solve the problem 
   !
-  DO tstep=1,Nsteps-1
-     CALL OceanWave3DTakeATimeStep
+  DO tstep=1,Nsteps-1 
+     CALL OceanWave3DTakeATimeStep 
   END DO  
   !
   CALL SYSTEM_CLOCK(count_1, count_rate, count_max)

@@ -1,5 +1,8 @@
 SUBROUTINE OceanWave3DT0Setup
-
+  !
+  ! This subroutine performs all of the initial set-up work before the time-stepping 
+  ! begins.  
+  !
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
@@ -80,38 +83,61 @@ SUBROUTINE OceanWave3DT0Setup
              e12.6,//)
      ELSEIF(IncWaveType==2)THEN
         !
-        ! An irregular wave
+        ! A linear regular or irregular wave
         !
         print *, ' '
-        IF(RandomWave%ispec==0)THEN
-           WRITE(6,70)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
-70         FORMAT(' The incident wave is a P-M spectrum wave with',/,&
+        IF(RandomWave%ispec==-1)THEN
+           WRITE(6,70)RandomWave%Tp,RandomWave%Hs
+70         FORMAT(' The incident wave is a linear mono-chromatic wave with',/,&
+                ' T=', e10.4,' and H=',e10.4,'.',//)
+        ELSEIF(RandomWave%ispec==0)THEN
+           WRITE(6,71)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
+71         FORMAT(' The incident wave is a P-M spectrum wave with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave%ispec==1)THEN
-           WRITE(6,71)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
-71         FORMAT(' The incident wave is a JONSWAP spectrum wave with ',/, &
+           WRITE(6,72)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
+72         FORMAT(' The incident wave is a JONSWAP spectrum wave with ',/, &
                 'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave%ispec==2)THEN
-           WRITE(6,72)RandomWave%inc_wave_file
-72         FORMAT(' The incident wave will be read from file ',a30,/)
+           WRITE(6,73)RandomWave%inc_wave_file
+73         FORMAT(' The incident wave will be read from file ',a30,/)
         ELSE
-           PRINT *, 'ERROR:  RandomWave%ispec must be 0,1, or 2.'
+           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1, or 2.'
            STOP
         END IF
         !
-        ! Build the wave using the nearest power of two which is greater than nsteps since we
-        ! are using FFT's based on powers of two.
+        IF(RandomWave%ispec >=0) THEN
+           !
+           ! Build the wave using the nearest power of two which is greater than nsteps since we
+           ! are using FFT's based on powers of two.
+           !
+           i=NINT(LOG(real(Nsteps,long))/LOG(two))
+           IF(two**i<Nsteps)i=i+1
+           n_fft=2**i;
+        ELSE
+           !
+           ! For a monochromatic wave we use Nsteps.
+           !
+           n_fft=Nsteps
+        END IF
         !
-        i=NINT(LOG(real(Nsteps,long))/LOG(two))
-        IF(two**i<Nsteps)i=i+1
-        n_fft=2**i;
-        !
-        ! The grid is also assumed to be uniform in the relaxation/generation zone.
+        ! The grid is also assumed to be uniform in the relaxation/generation zone(s) and 
+        ! we expect to generate in X-directed relaxation zones.  Other areas are 
+        ! not yet supported.  -HBB
         !
         RandomWave%dx=FineGrid%x(RelaxZones(1)%idx(1)+1,1)-FineGrid%x(RelaxZones(1)%idx(1),1)
         j_wavem=nint(RandomWave%x0/RandomWave%dx)+2
-        n_wavem=RelaxZones(1)%idx(2)-RelaxZones(1)%idx(1)+1;
-        print *, 'The random wave is centered at x=',FineGrid%x(j_wavem,1), &
+        !
+        ! Count the total number of grid points in the x-directed relaxation zones.  
+        n_wavem=0
+        DO i=1,relaxNo
+           If(RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X' &
+                .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+              n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
+           END If
+        END DO
+        n_wavem=n_wavem+GhostGridX ! Include the ghost point at the left boundary.  
+        print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1), &
              ' in a depth of',RandomWave%h0,', the generation zone contains ',n_wavem, ' points.'
         RandomWave%nf=FineGrid%nx
         !
@@ -121,7 +147,6 @@ SUBROUTINE OceanWave3DT0Setup
              RandomWave%Tp, RandomWave%Hs, RandomWave%h0, g, RandomWave%inc_wave_file,          &
              RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%eta,              &
              RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf)
-
      ENDIF
   ENDIF
   !
