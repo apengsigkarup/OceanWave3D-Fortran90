@@ -16,6 +16,7 @@ end
 % Turn this flag on to plot up the data.  What is plotted is controlled
 % after the reading block.  
 %
+% Plots='yes';
 Plots='no';
 %
 % Open the file
@@ -153,9 +154,9 @@ for ip=1:nx
     etat(:,ip)=Dt*eta(:,ip); etatt(:,ip)=Dt*etat(:,ip);
     %
     for j=1:nz
-        phit(:,j,ip)=Dt*phi(:,j,ip)-w(:,j,ip).*sigma(j).*etat(:,1,ip);
+        phit(:,j,ip)=Dt*phi(:,j,ip)-w(:,j,ip).*sigma(j).*etat(:,ip);
         p(:,j,ip)=-(phit(:,j,ip)+1/2*(u(:,j,ip).^2+w(:,j,ip).^2));
-        ut(:,j,ip)=Dt*u(:,j,ip)-uz(:,j,ip).*sigma(j).*etat(:,1,ip);
+        ut(:,j,ip)=Dt*u(:,j,ip)-uz(:,j,ip).*sigma(j).*etat(:,ip);
     end
 end
 %
