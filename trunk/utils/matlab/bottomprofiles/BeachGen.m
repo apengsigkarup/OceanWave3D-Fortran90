@@ -3,13 +3,20 @@
 % the parameters interactively.  
 %
 function BeachGen
-n=input('n=?'); L=input('L=?'); h0=input('h0?'); h1=input('h1?');
-dx=L/(n-1); dh=h0-h1; x0=L/2; x=[0:n-1]*dx;
-for i=1:n
+L0=input('Flat bottom run-up length at the left end L_0?');
+L1=input('Sloping beach length L_1=?'); h0=input('h0?'); h1=input('h1?');
+n1=input('Number of grid points on the sloping beach part n_1=?'); 
+dx=L1/(n1-1); n0=round(L0/dx); L0=n0*dx; n=n0+n1; L=L0+L1;
+display(['Run-up length re-defined to be L_1=',num2str(L1)]);
+dh=h0-h1; x=[0:n-1]*dx; x0=L1/2;
+for i=1:n0
+    h(i)=h0;
+end
+for i=1:n1
     xbar=-1+((i-1)*dx/x0);
-    h(i)=h0-.5*dh*(1+f(xbar));
-    hx(i)=dh/x0*fx(xbar);
-    hxx(i)=-dh/(2*x0^2)*fxx(xbar);
+    h(n0+i)=h0-.5*dh*(1+f(xbar));
+    hx(n0+i)=dh/x0*fx(xbar);
+    hxx(n0+i)=-dh/(2*x0^2)*fxx(xbar); 
 end
 figure(1);clf;
 plot(x,h,'-o');
@@ -19,7 +26,8 @@ plot(x,hx,'-+',x,hxx,'-*');
 % Save the bathymetry in an output file for OceanWave3D.
 %
 Header=['% Smooth beach with nx=',num2str(n),...
-    ' Lx=',num2str(L),' h_0=',num2str(h0),' and h_1=',num2str(h1)];
+    ' L0=',num2str(L0),' Lbeach=',num2str(L1),' h_0=',num2str(h0), ...
+    ' and h_1=',num2str(h1)];
 fid = fopen(['beach_',num2str(n)],'wb'); % Open file
 fprintf(fid,'%s\n',Header); % Write header
 fprintf(fid,'%d\n',0);
