@@ -44,7 +44,7 @@ C
 C     "crit" is the criterion for convergence. If the sum of magnitudes
 C            of corrections is smaller than crit, the iteration stops
 C      
-      CRIT=1.D-8 !GD: change to test precision...
+      CRIT=1.D-6 !Originally 10^-4 GD
 !      WRITE(6,20) DEPTH,HOVERD
 !      WRITE(6,21) HEIGHT,CASE
 !      WRITE(6,22) CURRNT,VALUE
