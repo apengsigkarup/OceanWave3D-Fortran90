@@ -16,6 +16,7 @@ C
      $     COEFF(num),SOL(num,2),Y(num)
 c      IMPLICIT REAL*8 (A-H,K,L,O-Z)
       real*8 :: RHS(num) !GD change: RHS(*)
+C      real*8 :: RHS(*) 
       integer :: i, it, nm, m, j
       real*8 :: e, c, s, psi, u, v
 C

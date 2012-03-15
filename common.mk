@@ -49,8 +49,8 @@ ifeq ($(FC),gf90)
   # hbb home machine
   LIBDIRS  = -L $(HOME)/lib/ 
   LINLIB   = -lharwell -lskit -llapack -lblas
-  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+  DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic
+  OPTFLAGS = -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow
 #  OPTFLAGS = -g -fast
 endif
 

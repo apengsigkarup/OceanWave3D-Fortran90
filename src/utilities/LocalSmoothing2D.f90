@@ -65,13 +65,8 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
      j=1
      Do i=1,Nx
         Do k=1,Nz
-           Utem(k,i,j) = Utem(k,i,j) + ((1-z(k))*hx(i,j)/d(i,j)-z(k)*etax(i,j)/d(i,j))*Wtem(k,i,j)   
-	END Do
-     END Do
-     j=1
-     Do i=1,Nx
-        Do k=1,Nz
            Wtem(k,i,j) = Wtem(k,i,j)/d(i,j) 
+           Utem(k,i,j) = Utem(k,i,j) + ((1-z(k))*hx(i,j)-z(k)*etax(i,j))*Wtem(k,i,j)   
 	END Do
      END Do
      !
@@ -84,13 +79,8 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
      j=1
      Do i=1,Nx
         Do k=1,Nz
-           Wx(k,i,j) = Wx(k,i,j) + ((1-z(k))*hx(i,j)/d(i,j)-z(k)*etax(i,j)/d(i,j))*Wz(k,i,j)   
-	END Do
-     END Do
-     j=1
-     Do i=1,Nx
-        Do k=1,Nz
            Wz(k,i,j) = Wz(k,i,j)/d(i,j) 
+           Wx(k,i,j) = Wx(k,i,j) + ((1-z(k))*hx(i,j)-z(k)*etax(i,j))*Wz(k,i,j)   
 	END Do
      END Do
      !
@@ -111,7 +101,7 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
      ! 
      j=1
      DO i=1,nx
-        Wt(i,j)=Wt(i,j)+Utem(Nz,i,j)*Wx(Nz,i,j) +Wtem(Nz,i,j)*Wz(Nz,i,j)/d(i,j)!
+        Wt(i,j)=Wt(i,j)+Utem(Nz,i,j)*Wx(Nz,i,j) +Wtem(Nz,i,j)*Wz(Nz,i,j)!
      END DO
      !
      ! First build a coefficient vector which is .25 at those points which surround a point 
