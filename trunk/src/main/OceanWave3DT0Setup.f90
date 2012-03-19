@@ -200,9 +200,9 @@ SUBROUTINE OceanWave3DT0Setup
 
      CALL PreparePreconditioner(FineGrid%PreconditioningMatrix,FineGrid,GhostGridX, GhostGridY, GhostGridZ, &
           alphaprecond, betaprecond, gammaprecond, Precond, CurvilinearONOFF)
-     filename = "SparseMatrix.bin"
-     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
-     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
+!    filename = "SparseMatrix.bin"
+!     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
+!     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
      CALL FactorPreconditioner(FineGrid%PreconditioningMatrix, &
           (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ))
 

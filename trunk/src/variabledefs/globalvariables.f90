@@ -46,7 +46,7 @@ REAL(KIND=long), DIMENSION(:),   ALLOCATABLE :: ee, tm
 INTEGER :: Nsteps, tstep, timemethod, RKSTAGES, extrapolationONOFF
 REAL(KIND=long) :: dt, time, time0, CFL, c, dxmin, dymin, dx, dy, dsigmamin
 
-INTEGER :: Precond, MGCoarseningStrategy, MGmaxgrids, GMRESmaxiterations
+INTEGER :: solver, Precond, MGCoarseningStrategy, MGmaxgrids, GMRESmaxiterations
 
 REAL(KIND=long), DIMENSION(:,:,:), ALLOCATABLE :: PHIfine, PHIcoarse
 
