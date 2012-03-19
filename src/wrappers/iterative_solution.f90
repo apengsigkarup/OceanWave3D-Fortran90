@@ -4,7 +4,7 @@ USE Precision
 USE Constants
 USE GlobalVariables, ONLY: tstep, RKSTAGES, MINITER, MAXITER, TOTALITER, TOTALITERFS, MINITERNOFS, MAXITERNOFS, CYCLET, &
       MAXIT, RELTOL, RINFO, JOB, IS_HSL, MAXIS, SS, MAXS, CNTL, ICNTL, INFOHSL, alpha, beta, gamma, Precond, GhostGridZ, &
-	  FineGrid, COLSCA, ROWSCA, KEEP, workspace, ipar, fpar, RESETSOLVER, STAT, abstol, GMRESmaxiterations, GhostGridX, &
+	  FineGrid, COLSCA, ROWSCA, KEEP, workspace, ipar, fpar, RESETSOLVER, STAT, abstol, GMRESmaxiterations, solver, GhostGridX, &
 	  GhostGridY
   IMPLICIT NONE
   EXTERNAL A_times_x ! external procedures for matrix-vector product
@@ -23,9 +23,18 @@ USE GlobalVariables, ONLY: tstep, RKSTAGES, MINITER, MAXITER, TOTALITER, TOTALIT
   ipar(3)  = 1	! use convergence test scheme 2
   ipar(5)  = GMRESmaxiterations	! use *GMRES(10) (e.g. FGMRES(10))
   ipar(4)  = (n_rows+3)*(ipar(5)+2) + (ipar(5)+1)*ipar(5)/2	! the size of the workspace
+IF (solver==0) THEN
+  ! high-order defect correction method
+!  print*,'   HIGH-ORDER DEFECT CORRECTION METHOD:'
+  ipar(4)  = n_rows*2  ! the size of the workspace
+ELSE ! default
+  ! GMRES
+!  print*,'   GMRES METHOD:'
+  ipar(4)  = (n_rows+3)*(ipar(5)+2) + (ipar(5)+1)*ipar(5)/2	! the size of the workspace
+ENDIF
 IF (RESETSOLVER==0) THEN
   ALLOCATE(workspace(ipar(4)),STAT=STAT) ! workspace for residual storage
-  PRINT *,'   GMRES WORKSPACE SIZE = ',ipar(4)
+  PRINT *,'   ITERATIVE SOLVER WORKSPACE SIZE = ',ipar(4)
   CALL CheckError(STAT,6)
   RESETSOLVER = 1 ! MAKE SURE WE ONLY DO THIS ONCE
 ENDIF
@@ -38,7 +47,12 @@ ENDIF
 iterations = 0
 
 ! GMRES from SPARSKIT2
-10 CALL gmres(n_rows,rhss,sol,ipar,fpar,workspace)  ! initial guess given as input using "sol"
+10 IF (solver==0) THEN
+       ! high-order DC method by APEK
+       CALL dc(n_rows,rhss,sol,ipar,fpar,workspace)  ! initial guess given as input using "sol"
+   ELSE
+       CALL gmres(n_rows,rhss,sol,ipar,fpar,workspace)  ! initial guess given as input using "sol"
+   ENDIF
    IF (ipar(1).EQ.1) THEN
 	  ! DIRECT MATRIX-VECTOR PRODUCT (Determine residual)
       iterations=iterations+1

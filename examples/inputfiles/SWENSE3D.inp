@@ -4,7 +4,7 @@ Guillaume setup - cylinder case (nonlinear test)
 3 3 3 1 1 1                     <- alpha, beta, gamma
 1000 0.005 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
 9.81                          <- gravitational acceleration constant
-1 0 24 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+1 1 0 24 1e-6 1e-4 1 F 1 1 5 <- solver (0:DC, 1:GMRES), GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
 0.045518 0.164885 1.0 2.0 0 0.0 1 4 24         <- 0.032627 ; 0.045518 ; 0.061275 Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
 1 1    <- StoreDataOnOff
 1    <- 0=linear, 1=nonlinear computations

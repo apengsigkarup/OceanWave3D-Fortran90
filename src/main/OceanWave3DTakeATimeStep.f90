@@ -47,19 +47,33 @@ SUBROUTINE OceanWave3DTakeATimeStep
   ! Print the simulation time to the screen every 10 time steps.
   !
   If (tstep > 1 .and. tstep < 10) then
-     WRITE (6,2001) TOTALITER
-     WRITE (6,2002) TOTALITERFS
-     WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+     IF (solver==0) THEN
+       WRITE (6,2007) TOTALITER
+       WRITE (6,2008) TOTALITERFS
+       WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+     ELSE
+       WRITE (6,2001) TOTALITER
+       WRITE (6,2002) TOTALITERFS
+       WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+     ENDIF
      WRITE (6,2005) MINITER, MAXITER
      IF (tstep>2) THEN
-        WRITE (6,2004) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+        IF (solver==0) THEN
+          WRITE (6,2010) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+        ELSE
+          WRITE (6,2004) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+        ENDIF
         WRITE (6,2006) MINITERNOFS, MAXITERNOFS
      ENDIF
   else
      ! Print the simulation time to the screen every 10 time steps.
      IF(MOD(tstep,10)==0)THEN
         print *, 'time step number ',tstep,' t=',time
-        WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+        IF (solver==0) THEN
+          WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+        ELSE
+          WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+        END IF
         WRITE (6,2005) MINITER, MAXITER
      endif
   endif
@@ -117,6 +131,10 @@ SUBROUTINE OceanWave3DTakeATimeStep
 2004 FORMAT(' An average of ',F8.2,' GMRES iterations done per solve excluding first time step iteration counts.')
 2005 FORMAT('   Minimum no. ', I8,' and maximum no. ',I8,' iterations per solve')
 2006 FORMAT('   Minimum no. ', I8,' and maximum no. ',I8,' iterations per solve excluding first time step solves')
+2007 FORMAT(' A total of ',I8,' DC iterations done.')
+2008 FORMAT(' A total of ',I8,' DC iterations done in first time step.')
+2009 FORMAT(' An average of ',F8.2,' DC iterations done per solve.')
+2010 FORMAT(' An average of ',F8.2,' DC iterations done per solve excluding first time step iteration counts.')
 2020 FORMAT('   Loop time = ',F12.3,' sec.')
 
 END SUBROUTINE OceanWave3DTakeATimeStep

@@ -25,6 +25,7 @@ include src/wrappers/makefile.inc
 include src/initialization/makefile.inc
 include src/IO/makefile.inc
 include src/main/makefile.inc
+include src/iterative/makefile.inc
 
 # Search paths for source dependencies
 VPATH  = src/variabledefs 
@@ -42,6 +43,7 @@ VPATH += src/pressure
 VPATH += src/timeintegration
 VPATH += src/utilities
 VPATH += src/wrappers
+VPATH += src/iterative
 VPATH += $(BUILDDIR)
 
 # Include directories

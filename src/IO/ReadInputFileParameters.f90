@@ -183,8 +183,30 @@ SUBROUTINE ReadInputFileParameters
 
   READ (FILEIP(1),*) g
 
-  READ (FILEIP(1),*) Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
+  READ (FILEIP(1),*) solver, Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
        nu(1), nu(2), MGmaxgrids
+  SELECT CASE (solver)
+      CASE(0)
+         WRITE(*,*) '   Defect correction (DC) method is chosen.'
+      CASE DEFAULT
+         WRITE(*,*) '   GMRES method is chosen.'
+  END SELECT
+  IF (Precond==1) THEN
+  SELECT CASE (solver)
+      CASE(0)
+         WRITE(*,*) '   Strategy: DC + LU (order ',2*alphaprecond,')'
+      CASE DEFAULT
+         WRITE(*,*) '   Strategy: GMRES + LU (order ',2*alphaprecond,')'
+  END SELECT
+  ELSE IF (Precond==3) THEN
+  SELECT CASE (solver)
+      CASE(0)
+         WRITE(*,*) '   Strategy: DC + MG-RB-',cyclet,'(',nu(1),',',nu(2),')'
+      CASE DEFAULT
+         WRITE(*,*) '   Strategy: GMRES + MG-RB-',cyclet,'(',nu(1),',',nu(2),')'
+  END SELECT
+  END IF
+  WRITE(*,*) '   Tolerance levels user-defined. RelTol = ',reltol,' and AbsTol = ',abstol
   IF (Precond==3 .AND. GhostGridZ/=1 ) THEN
      GOTO 104
   ENDIF

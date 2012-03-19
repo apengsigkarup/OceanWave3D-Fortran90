@@ -14,10 +14,10 @@ BUILDDIR = $(PWD)/../build
 
 # Choose the Fortran compiler on this system
 # E.g. pathf90, f90, gfortran, gf90, ifort
-#FC = gfortran
+FC = gfortran
 #FC = gfortran44
 #FC = gfortran-4.4
-FC = gf90
+#FC = gf90
 
 # Compiler-dependent section
 ifeq ($(FC),gfortran-4.4)
