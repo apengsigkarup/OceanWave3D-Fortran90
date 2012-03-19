@@ -26,13 +26,9 @@ c
       real*8 one, zero
       parameter(one=1.0D0, zero=0.0D0)
 c
-c     local variables, ptr and p2 are temporary pointers,
-c     hess points to the Hessenberg matrix,
-c     vc, vs point to the cosines and sines of the Givens rotations
-c     vrn points to the vectors of residual norms, more precisely
-c     the right hand side of the least square problem solved.
+c     local variables
 c
-      integer i,ii,idx,k,m,ptr,p2,hess,vc,vs,vrn
+      integer i,ii,k,m
       real*8 alpha, c, s
       logical lp, rp
       save
@@ -72,7 +68,7 @@ c
          w(n+i) = rhs(i) - w(i)
       enddo
       fpar(11) = fpar(11) + n
-      ipar(1) = 3
+      ipar(1)  = 3
       ipar(10) = 2
       return
 c
@@ -141,42 +137,6 @@ c
           ipar(1) = -1
       endif
       return
-c
-c     process the complete stopping criteria
-c
-c      if (ipar(3).eq.999) then
-c
-c     FIXME HERE
-c
-c         print*,'FIXME, dc.f!!!'
-c         ipar(1) = 10
-c         ipar(8) = -1
-c         ipar(9) = idx + 1
-c         ipar(10) = 7
-c         return
-c      else if (ipar(3).lt.0) then
-c         if (ipar(7).le.m+1) then
-c            fpar(3) = abs(w(vrn+1))
-c            if (ipar(3).eq.-1) fpar(4) = fpar(1)*fpar(3)+fpar(2)
-c         endif
-c         fpar(6) = abs(w(vrn+k))
-c      else
-c         fpar(6) = fpar(5)
-c      endif
-c
-c     termination, set error code, compute convergence rate
-c
-c      if (ipar(1).gt.0) then
-c         if (ipar(3).eq.999 .and. ipar(11).eq.1) then
-c            ipar(1) = 0
-c         else if (ipar(3).ne.999 .and. fpar(6).le.fpar(4)) then
-c            ipar(1) = 0
-c         else if (ipar(7).ge.ipar(6) .and. ipar(6).gt.0) then
-c            ipar(1) = -1
-c         else
-c            ipar(1) = -10
-c         endif
-c      endif
  300  if (fpar(3).ne.zero .and. fpar(6).ne.zero .and.
      +     ipar(7).gt.ipar(13)) then
 c
