@@ -89,6 +89,8 @@ where the source files are included in a tree structure as
         |-- utilities/       : useful stuff
         | 
         |-- variabledefs/    : global variable definitions
+	|
+	|-- iterative/       : iterative methods for linear systems
    | 
    |-- doc/                  : documentation (doxygen)
    | 
