@@ -1,0 +1,67 @@
+!!\chapter{Fortran \& Portable-Kind-Precision Selection}
+!!\label{cap:kind precision}
+!!
+!!\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf F}}{ortran} is the most popular programming language for scientific computing.
+!!With fortran it is quite simple obtain fast code and manage large multidimensional array. Because fortran permits the achivment
+!!of high performance it is also used on great range of different computer-architettures, and often on the fastest supercomputer
+!!in the world. Therefore fortran programs must be \MaiuscolettoBS{portable}: portability means that the code will give the same
+!!results on every different computer-architettures. One of the most important goal of the numeric code is to control the
+!!\MaiuscolettoBS{the numeric error} due to finite precision of numerical operations. Fortran uses the \MaiuscolettoBS{IEEE
+!!rappresentations}; integers and reals (floating point) are represented with a finite precision. So when the code computes an
+!!operation it has a \MaiuscolettoBS{trunction error} due to the truncation of the numerical finite rappresentaions. For numerical
+!!and more in general scientific applications this source of errors must be controlled. The programmer must know which is the
+!!precision associated to the code variables. Before the standard fortran 90/95 there are not any way to select the precision of
+!!the numerical variables in a portable fashion. With the possibility to specify a kind parameter for variables, the standard
+!!fortran 90/95 makes avaible two useful functions to select the kind precision of integers and reals:
+!!
+!!\begin{boxred}{selected\_real\_kind \& selected\_int\_kind}
+!!\begin{verbatim}
+!!function selected_real_kind(p,r) result(kind_id)
+!!integer, intent(IN), optional:: p
+!!integer, intent(IN), optional:: r
+!!integer::                       kind_id
+!!
+!!The result, kind_id, is a scalar of type default integer.
+!!If both arguments are absent, the result is zero.
+!!Otherwise, the result has a value equal to a value of
+!!the kind parameter of a real data type with decimal
+!!precision, as returned by the function PRECISION, of at
+!!least p digits and a decimal exponent range, as returned
+!!by the function RANGE, of at least r.
+!!
+!!function selected_int_kind(p) result(kind_id)
+!!integer, intent(IN), optional:: p
+!!integer::                       kind_id
+!!
+!!The result, kind_id, is a scalar of type default integer.
+!!The result has a value equal to the value of the kind
+!!parameter of the integer data type that represents all
+!!values n in the range of about values n with
+!!-10^p < n < 10^p.
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!Using these two functions the programmer can accurately control the precision of its own variables in a portable manner.
+!!Note that specifing the kind precision without using these two functions is not portable: $real(8)$ means different
+!!precisions on different architettures. Parametrizing the kind of all numerical variables using these two functions makes
+!!the portable. The \LIBVTKIO uses this principle to achive portable-kind-precision selection; in the library are defined
+!!some parameters by which all variables kind-precisions are parametrized:
+!!
+!!\begin{boxblu}{\LIBVTKIO Kind-Precision Parameters}
+!!{\color{RoyalBlue}\MaiuscolettoS{Real Precision Definitions}}
+!!\begin{description}
+!! \item [{\color{RoyalBlue}R16P}] real with $33$ digits, range $[+-10^{-4931},+-10^{+4931}-1]$
+!! \item [{\color{RoyalBlue}R8P}]  real with $15$ digits, range $[+-10^{-307} ,+-10^{+307}-1 ]$
+!! \item [{\color{RoyalBlue}R4P}]  real with $6$  digits, range $[+-10^{-37}  ,+-10^+{37}-1  ]$
+!!\end{description}
+!!{\color{RoyalBlue}\MaiuscolettoS{Integer Precision Definitions}}
+!!\begin{description}
+!! \item [{\color{RoyalBlue}I8P}] range $[-2^{63},+2^{63}-1]$
+!! \item [{\color{RoyalBlue}I4P}] range $[-2^{31},+2^{31}-1]$
+!! \item [{\color{RoyalBlue}I2P}] range $[-2^{15},+2^{15}-1]$
+!! \item [{\color{RoyalBlue}I1P}] range $[-2^{7} ,+2^{7} -1]$
+!!\end{description}
+!!\end{boxblu}
+!!
+!!In order to avoid strange results porting your code the use of parametrized-kind-precision is very useful. The \LIBVTKIO
+!!makes avaible to the external its own kind-parameters that can be used to parametrize the code.

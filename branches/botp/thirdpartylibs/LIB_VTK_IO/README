@@ -1,0 +1,10 @@
+README FILE by Allan P. Engsig-Karup.
+
+On the command line type
+
+  $ make VTK_IO COMPILER=gnu
+  $ cp static/*.a $HOME/lib/.
+  $ cp static/*.mod /Users/apek/CVS/build
+
+to compile the LIB_VTK_IO static library using a gnu compiler.
+
