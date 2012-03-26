@@ -1,0 +1,12 @@
+!!\appendix
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Example.doc}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Dynamic_Dispatching.doc}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Bugs.doc}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_GPLv3.doc}
+
+!!\printindex
+!(doc)footer

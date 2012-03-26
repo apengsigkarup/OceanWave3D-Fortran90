@@ -1,0 +1,2111 @@
+
+\newcommand{\LIBVTKIO}{\MaiuscolettoBS{LIB\_VTK\_IO }}
+
+\documentclass[pagesize=pdftex,fontsize=10pt,paper=a4,oneside]{scrbook}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\RequirePackage{graphicx}
+\RequirePackage[dvipsnames]{xcolor}
+\definecolor{black}{rgb}{0,0,0}
+\definecolor{Maroon}{cmyk}{0,0.87,0.68,0.32}
+\definecolor{RoyalBlue}{cmyk}{1,0.50,0,0}
+\definecolor{gray}{cmyk}{0,0,0.1,0.07}
+\definecolor{shadecolor}{cmyk}{0,0,0.1,0.07}
+\usepackage{framed}
+\usepackage{listings}
+\lstdefinelanguage{MyFortran}[95]{Fortran}%
+  {morestring=[d]'}
+\lstdefinestyle{codeFootnotesize}{%
+  language=MyFortran,%
+  columns=fixed,%
+  xleftmargin=10pt,%
+  basicstyle=\footnotesize,%
+  numbers=left,%
+  numberstyle={\tiny},%
+  keywordstyle=\color{RoyalBlue},%
+  stringstyle={\ttfamily},%
+  texcl=true,%
+  upquote=true,%
+  commentstyle=\color{Maroon}\scriptsize%
+}
+\lstdefinestyle{codeScriptsize}{%
+  language=MyFortran,%
+  columns=fixed,%
+  xleftmargin=10pt,%
+  basicstyle=\scriptsize,%
+  numbers=left,%
+  numberstyle={\tiny},%
+  keywordstyle=\color{RoyalBlue},%
+  stringstyle={\ttfamily},%
+  texcl=true,%
+  upquote=true,%
+  commentstyle=\color{Maroon}\scriptsize%
+}
+\lstdefinestyle{codeTiny}{%
+  language=MyFortran,%
+  columns=fixed,%
+  xleftmargin=10pt,%
+  basicstyle=\tiny,%
+  numbers=left,%
+  numberstyle={\tiny},%
+  keywordstyle=\color{RoyalBlue},%
+  stringstyle={\ttfamily},%
+  texcl=true,%
+  upquote=true,%
+  commentstyle=\color{Maroon}\scriptsize%
+}
+\lstdefinestyle{signature}{%
+  language=MyFortran,%
+  columns=fixed,%
+  xleftmargin=24pt,%
+  keywordstyle=\color{RoyalBlue},%
+  stringstyle={\ttfamily},%
+  texcl=true,%
+  upquote=true,%
+  commentstyle=\color{Maroon}\scriptsize%
+}
+\lstdefinestyle{variables}{%
+  language=MyFortran,%
+  columns=fixed,%
+  xleftmargin=10pt,%
+  basicstyle=\scriptsize,%
+  keywordstyle=\color{RoyalBlue},%
+  stringstyle={\ttfamily},%
+  texcl=true,%
+  upquote=true,%
+  commentstyle=\color{Maroon}\scriptsize%
+}
+\newcommand{\module}[1]
+  {\section{Module: \texttt{#1}}}
+\newcommand{\program}[1]
+  {\section{Program: \texttt{#1}}}
+\newcommand{\subroutine}[1]
+  {\subsection{Subroutine: \texttt{#1}}}
+\newcommand{\function}[1]
+  {\subsection{Function: \texttt{#1}}}
+\newcommand{\code}{\lstinline[style=codeScriptsize]}
+\newcommand{\var}{\bgroup\catcode`\_=13\relax\dovar}
+\newcommand{\dovar}[1]{\itshape #1\egroup}
+\RequirePackage{makeidx}
+\makeindex
+\DeclareRobustCommand{\MarginNote}[1]{\marginpar{%
+\slshape\footnotesize%
+\parindent=0pt\lineskip=0pt\lineskiplimit=0pt%\baselineskip=10pt
+\tolerance=2000\hyphenpenalty=300\exhyphenpenalty=300%
+\doublehyphendemerits=100000\finalhyphendemerits=\doublehyphendemerits%
+\raggedright\hspace{0pt}#1}}
+\newenvironment{boxred}[1]%
+               {%
+                \noindent\hspace*{-0.025\textwidth}%
+                \color{Maroon}%
+                \rule[-5.8pt]{0.6pt}{6pt}\hspace*{-0.6pt}\rule{1.05\textwidth}{0.6pt}\hspace*{-0.6pt}\rule[-5.8pt]{0.6pt}{6pt}%
+                \color{black}%
+                \vspace*{0.6pt}\MarginNote{\color{Maroon}{#1}}%
+               }%
+               {%
+                \noindent\hspace*{-0.025\textwidth}%
+                \color{Maroon}%
+                \rule[0pt]{0.6pt}{6pt}\hspace*{-0.6pt}\rule{1.05\textwidth}{0.6pt}\hspace*{-0.6pt}\rule[0pt]{0.6pt}{6pt}%
+                \color{black}%
+                \vspace*{2mm}%
+               }
+\newenvironment{boxblu}[1]%
+               {%
+                \noindent\hspace*{-0.025\textwidth}%
+                \color{RoyalBlue}%
+                \rule[-5.8pt]{0.6pt}{6pt}\hspace*{-0.6pt}\rule{1.05\textwidth}{0.6pt}\hspace*{-0.6pt}\rule[-5.8pt]{0.6pt}{6pt}%
+                \color{black}%
+                \vspace*{0.6pt}\MarginNote{\color{RoyalBlue}{#1}}%
+               }%
+               {%
+                \noindent\hspace*{-0.025\textwidth}%
+                \color{RoyalBlue}%
+                \rule[0pt]{0.6pt}{6pt}\hspace*{-0.6pt}\rule{1.05\textwidth}{0.6pt}\hspace*{-0.6pt}\rule[0pt]{0.6pt}{6pt}%
+                \color{black}%
+                \vspace*{2mm}%
+               }
+\newfont{\EnumFont}{eurb10 scaled 1000}
+\newenvironment{enumerate1Red}%
+{\def\theenumi{\textsc{\EnumFont\color{Maroon}\arabic{enumi}}}%
+\enumerate}%
+{\endenumerate}
+\newenvironment{enumerate1Blu}%
+{\def\theenumi{\textsc{\EnumFont\color{RoyalBlue}\arabic{enumi}}}%
+\enumerate}%
+{\endenumerate}
+\newenvironment{enumerateABlu}%
+{\def\theenumi{\textsc{\EnumFont\color{RoyalBlue}\Alph{enumi}}}%
+\enumerate}%
+{\endenumerate}
+\newenvironment{enumerateARed}%
+{\def\theenumi{\textsc{\EnumFont\color{Maroon}\Alph{enumi}}}%
+\enumerate}%
+{\endenumerate}
+\newcommand{\virgo}[1]{``{#1}''}
+\RequirePackage{epigraph}
+\RequirePackage{lettrine}
+\RequirePackage[osf,sc]{mathpazo}
+\linespread{1.05}
+\newfont{\chapterNumberFont}{eurb10 scaled 7000}
+\RequirePackage[euler-digits]{eulervm}
+\RequirePackage{microtype}
+\microtypesetup{expansion=false}
+\RequirePackage{textcase}
+\DeclareRobustCommand{\MaiuscolettoS}[1]{\textls[160]{\MakeTextUppercase{#1}}}
+\DeclareRobustCommand{\MaiuscolettoBS}[1]{\textls[80]{\scshape\MakeTextLowercase{#1}}}
+\RequirePackage{titlesec}
+\titleformat{\part}[display]%
+{\normalfont\centering\large}%
+{\thispagestyle{empty}\partname~\MakeTextUppercase{\thepart}}{1em}%
+{\color{Maroon}\MaiuscolettoS}
+\titleformat{\chapter}[display]%
+            {\vspace*{20mm}}%
+            {\raggedleft{\color{Maroon}\chapterNumberFont\thechapter} \\ }%
+            {0pt}%
+            {\titlerule\vspace*{.9\baselineskip}\raggedright\huge\MaiuscolettoBS}%
+            [\vspace*{1cm}]
+\titlespacing*{\chapter}{0pt}{1\baselineskip}{1.2\baselineskip}
+\titleformat{\section}%
+{\relax}{\textsc{\LARGE\MaiuscolettoBS{\thesection}}}{1em}{\LARGE\MaiuscolettoBS}
+\titlespacing*{\section}{0pt}{1.25\baselineskip}{1\baselineskip}
+\titleformat{\subsection}%
+{\relax}{\textsc{\Large\MaiuscolettoBS{\thesubsection}}}{1em}{\Large\MaiuscolettoBS}
+\titlespacing*{\subsection}{0pt}{1.25\baselineskip}{1\baselineskip}
+\titleformat{\subsubsection}%
+{\relax}{\textsc{\large\MaiuscolettoBS{\thesubsubsection}}}{1em}{\large\MaiuscolettoBS}
+\titlespacing*{\subsubsection}{0pt}{1\baselineskip}{1\baselineskip}
+\titleformat{\paragraph}[runin]%
+{\normalfont\normalsize}{\theparagraph}{0pt}{\MaiuscolettoBS}
+\titlespacing*{\paragraph}{0pt}{1\baselineskip}{1\baselineskip}
+\RequirePackage[titles]{tocloft}
+\RequirePackage{minitoc}
+\newlength{\newnumberwidth}
+\settowidth{\newnumberwidth}{99}
+\cftsetpnumwidth{\newnumberwidth}
+\newlength{\beforebibskip}
+\setlength{\beforebibskip}{0em}
+\renewcommand{\cftchappresnum}{\scshape\MakeTextLowercase}
+\renewcommand{\cftchapfont}{\normalfont}
+\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftchapleader}{\hspace{1.5em}}
+\renewcommand{\cftchapafterpnum}{\cftparfillskip}
+\renewcommand{\cftsecpresnum}{\scshape\MakeTextLowercase}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftsecleader}{\hspace{1.5em}}
+\renewcommand{\cftsecafterpnum}{\cftparfillskip}
+\renewcommand{\cftsubsecpresnum}{\scshape\MakeTextLowercase}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecleader}{\hspace{1.5em}}
+\renewcommand{\cftsubsecafterpnum}{\cftparfillskip}
+\renewcommand{\cftfigpresnum}{\scshape\MakeTextLowercase}
+\renewcommand{\cftfigfont}{\normalfont}
+\renewcommand{\cftfigleader}{\hspace{1.5em}}
+\renewcommand{\cftfigpresnum}{\figurename~}
+\renewcommand{\cftfigafterpnum}{\cftparfillskip}
+\newlength{\figurelabelwidth}
+\settowidth{\figurelabelwidth}{\cftfigpresnum~99}
+\addtolength{\figurelabelwidth}{2.5em}
+\cftsetindents{figure}{0em}{\figurelabelwidth}
+\renewcommand{\cfttabpresnum}{\scshape\MakeTextLowercase}
+\renewcommand{\cfttabfont}{\normalfont}
+\renewcommand{\cfttableader}{\hspace{1.5em}}
+\renewcommand{\cfttabpresnum}{\tablename~}
+\renewcommand{\cfttabafterpnum}{\cftparfillskip}
+\newlength{\tablelabelwidth}
+\settowidth{\tablelabelwidth}{\cfttabpresnum~99}
+\addtolength{\tablelabelwidth}{2.5em}
+\cftsetindents{table}{0em}{\figurelabelwidth}
+\AtBeginDocument{\addtocontents{toc}{\protect\vspace*{-\cftbeforepartskip}}}
+\deffootnote{0em}{0em}{\thefootnotemark\hspace*{.5em}}
+\RequirePackage[automark]{scrpage2}
+\clearscrheadings
+\setheadsepline{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{\MaiuscolettoBS{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \MaiuscolettoBS{#1}}}
+\lehead{\mbox{\llap{\small\thepage\kern2em}\headmark\hfil}}
+\rohead{\mbox{\hfil{\headmark}\rlap{\small\kern2em\thepage}}}
+\renewcommand{\headfont}{\small}
+\RequirePackage{hyperref}
+\hypersetup{%
+            colorlinks=true,%
+            linktocpage=true,%
+            linkcolor=RoyalBlue,%
+            }
+\RequirePackage{subfig}
+\begin{document}
+\frontmatter
+\dominitoc
+
+
+\begin{titlepage}
+\begin{center}
+ \vspace*{15mm}
+
+ {\color{Maroon}\MaiuscolettoS{\Huge LIB\_VTK\_IO}}
+ \vspace*{10mm}
+
+ \MaiuscolettoBS{\LARGE VTK InPut/OutPut Fortran Library}
+ \vspace*{10mm}
+
+ {\Large Version 0.2}
+ \vspace*{15mm}
+
+ \MaiuscolettoBS{\Large Author}
+
+ \MaiuscolettoBS{\LARGE Stefano Zaghi}
+ \vspace*{40mm}
+
+ \MaiuscolettoBS{\Large Co-Authors}
+
+ \MaiuscolettoBS{\large Enrico Cavallini and Renato N. Elias}
+ \vspace*{40mm}
+
+ {\large 07-01-2008}
+
+\end{center}
+\end{titlepage}
+
+
+\tableofcontents
+
+
+
+
+
+\mainmatter
+
+
+\part{Compile and Install LIB\_VTK\_IO}
+\label{part:Compile and Install}
+
+
+
+\part{LIB\_VTK\_IO API}
+\label{part:LIBVTKIO API}
+\chapter{Module LIB\_VTK\_IO}
+\label{mod:LIB_VTK_IO}
+\index{LIB\_VTK\_IO}
+ 
+\minitoc
+\vspace*{8mm}
+
+\LIBVTKIO is a library of functions for Input and Output pure fortran data (both ascii and binary) in VTK format.
+
+The VTK standard can be separated into two main catagories: the \MaiuscolettoBS{VTK Legacy Standard} and the
+\MaiuscolettoBS{VTK XML Standard}. The latter is more powerful and will has a stronger support from VTk comunity than legacy
+standard; XML file format would to be preferred despite the legacy one.
+
+At the present only a few functions of the final library have been implemented. The InPut functions are totaly absent, but the
+OutPut functions are almost complete (the \virgo{polydata} functions are the only missing).
+
+The functions actually present are:
+
+\begin{boxred}{Functions for Legacy VTK file format}
+\begin{enumerate1Red}
+ \item \MaiuscolettoS{VTK\_INI}
+ \item \MaiuscolettoS{VTK\_GEO}
+ \item \MaiuscolettoS{VTK\_CON}
+ \item \MaiuscolettoS{VTK\_DAT}
+ \item \MaiuscolettoS{VTK\_VAR}
+ \item \MaiuscolettoS{VTK\_END}
+\end{enumerate1Red}
+\end{boxred}
+
+\begin{boxred}{Functions for XML VTK file format}
+\begin{enumerate1Red}
+ \item \MaiuscolettoS{VTK\_INI\_XML}
+ \item \MaiuscolettoS{VTK\_GEO\_XML}
+ \item \MaiuscolettoS{VTK\_CON\_XML}
+ \item \MaiuscolettoS{VTK\_DAT\_XML}
+ \item \MaiuscolettoS{VTK\_VAR\_XML}
+ \item \MaiuscolettoS{VTK\_END\_XML}
+\end{enumerate1Red}
+\end{boxred}
+
+
+\label{interface:VTK_GEO}
+\index{VTK\_GEO}
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Interface}]
+interface VTK_GEO
+  module procedure VTK_GEO_UNST_R8, & ! real(R8P) UNSTRUCTURED\_GRID
+                   VTK_GEO_UNST_R4, & ! real(R4P) UNSTRUCTURED\_GRID
+                   VTK_GEO_STRP_R8, & ! real(R8P) STRUCTURED\_POINTS
+                   VTK_GEO_STRP_R4, & ! real(R4P) STRUCTURED\_POINTS
+                   VTK_GEO_STRG_R8, & ! real(R8P) STRUCTURED\_GRID
+                   VTK_GEO_STRG_R4, & ! real(R4P) STRUCTURED\_GRID
+                   VTK_GEO_RECT_R8, & ! real(R8P) RECTILINEAR\_GRID
+                   VTK_GEO_RECT_R4    ! real(R4P) RECTILINEAR\_GRID
+endinterface
+\end{lstlisting}
+
+\end{boxred}
+ 
+\label{interface:VTK_VAR}
+\index{VTK\_VAR}
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Interface}]
+interface VTK_VAR
+  module procedure VTK_VAR_SCAL_R8, & ! real(R8P)    scalar
+                   VTK_VAR_SCAL_R4, & ! real(R4P)    scalar
+                   VTK_VAR_SCAL_I4, & ! integer(I4P) scalar
+                   VTK_VAR_VECT_R8, & ! real(R8P)    vectorial
+                   VTK_VAR_VECT_R4, & ! real(R4P)    vectorial
+                   VTK_VAR_VECT_I4, & ! integer(I4P) vectorial
+                   VTK_VAR_TEXT_R8, & ! real(R8P)    vectorial (texture)
+                   VTK_VAR_TEXT_R4    ! real(R4P)    vectorial (texture)
+endinterface
+\end{lstlisting}
+
+\end{boxred}
+ 
+\label{interface:VTK_GEO_XML}
+\index{VTK\_GEO\_XML}
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Interface}]
+interface VTK_GEO_XML
+  module procedure VTK_GEO_XML_STRG_R4, & ! real(R4P) StructuredGrid
+                   VTK_GEO_XML_STRG_R8, & ! real(R8P) StructuredGrid
+                   VTK_GEO_XML_RECT_R8, & ! real(R8P) RectilinearGrid
+                   VTK_GEO_XML_RECT_R4, & ! real(R4P) RectilinearGrid
+                   VTK_GEO_XML_UNST_R8, & ! real(R8P) UnstructuredGrid
+                   VTK_GEO_XML_UNST_R4, & ! real(R4P) UnstructuredGrid
+                   VTK_GEO_XML_CLOSEP     ! closing tag "Piece" function
+endinterface
+\end{lstlisting}
+
+\end{boxred}
+ 
+\label{interface:VTK_VAR_XML}
+\index{VTK\_VAR\_XML}
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Interface}]
+interface VTK_VAR_XML
+  module procedure VTK_VAR_XML_SCAL_R8, & ! real(R8P)    scalar
+                   VTK_VAR_XML_SCAL_R4, & ! real(R4P)    scalar
+                   VTK_VAR_XML_SCAL_I8, & ! integer(I8P) scalar
+                   VTK_VAR_XML_SCAL_I4, & ! integer(I4P) scalar
+                   VTK_VAR_XML_SCAL_I2, & ! integer(I2P) scalar
+                   VTK_VAR_XML_SCAL_I1, & ! integer(I1P) scalar
+                   VTK_VAR_XML_VECT_R8, & ! real(R8P)    vectorial
+                   VTK_VAR_XML_VECT_R4, & ! real(R4P)    vectorial
+                   VTK_VAR_XML_VECT_I8, & ! integer(I4P) vectorial
+                   VTK_VAR_XML_VECT_I4, & ! integer(I4P) vectorial
+                   VTK_VAR_XML_VECT_I2, & ! integer(I4P) vectorial
+                   VTK_VAR_XML_VECT_I1    ! integer(I4P) vectorial
+endinterface
+\end{lstlisting}
+
+\end{boxred}
+ 
+
+\LIBVTKIO has a small set of internal variables and parameters some of which have public visibility.
+
+The \LIBVTKIO uses a partable kind parameters for real and integer variables. The following are the kind parameters used: these
+parameters are public and their use is strong encouraged.
+
+Real precision definitions:
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{LIB\_VTK\_IO Variables}]
+integer, parameter:: R16P = selected_real_kind(33,4931) ! 33  digits, range $[\pm 10^{-4931}  ,\pm 10^{+4931}   -1]$
+integer, parameter:: R8P  = selected_real_kind(15,307)  ! 15  digits, range $[\pm 10^{-307}~~ ,\pm 10^{+307}~~  -1]$
+integer, parameter:: R4P  = selected_real_kind(6,37)    ! 6~~~digits, range $[\pm 10^{-37}~~~~,\pm 10^{+37}~~~~ -1]$
+integer, parameter:: R_P  = R8P                         ! default real precision
+\end{lstlisting}
+
+\end{boxred}
+ 
+Integer precision definitions:
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{LIB\_VTK\_IO Variables}]
+integer, parameter:: I8P  = selected_int_kind(18)       ! range $[-2^{63} ,+2^{63}  -1]$
+integer, parameter:: I4P  = selected_int_kind(9)        ! range $[-2^{31} ,+2^{31}  -1]$
+integer, parameter:: I2P  = selected_int_kind(4)        ! range $[-2^{15} ,+2^{15}  -1]$
+integer, parameter:: I1P  = selected_int_kind(2)        ! range $[-2^{7}~~,+2^{7}~~ -1]$
+integer, parameter:: I_P  = I4P                         ! default integer precision
+\end{lstlisting}
+
+\end{boxred}
+ 
+
+Besides the kind parameters there are also the format parameters useful for writing in a well-ascii-format numeric variables.
+Also these parameters are public.
+
+ Real output formats:
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{LIB\_VTK\_IO Variables}]
+character(10), parameter:: FR16P = '(E41.33E4)'         ! R16P  output format
+character(10), parameter:: FR8P  = '(E23.15E3)'         ! R8P   output format
+character(9),  parameter:: FR4P  = '(E14.6E2)'          ! R4P   output format
+character(10), parameter:: FR_P  = '(E23.15E3)'         ! R\_P  output format
+\end{lstlisting}
+
+\end{boxred}
+ 
+ Integer output formats:
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{LIB\_VTK\_IO Variables}]
+character(5), parameter:: FI8P  = '(I21)'               ! I8P  output format
+character(5), parameter:: FI4P  = '(I12)'               ! I4P  output format
+character(4), parameter:: FI2P  = '(I7)'                ! I2P  output format
+character(4), parameter:: FI1P  = '(I5)'                ! I1P  output format
+character(5), parameter:: FI_P  = '(I12)'               ! I\_P output format
+\end{lstlisting}
+
+\end{boxred}
+ 
+
+\LIBVTKIO uses a small set of internal variables that are private (not accessible from the outside). The following are
+ private variables:
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{LIB\_VTK\_IO Variables}]
+integer(I4P), parameter:: maxlen       = 500         ! max number of characters os static string
+character(1), parameter:: end_rec      = char(10)    ! end-character for binary-record finalize
+integer(I4P), parameter:: f_out_ascii  = 0           ! ascii-output-format parameter identifier
+integer(I4P), parameter:: f_out_binary = 1           ! binary-output-format parameter identifier
+integer(I4P)::            f_out        = f_out_ascii ! current output-format (initialized to ascii format)
+character(len=maxlen)::   topology                   ! mesh topology
+integer(I4P)::            Unit_VTK                   ! internal logical unit
+integer(I4P)::            Unit_VTK_Append            ! internal logical unit for raw binary XML append file
+integer(I4P)::            N_Byte                     ! number of byte to be written/read
+real(R8P)::               tipo_R8                    ! prototype of R8P real
+real(R4P)::               tipo_R4                    ! prototype of R4P real
+integer(I8P)::            tipo_I8                    ! prototype of I8P integer
+integer(I4P)::            tipo_I4                    ! prototype of I4P integer
+integer(I2P)::            tipo_I2                    ! prototype of I2P integer
+integer(I1P)::            tipo_I1                    ! prototype of I1P integer
+integer(I4P)::            ioffset                    ! offset pointer
+integer(I4P)::            indent                     ! indent pointer
+
+\end{lstlisting}
+
+\end{boxred}
+ 
+In the following chapters there is the API reference of all functions of \LIBVTKIO.
+\chapter{Auxiliary functions}
+\minitoc
+\vspace*{8mm}
+
+\LIBVTKIO uses two auxiliary functions that are not connected with the VTK standard. These functions are private and so they
+cannot be called outside the library.
+\section{Function GetUnit}
+\label{fun:GetUnit}
+\index{GetUnit}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{GetUnit Signature}]
+function GetUnit() result(Free_Unit)
+\end{lstlisting}
+\end{boxred}
+ 
+The GetUnit function is used for getting a free logic unit. The users of \LIBVTKIO does not know which is
+the logical unit: \LIBVTKIO handels this information without boring the users. The logical unit used is safe-free: if the
+program calling \LIBVTKIO has others logical units used \LIBVTKIO will never use these units, but will choice one that is free.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{GetUnit Variables}]
+  integer(I4P):: Free_Unit ! free logic unit
+  integer(I4P):: n1        ! counter
+  integer(I4P):: ios       ! inquiring flag
+  logical(4)::   lopen     ! inquiring flag
+
+\end{lstlisting}
+
+\end{boxred}
+ 
+The following is the code snippet of GetUnit function: the units 0, 5, 6, 9 and all non-free units are discarded.
+
+ 
+\begin{boxred}{GetUnit Code Snippet}
+\begin{lstlisting}[firstnumber=   236,style=codeFootnotesize]
+  Free_Unit = -1_I4P                                      ! initializing free logic unit
+  n1=1_I4P                                                ! initializing counter
+  do
+    if ((n1/=5_I4P).AND.(n1/=6_I4P).AND.(n1/=9_I4P)) then
+      inquire (unit=n1,opened=lopen,iostat=ios)           ! verify logic units
+      if (ios==0_I4P) then
+        if (.NOT.lopen) then
+          Free_Unit = n1                                  ! assignment of free logic
+          return
+        endif
+      endif
+    endif
+    n1=n1+1_I4P                                           ! updating counter
+  enddo
+  return
+\end{lstlisting}
+
+\end{boxred}
+ 
+GetUnit function is private and cannot be called outside \LIBVTKIO. If you are interested to use it change its scope to public.
+
+\section{Function Upper\_Case}
+\label{fun:Upper_Case}
+\index{Upper\_Case}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{Upper\_Case Signature}]
+function Upper_Case(string)
+\end{lstlisting}
+\end{boxred}
+ 
+The Upper\_Case function converts the lower case characters of a string to upper case one. \LIBVTKIO uses this function in
+order to achieve case-insensitive: all character variables used within \LIBVTKIO functions are pre-processed by
+Uppper\_Case function before these variables are used. So the users can call \LIBVTKIO functions whitout pay attention of the
+case of the kwywords passed to the functions: calling the function VTK\_INI with the string \code{E_IO = VTK_INI('Ascii',...)}
+or with the string  \code{E_IO = VTK_INI('AscII',...)} is equivalent.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{Upper\_Case Variables}]
+  character(len=*), intent(IN):: string     ! string to be converted
+  character(len=len(string))::   Upper_Case ! converted string
+  integer::                      n1         ! characters counter
+
+\end{lstlisting}
+
+\end{boxred}
+ 
+The following is the code snippet of Upper\_Case function.
+
+ 
+\begin{boxred}{Upper\_Case Code Snippet}
+\begin{lstlisting}[firstnumber=   277,style=codeFootnotesize]
+  Upper_Case = string
+  do n1=1,len(string)
+    select case(ichar(string(n1:n1)))
+    case(97:122)
+      Upper_Case(n1:n1)=char(ichar(string(n1:n1))-32) ! Upper case conversion
+    endselect
+  enddo
+  return
+\end{lstlisting}
+
+\end{boxred}
+ 
+Upper\_Case function is private and cannot be called outside \LIBVTKIO. If you are interested to use it change its scope
+to public.
+
+\chapter{VTK LEGACY functions}
+\minitoc
+\vspace*{8mm}
+
+\section{Function VTK\_INI}
+\label{fun:VTK_INI}
+\index{VTK\_INI}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_INI Signature}]
+function VTK_INI(output_format,filename,title,mesh_topology) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+The VTK\_INI function is used for initializing file. This function must be the first to be called.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_INI Variables}]
+  character(*), intent(IN):: output_format ! output format: ASCII or BINARY
+  character(*), intent(IN):: filename      ! name of file
+  character(*), intent(IN):: title         ! title
+  character(*), intent(IN):: mesh_topology ! mesh topology
+  integer(I4P)::             E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_INI variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}output\_format}] indicates the \virgo{format} of output file. It can assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{ascii} (it is case insensitive) $\rightarrow$ creating an ascii output file.
+  \item \emph{binary} (it is case insensitive) $\rightarrow$ creating a binary (big\_endian encoding) output file.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}filename}] contains the name (with its path) of the output file.
+ \item[{\color{RoyalBlue}title}] contains the title of the VTK dataset.
+ \item[{\color{RoyalBlue}topology}] indicates the topology of the mesh and can assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{STRUCTURED\_POINTS}.
+  \item \emph{STRUCTURED\_GRID}.
+  \item \emph{UNSTRUCTURED\_GRID}.
+  \item \emph{RECTILINEAR\_GRID}.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_INI calling:
+
+\begin{boxred}{VTK\_INI Calling}
+\begin{verbatim}
+...
+E_IO = VTK_INI('Binary','example.vtk','VTK legacy file','UNSTRUCTURED_GRID')
+...
+\end{verbatim}
+\end{boxred}
+\noindent Note that the \virgo{.vtk} extension is necessary in the file name.
+
+
+\section{VTK\_GEO}
+
+VTK\_GEO is an interface to 8 different functions; there are 2 functions for each 4 different topologies actually supported:
+one function for mesh coordinates with R8P precision and one for mesh coordinates with R4P precision.
+This function must be called after VTK\_INI. It saves the mesh geometry. The inputs that must be passed change depending on
+the topologies choiced. Not all VTK topologies have been implemented (\virgo{polydata} topologies are absent). The signatures
+for all implemented topologies are now reported.
+
+\subsection{VTK\_GEO STRUCTURED POINTS}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Points Signature}]
+ function VTK_GEO(Nx,Ny,Nz,X0,Y0,Z0,Dx,Dy,Dz) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{structured points} is useful for structured grid with uniform discretization steps.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Points Variables}]
+integer(I4P),     intent(IN):: Nx   ! number of nodes in x direction
+integer(I4P),     intent(IN):: Ny   ! number of nodes in y direction
+integer(I4P),     intent(IN):: Nz   ! number of nodes in z direction
+real(R8P or R4P), intent(IN):: X0   ! x coordinate of origin
+real(R8P or R4P), intent(IN):: Y0   ! y coordinate of origin
+real(R8P or R4P), intent(IN):: Z0   ! z coordinate of origin
+real(R8P or R4P), intent(IN):: Dx   ! space step in x
+real(R8P or R4P), intent(IN):: Dy   ! space step in y
+real(R8P or R4P), intent(IN):: Dz   ! space step in z
+integer(I4P)::                 E_IO ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X0,Y0,Z0,Dx,Dy,Dz} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be sure
+that all variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO structured point variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}Nx}] indicates the number of nodes in $X$ direction.
+ \item[{\color{RoyalBlue}Ny}] indicates the number of nodes in $Y$ direction.
+ \item[{\color{RoyalBlue}NZ}] indicates the number of nodes in $Z$ direction.
+ \item[{\color{RoyalBlue}X0}] indicates the $X$ value of coordinates system origin. It is a scalar.
+ \item[{\color{RoyalBlue}Y0}] indicates the $Y$ value of coordinates system origin. It is a scalar.
+ \item[{\color{RoyalBlue}Z0}] indicates the $Z$ value of coordinates system origin. It is a scalar.
+ \item[{\color{RoyalBlue}Dx}] indicates the uniform grid step discretization in $X$ direction. It is a scalar.
+ \item[{\color{RoyalBlue}Dy}] indicates the uniform grid step discretization in $Y$ direction. It is a scalar.
+ \item[{\color{RoyalBlue}DZ}] indicates the uniform grid step discretization in $Z$ direction. It is a scalar.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO structured point calling:
+
+\begin{boxred}{VTK\_GEO Structured Points Calling}
+\begin{verbatim}
+...
+integer(4):: Nx,Ny,Nz
+real(8):: X0,Y0,Z0
+real(8):: Dx,Dy,Dz
+...
+E_IO = VTK_GEO(Nx,Ny,Nz, &
+               X0,Y0,Z0,Dx,Dy,Dz)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_GEO STRUCTURED GRID}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Grid Signature}]
+function VTK_GEO(Nx,Ny,Nz,NN,X,Y,Z) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{structured grid} is useful for structured grid with non-uniform discretization steps.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Grid Variables}]
+integer(I4P),     intent(IN):: Nx      ! number of nodes in x direction
+integer(I4P),     intent(IN):: Ny      ! number of nodes in y direction
+integer(I4P),     intent(IN):: Nz      ! number of nodes in z direction
+integer(I4P),     intent(IN):: NN      ! number of all nodes
+real(R8P or R4P), intent(IN):: X(1:NN) ! x coordinates
+real(R8P or R4P), intent(IN):: Y(1:NN) ! y coordinates
+real(R8P or R4P), intent(IN):: Z(1:NN) ! z coordinates
+integer(I4P)::                 E_IO    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+sure that all variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO structured grid variables have the following meaning:
+
+\begin{description}
+  \item[{\color{RoyalBlue}Nx}] indicates the number of nodes in $X$ direction.
+  \item[{\color{RoyalBlue}Ny}] indicates the number of nodes in $Y$ direction.
+  \item[{\color{RoyalBlue}NZ}] indicates the number of nodes in $Z$ direction.
+  \item[{\color{RoyalBlue}NN}] indicates the number of all nodes, $NN= Nx\cdot Ny\cdot Nz$.
+  \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+  \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+  \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+  \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO structured grid calling:
+
+\begin{boxred}{VTK\_GEO Structured Grid Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: Nx=10,Ny=10,Nz=10
+integer(4), parameter:: Nnodi=Nx*Ny*Nz
+real(8):: X(1:Nnodi),Y(1:Nnodi),Z(1:Nnodi)
+...
+E_IO = VTK_GEO(Nx,Ny,Nz,Nnodi,X,Y,Z)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_GEO RECTILINEAR GRID}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Rectilinear Grid Signature}]
+function VTK_GEO(Nx,Ny,Nz,X,Y,Z) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{rectilinear grid} is useful for structured grid with non-uniform discretization steps even
+in generalized coordinates.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Rectilinear Grid Signature}]
+integer(I4P),     intent(IN):: Nx      ! number of nodes in x direction
+integer(I4P),     intent(IN):: Ny      ! number of nodes in y direction
+integer(I4P),     intent(IN):: Nz      ! number of nodes in z direction
+real(R8P or R4P), intent(IN):: X(1:Nx) ! x coordinates
+real(R8P or R4P), intent(IN):: Y(1:Ny) ! y coordinates
+real(R8P or R4P), intent(IN):: Z(1:Nz) ! z coordinates
+integer(I4P)::                 E_IO    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+sure that all variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO rectilinear grid variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}Nx}] indicates the number of nodes in $X$ direction.
+ \item[{\color{RoyalBlue}Ny}] indicates the number of nodes in $Y$ direction.
+ \item[{\color{RoyalBlue}Nz}] indicates the number of nodes in $Z$ direction.
+ \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of nodes. It is a vector of $[1:Nx]$.
+ \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of nodes. It is a vector of $[1:Ny]$.
+ \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of nodes. It is a vector of $[1:Nz]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO rectilinear grid calling:
+
+\begin{boxred}{VTK\_GEO Rectilinear Grid Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: Nx=10,Ny=20,Nz=30
+real(4):: X(1:Nx),Y(1:Ny),Z(1:Nz)
+...
+E_IO = VTK_GEO(Nx,Ny,Nz,X,Y,Z)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_GEO UNSTRUCTURED GRID}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Unstructured Grid Signature}]
+function VTK_GEO(Nnodi,X,Y,Z) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{unstructured grid} is necessary for unstructured grid, the most general mesh format. This
+topology is also useful for scructured mesh in order to save only a non-structured clip of mesh.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Unstructured Grid Variables}]
+integer(I4P),     intent(IN):: NN      ! number of nodes
+real(R8P or R4P), intent(IN):: X(1:NN) ! x coordinates of all nodes
+real(R8P or R4P), intent(IN):: Y(1:NN) ! y coordinates of all nodes
+real(R8P or R4P), intent(IN):: Z(1:NN) ! z coordinates of all nodes
+integer(I4P)::                 E_IO    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+sure that all variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO unstructured grid variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NN}] indicates the number of all nodes.
+ \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of nodes. It is a vector of $[1:NN]$.
+ \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of nodes. It is a vector of $[1:NN]$.
+ \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of nodes. It is a vector of $[1:NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO unstructured grid calling:
+
+\begin{boxred}{VTK\_GEO Unstructured Grid Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NN=100
+real(4):: X(1:NN),Y(1:NN),Z(1:NN)
+...
+E_IO = VTK_GEO(NN,X,Y,Z)
+...
+\end{verbatim}
+\end{boxred}
+
+In order to use the \virgo{unstructured grid} it is necessary to save also the \virgo{connectivity} of the grid. The
+connectivity must be saved with the function \MaiuscolettoBS{VTK\_CON}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Function VTK\_CON}
+\label{fun:VTK_CON}
+\index{VTK\_CON}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_CON Signature}]
+function VTK_CON(NC,connect,cell_type) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+This function \MaiuscolettoBS{must} be used when unstructured grid is used. It saves the connectivity of the unstructured
+mesh.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_CON Variables}]
+  integer(I4P), intent(IN):: NC              ! number of cells
+  integer(I4P), intent(IN):: connect(:)      ! mesh connectivity
+  integer(I4P), intent(IN):: cell_type(1:NC) ! VTK cell type
+  integer(I4P)::             E_IO            ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+  character(len=maxlen)::    s_buffer        ! buffer string
+  integer(I4P)::             ncon            ! dimension of connectivity vector 
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_CON variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC}] indicates the number of all cells.
+ \item[{\color{RoyalBlue}connect}] contains the connectivity of the mesh. It is a vector.
+ \item[{\color{RoyalBlue}cell\_type}] contains the type of every cells. It is a vector of $[1:NC]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The vector \MaiuscolettoBS{connect} must follow the VTK legacy standard. It is passed as \MaiuscolettoBS{assumed-shape} array
+because its dimensions is related to the mesh dimensions in a complex way. Its dimensions can be calculated by the following
+equation:
+
+\begin{equation}
+dc = NC + \sum\limits_{i = 1}^{NC} {nvertex_i }
+\label{eq:connectivity dimensions}
+\end{equation}
+
+\noindent where $dc$ is connectivity vector dimension and $nvertex_i$ is the number of vertices of $i^{th}$ cell. The VTK
+legacy standard for the mesh connectivity is quite obscure at least at first sight. It is more simple analizing an example.
+Suppose we have a mesh composed by 2 cells, one hexahedron (8 vertices) and one pyramid with square basis (5 vertices); suppose
+that the basis of pyramid is constitute by a face of the hexahedron and so the two cells share 4 vertices. The equation
+\ref{eq:connectivity dimensions} gives $dc=2+8+5=15$; the connectivity vector for this mesh can be:
+
+\begin{boxred}{Connectivity vector example for VTK legacy standard}
+\begin{verbatim}
+! first cell
+connect(1)  = 8  => number of vertices of 1° cell
+connect(2)  = 0  => identification flag of 1° vertex of 1° cell
+connect(3)  = 1  => identification flag of 2° vertex of 1° cell
+connect(4)  = 2  => identification flag of 3° vertex of 1° cell
+connect(5)  = 3  => identification flag of 4° vertex of 1° cell
+connect(6)  = 4  => identification flag of 5° vertex of 1° cell
+connect(7)  = 5  => identification flag of 6° vertex of 1° cell
+connect(8)  = 6  => identification flag of 7° vertex of 1° cell
+connect(9)  = 7  => identification flag of 8° vertex of 1° cell
+! second cell
+connect(10) = 5  => number of vertices of 2° cell
+connect(11) = 0  => identification flag of 1° vertex of 2° cell
+connect(12) = 1  => identification flag of 2° vertex of 2° cell
+connect(13) = 2  => identification flag of 3° vertex of 2° cell
+connect(14) = 3  => identification flag of 4° vertex of 2° cell
+connect(15) = 8  => identification flag of 5° vertex of 2° cell
+\end{verbatim}
+\end{boxred}
+
+\noindent Note that the first 4 identification flags of pyramid vertices as the same of the first 4 identification flags of
+the hexahedron because the two cells share this face. It is also important to note that the identification flags start
+form $0$ value: this is impose to the VTK standard. The function VTK\_CON does not calculate the connectivity vector: it
+writes the connectivity vector conforming the VTK standard, but does not calculate it. In the future release of \LIBVTKIO will
+be included a function to calculate the connectivity vector.
+
+The vector variable \MaiuscolettoBS{tipo} must conform the VTK standard \footnote{See the file VTK-Standard at the Kitware
+homepage.}. It contains the \emph{type} of each cells. For the above example this vector is:
+
+\begin{boxred}{Cell-Type vector example for VTK legacy standard}
+\begin{verbatim}
+tipo(1) = 12  => VTK hexahedron type of 1° cell
+tipo(2) = 14  => VTK pyramid type of 2° cell
+\end{verbatim}
+\end{boxred}
+
+The following is an example of VTK\_CON calling:
+
+\begin{boxred}{VTK\_CON Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC=2
+integer(4), parameter:: Nvertex1=8
+integer(4), parameter:: Nvertex2=5
+integer(4), parameter:: dc=NC+Nvertex1+Nvertex2
+integer(4)::            connect(1:dc)
+integer(4)::            cell_type(1:NC)
+...
+E_IO = VTK_CON(NC,connect,cell_type)
+...
+\end{verbatim}
+\end{boxred}
+
+
+\section{Function VTK\_DAT}
+\label{fun:VTK_DAT}
+\index{VTK\_DAT}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_DAT Signature}]
+function VTK_DAT(NC_NN,var_location) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+This function \MaiuscolettoBS{must} be called before saving the data related to geometric mesh. This function initializes the
+saving of data variables indicating the \emph{type} of variables that will be saved.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_DAT Variables}]
+  integer(I4P), intent(IN):: NC_NN        ! number of cells or nodes of field
+  character(*), intent(IN):: var_location ! location of saving variables: cell for cell-centered, node for node-centered
+  integer(I4P)::             E_IO         ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+  character(len=maxlen)::    s_buffer     ! buffer string
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_DAT variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of {\color{RoyalBlue}tipo}.
+ \item[{\color{RoyalBlue}var\_location}] contains the location-type of variables that will be saved after VTK\_DAT. It is a scalar and cab assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{cell} (it is case insensitive) $\rightarrow$ variables will be cell-centered.
+  \item \emph{node} (it is case insensitive) $\rightarrow$ variables will be node-centered.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Of course a single file can contain both cell and node centered variables; in this case the VTK\_DAT function must be called two times, before saving cell-centered variables and before saving node-centered variables.
+
+The following is an example of VTK\_DAT calling:
+
+\begin{boxred}{VTK\_DAT Calling}
+\begin{verbatim}
+...
+E_IO = VTK_DAT(50,'node')
+...
+\end{verbatim}
+\end{boxred}
+
+
+\section{VTK\_VAR}
+
+VTK\_VAR is an interface to 8 different functions; there are 3 functions for scalar variables, 3 functions for vectorial
+variables and 2 function texture variables.
+This function saves the data variables related to geometric mesh. The inputs that must be passed change depending on the data
+variables type.
+
+\subsection{VTK\_VAR SCALAR DATA}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Scalar Data Signature}]
+function VTK_VAR(formato,NC_NN,varname,var) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+This kind of call is used to save scalar data.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Scalar Data Variables}]
+integer(I4P),                     intent(IN):: NC_NN        ! number of nodes or cells
+character(*),                     intent(IN):: varname      ! variable name
+real(R8P or R4P) or integer(I4P), intent(IN):: var(1:NC_NN) ! variable to be saved
+integer(I4P)::                                 E_IO         ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_VAR variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+ \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+ \item[{\color{RoyalBlue}var}] contains the values of variables in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Note that the variables \texttt{var} can be passed both as 8-byte real kind, 4-byte real kind and 4-byte integer; the
+dynamic displacement interface will call the correct function.
+
+The following is an example of VTK\_VAR scalar data calling:
+
+\begin{boxred}{VTK\_VAR Scalar Data Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC_NN=100
+real(4)::               var(1:NC_NN)
+...
+E_IO = VTK_VAR(NC_NN,'Scalar Data',var)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_VAR REAL VECTORIAL DATA}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Real Vectorial Data Signature}]
+function VTK_VAR(tipo,NC_NN,varname,varX,varY,varZ) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+This kind of call is used to save real vectorial data.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Real Vectorial Data Variables}]
+character(*),     intent(IN):: vec_type      ! vector type: vect = generic vector , norm = normal vector
+integer(I4P),     intent(IN):: NC_NN         ! number of nodes or cells
+character(*),     intent(IN):: varname       ! variable name
+real(R8P or R4P), intent(IN):: varX(1:NC_NN) ! x component of vector
+real(R8P or R4P), intent(IN):: varY(1:NC_NN) ! y component of vector
+real(R8P or R4P), intent(IN):: varZ(1:NC_NN) ! z component of vector
+integer(I4P)::                 E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_VAR variables have the following meaning:
+
+\begin{description}
+ \item [{\color{RoyalBlue}tipo}] indicates the type of vector. It can assume the following value:
+ \begin{enumerateABlu}
+  \item \emph{vect} $\rightarrow$ generic vector.
+  \item \emph{norm} $\rightarrow$ normal vector of face.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+ \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+ \item[{\color{RoyalBlue}varX}] contains the values of $X$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}varY}] contains the values of $Y$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}varZ}] contains the values of $Z$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Note that the variables \texttt{varX,varY,varZ} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function.
+
+The following is an example of VTK\_VAR real vectorial data calling:
+
+\begin{boxred}{VTK\_VAR Real Vectorial Data Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC_NN=100
+real(4)::               varX(1:NC_NN)
+real(4)::               varZ(1:NC_NN)
+real(4)::               varZ(1:NC_NN)
+...
+E_IO = VTK_VAR('vect',NC_NN,'Real Vectorial Data',...
+            ...varX,varY,varZ)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_VAR INTEGER VECTORIAL DATA}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Integer Vectorial Data Signature}]
+function VTK_VAR(NC_NN,varname,varX,varY,varZ) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+This kind of call is used to save integer vectorial data.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Integer Vectorial Data Variables}]
+integer(R4P),   intent(IN):: NC_NN         ! number of nodes or cells
+character(*),   intent(IN):: varname       ! variable name
+integer(R4P),   intent(IN):: varX(1:NC_NN) ! x component of vector
+integer(R4P),   intent(IN):: varY(1:NC_NN) ! y component of vector
+integer(R4P),   intent(IN):: varZ(1:NC_NN) ! z component of vector
+integer(R4P)::               E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_VAR variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+ \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+ \item[{\color{RoyalBlue}varX}] contains the values of $X$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}varY}] contains the values of $Y$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}varZ}] contains the values of $Z$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_VAR real vectorial data calling:
+
+\begin{boxred}{VTK\_VAR Integer Vectorial Data Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC_NN=100
+integer(4)::            varX(1:NC_NN)
+integer(4)::            varZ(1:NC_NN)
+integer(4)::            varZ(1:NC_NN)
+...
+E_IO = VTK_VAR(NC_NN,'Integer Vectorial Data', &
+               varX,varY,varZ)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_VAR TEXTURE DATA}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Texture Data Signature}]
+function VTK_VAR(NC_NN,,dimm,varname,textCoo) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+This kind of call is used to save texture data.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR Texture Data Variables}]
+integer(R4P),     intent(IN):: NC_NN                   ! number of nodes or cells
+integer(R4P),     intent(IN):: dimm                    ! texture dimensions
+character(*),     intent(IN):: varname                 ! variable name
+real(R8P or R4P), intent(IN):: textCoo(1:NC_NN,1:dimm) ! texture
+integer(R4P)::                 E_IO                    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_VAR variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+                                  {\color{RoyalBlue}tipo} passed to VTK\_DAT.
+ \item[{\color{RoyalBlue}dimm}] indicates the dimensions of the texture coordinates. It can assume the value:
+ \begin{enumerateABlu}
+  \item \emph{1} $\rightarrow$ scalar texture.
+  \item \emph{2} $\rightarrow$ twodimensional texture.
+  \item \emph{3} $\rightarrow$ threedimensional texture.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+ \item[{\color{RoyalBlue}textCoo}] contains the coordinates of texture in each nodes or cells. It is a vector of
+                                   $[1:NC\_NN,1:dimm]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Note that the variable \texttt{textCoo} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function.
+
+The following is an example of VTK\_VAR texture data calling:
+
+\begin{boxred}{VTK\_VAR Texture Data Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC_NN=100
+integer(4), parameter:: dimm=2
+real(4)::               textCoo(1:NC_NN,1:dimm)
+...
+E_IO = VTK_VAR(NC_NN,dimm,'Texture Data',textCoo)
+...
+\end{verbatim}
+\end{boxred}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Function VTK\_END}
+\label{fun:VTK_END}
+\index{VTK\_END}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_END Signature}]
+function VTK_END() result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+This function is used to finalize the file opened and it has not inputs. The \LIBVTKIO manages the file unit without the
+user's action.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_END Variables}]
+  integer(I4P):: E_IO ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_END variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_END calling:
+
+\begin{boxred}{VTK\_END Calling}
+\begin{verbatim}
+...
+E_IO = VTK_END()
+...
+\end{verbatim}
+\end{boxred}
+
+
+\chapter{VTK XML functions}
+\minitoc
+\vspace*{8mm}
+
+\lettrine[lines=2,loversize=-.1,lraise=0.2]{{\bf T}}{he} XML standard is more powerful than legacy one. It is more flexible
+and free but on the other hand is more (but not so more using a library like \LIBVTKIO...) complex than legacy standard. The
+output of XML functions is a well-formated XML file at least for the ascii format (in the binary format \LIBVTKIO use
+raw-data format that does not produce a well formated XML file).
+
+The XML functions follow the same calling-convention of the legacy functions; all the \LIBVTKIO XML functions are
+\MaiuscolettoBS{4-byte integer function}: the output of these functions is an integer that is $0$ if the function calling
+has been done right while it is $> 0$  if some errors occur. The functions calling is the same as legacy functions:
+
+\begin{boxred}{Functions Calling}
+\begin{verbatim}
+...
+integer(4):: E_IO
+...
+E_IO = VTK_INI_XML(....
+...
+\end{verbatim}
+\end{boxred}
+
+\noindent Note that the XML functions have the same name of legacy functions with the suffix \virgo{\_XML}.
+
+\section{Function VTK\_INI\_XML}
+\label{fun:VTK_INI_XML}
+\index{VTK\_INI\_XML}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_INI\_XML Signature}]
+function VTK_INI_XML(output_format,filename,mesh_topology,nx1,nx2,ny1,ny2,nz1,nz2) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+The VTK\_INI\_XML function is used for initializing file. This function must be the first to be called.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_INI\_XML Variables}]
+  character(*), intent(IN)::           output_format ! output format: ASCII or BINARY
+  character(*), intent(IN)::           filename      ! file name
+  character(*), intent(IN)::           mesh_topology ! mesh topology
+  integer(I4P), intent(IN), optional:: nx1,nx2       ! initial and final nodes of x axis
+  integer(I4P), intent(IN), optional:: ny1,ny2       ! initial and final nodes of y axis
+  integer(I4P), intent(IN), optional:: nz1,nz2       ! initial and final nodes of z axis
+  integer(I4P)::                       E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+  character(len=maxlen)::              s_buffer      ! buffer string
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_INI\_XML variables have the following meaning:
+
+\begin{description}
+\item[{\color{RoyalBlue}output\_format}] indicates the \virgo{format} of output file. It can assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{ascii} (it is case insensitive) $\rightarrow$ creating an ascii output file.
+  \item \emph{binary} (it is case insensitive) $\rightarrow$ creating a binary (big\_endian encoding) output file.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}filename}] contains the name (with its path) of the output file.
+ \item[{\color{RoyalBlue}topology}] indicates the topology of the mesh and can assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{StructuredGrid}.
+  \item \emph{RectilinearGrid}.
+  \item \emph{UnstructuredGrid}.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}nx1,nx2}] contains the extent of X axis; $nx1$ is the initial node and $nx2$ is the final.
+ \item[{\color{RoyalBlue}ny1,ny2}] contains the extent of Y axis; $ny1$ is the initial node and $ny2$ is the final.
+ \item[{\color{RoyalBlue}nz1,nz2}] contains the extent of Z axis; $nz1$ is the initial node and $nz2$ is the final.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+This function is quite more complex than the rispective legacy function; it needs more inputs: the XML standard needs more
+informations to initialize the file.
+
+The following is an example of VTK\_INI\_XML calling:
+
+\begin{boxred}{VTK\_INI\_XML Calling}
+\begin{verbatim}
+...
+...
+E_IO = VTK_INI_XML('BINARY','XML_RECT_BINARY.vtr', &
+                   'RectilinearGrid',              &
+                   nx1=nx1,nx2=nx2,                &
+                   ny1=ny1,ny2=ny2,                &
+                   nz1=nz1,nz2=nz2)
+...
+\end{verbatim}
+\end{boxred}
+
+\noindent Note that the file extension is necessary in the file name. The XML standard has different extensions for each
+different topologies (i.e. \MaiuscolettoBS{.vtr} for rectilinear topology). See the VTK-standard file for more information.
+
+
+\section{VTK\_GEO\_XML}
+
+VTK\_GEO\_XML is an interface to 6 different functions; there are 2 functions for each 3 topologies supported.
+This function must be called after VTK\_INI\_XML. It saves the mesh geometry. The inputs that must be passed change
+depending on the topologies choiced. Not all VTK topologies have been implemented (\virgo{polydata} topologies are absent).
+The signatures for all implemented topologies are now reported.
+
+\subsection{VTK\_GEO\_XML STRUCTURED GRID}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Structured Grid Signature}]
+function VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2,NN, &
+                     X,Y,Z) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{structured grid} is useful for structured grid with non-uniform discretization steps.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Structured Grid Variables}]
+integer(I4P),     intent(IN):: nx1,nx2  ! initial and final nodes of x axis
+integer(I4P),     intent(IN):: ny1,ny2  ! initial and final nodes of y axis
+integer(I4P),     intent(IN):: nz1,nz2  ! initial and final nodes of z axis
+integer(I4P),     intent(IN):: NN       ! number of all nodes
+real(R8P or R4P), intent(IN):: X(1:NN)  ! x coordinates
+real(R8P or R4P), intent(IN):: Y(1:NN)  ! y coordinates
+real(R8P or R4P), intent(IN):: Z(1:NN)  ! z coordinates
+integer(I4P)::                 E_IO     ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic displacement
+interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be sure that all
+variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO\_XML structured grid variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}nx1,nx2}] contains the extent of X axis; $nx1$ is the initial node and $nx2$ is the final.
+ \item[{\color{RoyalBlue}ny1,ny2}] contains the extent of Y axis; $ny1$ is the initial node and $ny2$ is the final.
+ \item[{\color{RoyalBlue}nz1,nz2}] contains the extent of Z axis; $nz1$ is the initial node and $nz2$ is the final.
+ \item[{\color{RoyalBlue}NN}] contains the global number of nodes $NN=(nx2-nx1+1)*(ny2-ny1+1)*(nz2-nz1+1)$.
+ \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+ \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+ \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO\_XML structured grid calling:
+
+\begin{boxred}{VTK\_GEO\_XML Structured Grid Calling}
+\begin{verbatim}
+...
+integer(4):: nx1,nx2
+integer(4):: ny1,ny2
+integer(4):: nz1,nz2
+integer(4):: NN
+real(4):: X(1:NN),Y(1:NN),Z(1:NN)
+...
+E_IO = VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2, &
+                   NN,                      &
+                   X,Y,Z)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_GEO\_XML RECTILINEAR GRID}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Rectilinear Grid Signature}]
+function VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2, &
+                     X,Y,Z) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{rectilinear grid} is useful for structured grid with non-uniform discretization steps even in
+generalized coordinates.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Rectilinear Grid Variables}]
+integer(I4P),     intent(IN):: nx1,nx2    ! initial and final nodes of x axis
+integer(I4P),     intent(IN):: ny1,ny2    ! initial and final nodes of y axis
+integer(I4P),     intent(IN):: nz1,nz2    ! initial and final nodes of z axis
+real(R8P or R4P), intent(IN):: X(nx1:nx2) ! x coordinates
+real(R8P or R4P), intent(IN):: Y(ny1:ny2) ! y coordinates
+real(R8P or R4P), intent(IN):: Z(nz1:nz2) ! z coordinates
+integer(I4P)::                 E_IO       ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be sure
+that all variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO\_XML rectilinear grid variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}nx1,nx2}] contains the extent of X axis; $nx1$ is the initial node and $nx2$ is the final.
+ \item[{\color{RoyalBlue}ny1,ny2}] contains the extent of Y axis; $ny1$ is the initial node and $ny2$ is the final.
+ \item[{\color{RoyalBlue}nz1,nz2}] contains the extent of Z axis; $nz1$ is the initial node and $nz2$ is the final.
+ \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of X nodes. It is a vector of $[nx1:nx2]$.
+ \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of Y nodes. It is a vector of $[ny1:ny2]$.
+ \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of Z nodes. It is a vector of $[nz1:nz2]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO\_XML rectilinear grid calling:
+
+\begin{boxred}{VTK\_GEO\_XML Structured Grid Calling}
+\begin{verbatim}
+...
+integer(4):: nx1,nx2
+integer(4):: ny1,ny2
+integer(4):: nz1,nz2
+real(4):: X(nx1:nx2),Y(ny1:ny2),Z(nz1:nz2)
+...
+E_IO = VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2, &
+                   X,Y,Z)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_GEO\_XML UNSTRUCTURED GRID}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Unstructured Grid Signature}]
+function VTK_GEO_XML(Nnodi,NCelle,X,Y,Z) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+The topology \virgo{unstructured grid} is necessary for unstructured grid, the most general mesh format. This topology
+is also useful for scructured mesh in order to save only a non-structured clip of mesh.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Unstructured Grid Variables}]
+integer(I4P),     intent(IN):: NN       ! number of nodes
+integer(I4P),     intent(IN):: NC       ! number of cells
+real(R8P or R4P), intent(IN):: X(1:NN)  ! x coordinates
+real(R8P or R4P), intent(IN):: Y(1:NN)  ! y coordinates
+real(R8P or R4P), intent(IN):: Z(1:NN)  ! z coordinates
+integer(I4P)::                 E_IO     ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+sure that all variables are 8-byte real kind or all are 4-byte real kind.
+
+The VTK\_GEO\_XML unstructured grid variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}Nnodi}] indicates the number of all nodes.
+ \item[{\color{RoyalBlue}NCelle}] indicates the number of all cells.
+ \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of nodes. It is a vector of $[1:Nnodi]$.
+ \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of nodes. It is a vector of $[1:Nnodi]$.
+ \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of nodes. It is a vector of $[1:Nnodi]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO\_XML unstructured grid calling:
+
+\begin{boxred}{VTK\_GEO\_XML Unstructured Grid Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: Nnodi=100
+integer(4), parameter:: NCelle=50
+real(4):: X(1:Nnodi),Y(1:Nnodi),Z(1:Nnodi)
+...
+E_IO = VTK_GEO_XML('ascii',Nnodi,NCelle,X,Y,Z)
+...
+\end{verbatim}
+\end{boxred}
+
+In order to use the \virgo{unstructured grid} it is necessary to save also the \virgo{connectivity} of the grid.
+The connectivity must be saved with the function \MaiuscolettoBS{VTK\_CON\_XML}.
+
+\subsection{VTK\_GEO\_XML CLOSE PIECE}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Close Piece Signature}]
+function VTK_GEO_XML() result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+As we said before the XML standard is more powerful than legacy. XML file can contain more than 1 mesh with its
+associated variables. Thus there is the necessity to close each \virgo{pieces} that compose the data-set saved in the
+XML file. The \MaiuscolettoBS{VTK\_GEO\_XML} called in the \virgo{close piece} format is used just to close the
+current piece before saving another piece or closing the file.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Close Piece Variables}]
+integer(I4P):: E_IO ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_GEO\_XML close piece variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The following is an example of VTK\_GEO\_XML close piece calling:
+
+\begin{boxred}{VTK\_GEO\_XML Unstructured Grid Calling}
+\begin{verbatim}
+...
+E_IO = VTK_GEO_XML()
+...
+\end{verbatim}
+\end{boxred}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Function VTK\_CON\_XML}
+\label{fun:VTK_CON_XML}
+\index{VTK\_CON\_XML}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_CON\_XML Signature}]
+function VTK_CON_XML(NC,connect,offset,cell_type) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+This function \MaiuscolettoBS{must} be used when unstructured grid is used. It saves the connectivity of the unstructured mesh.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_CON\_XML Variables}]
+  integer(I4P), intent(IN):: NC              ! number of cells
+  integer(I4P), intent(IN):: connect(:)      ! mesh connectivity
+  integer(I4P), intent(IN):: offset(1:NC)    ! cell offset
+  integer(I1P), intent(IN):: cell_type(1:NC) ! VTK cell type
+  integer(I4P)::             E_IO            ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+  character(len=maxlen)::    s_buffer        ! buffer string
+  integer(I4P)::             n1              ! counter
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_CON\_XML variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NCelle}] indicates the number of all cells.
+ \item[{\color{RoyalBlue}connect}] contains the connectivity of the mesh. It is a vector.
+ \item[{\color{RoyalBlue}offset}] contains the offset\footnote{The summ of nodes of all previous cells included the
+                                  current cell.} of every cells. It is a vector of $[1:NCelle]$.
+ \item[{\color{RoyalBlue}tipo}] contains the type of every cells. It is a vector of $[1:NCelle]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+The vector \MaiuscolettoBS{connect} must follow the VTK XML standard. It is passed as \MaiuscolettoBS{assumed-shape}
+array because its dimensions is related to the mesh dimensions in a complex way. Its dimensions can be calculated by
+the following equation:
+
+\begin{equation}
+dc = \sum\limits_{i = 1}^{NCelle} {nvertex_i }
+\label{eq:xml connectivity dimensions}
+\end{equation}
+
+\noindent where $dc$ is connectivity vector dimension and $nvertex_i$ is the number of vertices of $i^{th}$ cell.
+Note that this equation is different from the legacy one (eq. \ref{eq:connectivity dimensions}). The XML connectivity
+convention is quite different from the legacy standard. As an example considering the same mesh of section \ref{sec:VTKCON}:
+suppose we have a mesh composed by 2 cells, one hexahedron (8 vertices) and one pyramid with square basis (5 vertices);
+suppose that the basis of pyramid is constitute by a face of the hexahedron and so the two cells share 4 vertices. The
+equation \ref{eq:xml connectivity dimensions} gives $dc=8+5=13$; the connectivity vector for this mesh can be:
+
+\begin{boxred}{Connectivity vector example for VTK XML standard}
+\begin{verbatim}
+! first cell
+connect(1)  = 0  => identification flag of 1° vertex of 1° cell
+connect(2)  = 1  => identification flag of 2° vertex of 1° cell
+connect(3)  = 2  => identification flag of 3° vertex of 1° cell
+connect(4)  = 3  => identification flag of 4° vertex of 1° cell
+connect(5)  = 4  => identification flag of 5° vertex of 1° cell
+connect(6)  = 5  => identification flag of 6° vertex of 1° cell
+connect(7)  = 6  => identification flag of 7° vertex of 1° cell
+connect(8)  = 7  => identification flag of 8° vertex of 1° cell
+! second cell
+connect(9)  = 0  => identification flag of 1° vertex of 2° cell
+connect(10) = 1  => identification flag of 2° vertex of 2° cell
+connect(11) = 2  => identification flag of 3° vertex of 2° cell
+connect(12) = 3  => identification flag of 4° vertex of 2° cell
+connect(13) = 8  => identification flag of 5° vertex of 2° cell
+\end{verbatim}
+\end{boxred}
+
+Therefore this connectivity vector convention is more simple than the legacy convention, now we must create also the
+\MaiuscolettoBS{offset} vector that contains the data now missing in the \MaiuscolettoBS{connect} vector. The offset
+vector for this mesh can be:
+
+\begin{boxred}{Offset vector example for VTK XML standard}
+\begin{verbatim}
+! first cell
+offset(1) = 8  => summ of nodes of 1° cell
+! second cell
+offset(2) = 13 => summ of nodes of 1° and 2° cells
+\end{verbatim}
+\end{boxred}
+
+\noindent The value of every cell-offset can be calculated by the following equation:
+
+\begin{equation}
+offset_c = \sum\limits_{i = 1}^{c} {nvertex_i }
+\label{eq:xml offset vlue}
+\end{equation}
+
+\noindent where $offset_c$ is the value of $c^{th}$ cell and $nvertex_i$ is the number of vertices of $i^{th}$ cell.
+
+The function VTK\_CON\_XML does not calculate the connectivity and offset vectors: it writes the connectivity and offset
+vectors conforming the VTK XML standard, but does not calculate them. In the future release of \LIBVTKIO will be included
+a function to calculate the connectivity and offset vector.
+
+The vector variable \MaiuscolettoBS{tipo} must conform the VTK XML standard \footnote{See the file VTK-Standard at the
+Kitware homepage.} that is the same of the legacy standard presented previous (sec. \ref{sec:VTKCON}). It contains the
+\emph{type} of each cells. For the above example this vector is:
+
+\begin{boxred}{Cell-Type vector example for VTK legacy standard}
+\begin{verbatim}
+tipo(1) = 12  => VTK hexahedron type of 1° cell
+tipo(2) = 14  => VTK pyramid type of 2° cell
+\end{verbatim}
+\end{boxred}
+
+The following is an example of VTK\_CON\_XML calling:
+
+\begin{boxred}{VTK\_CON\_XML Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NCelle=2
+integer(4), parameter:: Nvertex1=8
+integer(4), parameter:: Nvertex2=5
+integer(4), parameter:: dc=Nvertex1+Nvertex2
+integer(4)::            connect(1:dc)
+integer(4)::            offset(1:NCelle)
+integer(4)::            tipo(1:NCelle)
+...
+E_IO = VTK_CON_XML(NCelle,connect,offset,tipo)
+...
+\end{verbatim}
+\end{boxred}
+
+
+\section{Function VTK\_DAT\_XML}
+\label{fun:VTK_DAT_XML}
+\index{VTK\_DAT\_XML}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_DAT\_XML Signature}]
+function VTK_DAT_XML(var_location,var_block_action) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+This function \MaiuscolettoBS{must} be called before saving the data related to geometric mesh. This function initializes
+the saving of data variables indicating the \emph{type} of variables that will be saved.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_DAT\_XML Variables}]
+  character(*), intent(IN):: var_location     ! location of saving variables: CELL for cell-centered, NODE for node-centered
+  character(*), intent(IN):: var_block_action ! variables block action: OPEN or CLOSE block
+  integer(I4P)::             E_IO             ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+
+\end{boxred}
+ 
+The VTK\_DAT\_XML variables have the following meaning:
+
+\begin{description}
+\item[{\color{RoyalBlue}var\_location}] contains the location-type of variables that will be saved after VTK\_DAT.
+It is a scalar and cab assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{cell} (it is case insensitive) $\rightarrow$ variables will be cell-centered.
+  \item \emph{node} (it is case insensitive) $\rightarrow$ variables will be node-centered.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}var\_block\_action}] indicates if the block-data-variables is being opened or closed; it can
+                                              assume the following values:
+ \begin{enumerateABlu}
+  \item \emph{open}  (it is case insensitive) $\rightarrow$ block-data is being opened.
+  \item \emph{close} (it is case insensitive) $\rightarrow$ block-data is being closed.
+ \end{enumerateABlu}
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Of course a single file can contain both cell and node centered variables. The \MaiuscolettoBS{VTK\_DAT\_XML} must be
+called two times, before saving a block-data-variables in order to open the block, and after the block-data-variables
+has been saved in order to close the block. XML file can contains as many blocks as you want.
+
+The following is an example of VTK\_DAT\_XML calling:
+
+\begin{boxred}{VTK\_DAT\_XML Calling}
+\begin{verbatim}
+...
+E_IO = VTK_DAT_XML('node','OPEN')
+...
+SAVE YOUR DATA WITH VTK_VAR_XML
+...
+E_IO = VTK_DAT_XML('node','CLOSE')
+...
+\end{verbatim}
+\end{boxred}
+
+
+\section{VTK\_VAR\_XML}
+
+VTK\_VAR\_XML is an interface to 12 different functions; there are 6 functions for scalar variables (1 for each supported
+precision: R8P, R4P, I8P, I4P, I2P and I1P) and 6 for vectorial variables (1 for each supported precision: R8P, R4P, I8P,
+I4P, I2P and I1P)
+This function saves the data variables related to geometric mesh. The inputs that must be passed change depending on the
+data variables type.
+
+\subsection{VTK\_VAR\_XML SCALAR DATA}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Scalar Data Signature}]
+function VTK_VAR_XML(NC_NN,varname,var) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+This kind of call is used to save scalar data.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Scalar Data Variables}]
+integer(I4P), intent(IN):: NC_NN        ! number of cells or nodes
+character(*), intent(IN):: varname      ! variable name
+real(R8P or...
+     R4P) or...
+integer(I8P or...
+        I4P or...
+        I2P or...
+        I1P), intent(IN):: var(1:NC_NN) ! variable to be saved
+integer(I4P)::             E_IO         ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_VAR\_XML variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+                                  {\color{RoyalBlue}var\_location} passed to VTK\_DAT\_XML.
+ \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+ \item[{\color{RoyalBlue}var}] contains the values of variables in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Note that the variables \texttt{var} can be passed both 8-byte real kind, 4-byte real kind, 8-byte integer, 4-byte integer, 2-byte integer and 1-byte integer; XML is very flexible; the dynamic displacement interface will call the correct function.
+
+The following is an example of VTK\_VAR\_XML scalar data calling:
+
+\begin{boxred}{VTK\_VAR\_XML Scalar Data Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC_NN=100
+integer(2)::            var(1:NC_NN)
+...
+E_IO = VTK_VAR_XML(NC_NN,'Scalar Data',var)
+...
+\end{verbatim}
+\end{boxred}
+
+\subsection{VTK\_VAR\_XML VECTORIAL DATA}
+
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Vectorial Data Signature}]
+function VTK_VAR_XML(NC_NN,varname, &
+                     varX,varY,varZ) result(E_IO)
+\end{lstlisting}
+\end{boxred}
+
+This kind of call is used to save vectorial data.
+
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Vectorial Data Variables}]
+integer(I4P),                      intent(IN):: NC_NN         ! number of cells or nodes
+character(*),                      intent(IN):: varname       ! variable name
+real(R8P or R4P) or...
+integer(I8P or I4P or I2P or I1P), intent(IN):: varX(1:NC_NN) ! x component
+real(R8P or R4P) or...
+integer(I8P or I4P or I2P or I1P), intent(IN):: varY(1:NC_NN) ! y component
+real(R8P or R4P) or...
+integer(I8P or I4P or I2P or I1P), intent(IN):: varZ(1:NC_NN) ! z component
+integer(I4P)::                                  E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+\end{lstlisting}
+\end{boxred}
+
+The VTK\_VAR\_XML variables have the following meaning:
+
+\begin{description}
+ \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+                                  {\color{RoyalBlue}var\_location} passed to VTK\_DAT\_XML.
+ \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+ \item[{\color{RoyalBlue}varX}] contains the values of $X$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}varY}] contains the values of $Y$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}varZ}] contains the values of $Z$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+ \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+\end{description}
+
+Note that the variables \texttt{varX,varY,varZ} can be passed both 8-byte real kind, 4-byte real kind, 8-byte integer,
+4-byte integer, 2-byte integer and 1-byte integer; XML is very flexible; the dynamic displacement interface will call
+the correct function.
+
+The following is an example of VTK\_VAR\_XML vectorial data calling:
+
+\begin{boxred}{VTK\_VAR\_XML Vectorial Data Calling}
+\begin{verbatim}
+...
+integer(4), parameter:: NC_NN=100
+integer(4)::            varX(1:NC_NN)
+integer(4)::            varZ(1:NC_NN)
+integer(4)::            varZ(1:NC_NN)
+...
+E_IO = VTK_VAR_XML(NC_NN,'Vectorial Data', &
+                   varX,varY,varZ)
+...
+\end{verbatim}
+\end{boxred}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Function VTK\_END\_XML}
+\label{fun:VTK_END_XML}
+\index{VTK\_END\_XML}
+ 
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_END\_XML Signature}]
+function VTK_END_XML() result(E_IO)
+\end{lstlisting}
+\end{boxred}
+ 
+This function is used to finalize the file opened. The \LIBVTKIO manages the file unit without the user's action.
+
+
+ 
+\begin{boxred}{}
+\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_END\_XML Variables}]
+  integer(I4P)::              E_IO      ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+  character(2)::              var_type  ! var\_type = R8,R4,I8,I4,I2,I1
+  real(R8P),    allocatable:: v_R8(:)   ! R8 vector for IO in AppendData
+  real(R4P),    allocatable:: v_R4(:)   ! R4 vector for IO in AppendData
+  integer(I8P), allocatable:: v_I8(:)   ! I8 vector for IO in AppendData
+  integer(I4P), allocatable:: v_I4(:)   ! I4 vector for IO in AppendData
+  integer(I2P), allocatable:: v_I2(:)   ! I2 vector for IO in AppendData
+  integer(I1P), allocatable:: v_I1(:)   ! I1 vector for IO in AppendData
+  integer(I4P)::              N_v       ! vector dimension
+  integer(I4P)::              n1        ! counter
+\end{lstlisting}
+
+\end{boxred}
+ 
+The following is an example of VTK\_END\_XML calling:
+
+\begin{boxred}{VTK\_END\_XML Calling}
+\begin{verbatim}
+...
+E_IO = VTK_END_XML()
+...
+\end{verbatim}
+\end{boxred}
+
+\appendix
+
+
+
+
+
+\printindex
+\end{document}
