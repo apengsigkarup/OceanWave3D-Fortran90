@@ -7,6 +7,34 @@ MODULE DataTypes
 USE Precision
 IMPLICIT NONE
 
+! Used for interpolation between OceanWave3D and OpenFOAM
+TYPE Interpolation_def
+
+        ! order = 2*alpha/beta + 1 derivatives the x/y-direction respectively.  
+        !
+        REAL(KIND=long), DIMENSION(:,:), POINTER :: dx
+        REAL(KIND=long), DIMENSION(:,:), POINTER :: dy
+        
+        ! order = 2 * gamma + 1 derivatives in the z-direction.
+        !
+        REAL(KIND=long), DIMENSION(:,:,:), POINTER :: dz
+
+        ! Local interpolation stencils 
+        !
+        REAL(KIND=long), DIMENSION(:), POINTER :: stencilX
+        REAL(KIND=long), DIMENSION(:), POINTER :: stencilY
+        REAL(KIND=long), DIMENSION(:), POINTER :: stencilZ
+
+        ! Vector containing nearest neighbour 
+        !
+        INTEGER, DIMENSION(:), POINTER :: NN
+
+        ! Integer indicating however a cell is above or below the free surface
+        ! 0=below, 1=above
+        INTEGER, POINTER :: inOrOut
+
+END TYPE Interpolation_def
+
 TYPE SparseArray_CSR
 ! Sparse storage using: Compressed Storage Row (CSR) format
 	REAL(KIND=long), DIMENSION(:), POINTER :: val ! Array values

@@ -26,6 +26,7 @@ include src/initialization/makefile.inc
 include src/IO/makefile.inc
 include src/main/makefile.inc
 include src/iterative/makefile.inc
+include src/OpenFoam/makefile.inc
 
 # Search paths for source dependencies
 VPATH  = src/variabledefs 
@@ -44,6 +45,9 @@ VPATH += src/timeintegration
 VPATH += src/utilities
 VPATH += src/wrappers
 VPATH += src/iterative
+VPATH += src/OpenFoam
+VPATH += src/OpenFoam/IO
+VPATH += src/OpenFoam/OpenFoam
 VPATH += $(BUILDDIR)
 
 # Include directories
@@ -74,6 +78,7 @@ Release: $(OBJECTSBUILDDIR)
 	fi
 	@echo "*** Starting linking of files for OceanWave3D (Release)... ***"
 	@$(FC) $(FFLAGS) -o $(INSTALLDIR)/$(PROGNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
+	ar -cr ~/lib/libOceanWave3DBuild.a $(BUILDDIR)/*.o
 	@echo "OceanWave3D has been built successfully."
 
 Debug: FFLAGS = $(DBFLAGS)
@@ -84,6 +89,8 @@ Debug: $(OBJECTSBUILDDIR)
 	fi
 	@echo "*** Starting linking of files for OceanWave3D (Debug)... ***"
 	$(FC) $(FFLAGS) -o $(INSTALLDIR)/$(PROGNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
+	ar -cr ~/lib/libOceanWave3DBuild.a $(BUILDDIR)/*.o
+	@echo "OceanWave3D Debug has been built successfully."
 
 all: Release
 

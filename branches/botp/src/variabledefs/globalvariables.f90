@@ -6,6 +6,7 @@ USE Precision
 USE Constants
 USE DataTypes
 USE HSL_LU
+USE OFmodule
 IMPLICIT NONE 
 
 ! I/O File handle arrays
@@ -106,5 +107,8 @@ REAL(KIND=long) :: swenseTransientTime
 
 ! Curvilinear
 INTEGER :: curvilinearONOFF
+
+! OpenFOAM Interpolation
+TYPE (Interpolation_def) :: Interpolation
 
 END MODULE GlobalVariables

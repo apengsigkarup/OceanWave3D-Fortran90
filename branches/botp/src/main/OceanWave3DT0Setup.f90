@@ -313,6 +313,11 @@ SUBROUTINE OceanWave3DT0Setup
         END IF
      END Do
   END IF
+ ALLOCATE( &
+  UOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
+  VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
+  WOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
+  ALLOCATE(dOF(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
 
 2010 FORMAT(/, '*********************************************************',/,&
        '***                                                   ***',/,&
