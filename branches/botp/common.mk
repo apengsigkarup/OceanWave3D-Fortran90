@@ -27,8 +27,8 @@ ifeq ($(USER),botp)
   FC       = gfortran-4.4
   LIBDIRS  = -L$(HOME)/lib/ 
   LINLIB   = -lharwell -lskit -llapack_LINUX_Gfortran4-4-3 -lblas 
-  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
 endif
 
 
