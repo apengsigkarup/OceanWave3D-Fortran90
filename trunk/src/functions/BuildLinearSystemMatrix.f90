@@ -105,6 +105,14 @@ DO j = 1+GhostGridY, Ny-GhostGridY ! FIXME: Problem here if GhostGridY is zero, 
                        dsigma(Gidx,3)*FullRankStencils%StencilZ(Gidx,:,1) + &
                        (dsigma(Gidx,4)**2+dsigma(Gidx,5)**2)*FullRankStencils%StencilZ(Gidx,:,2)
                 ENDIF
+!        print*,'FullRankStencils%StencilX(Gidx,:,2) =',FullRankStencils%StencilX(Gidx,:,2) 
+!        print*,'FullRankStencils%StencilZ(Gidx,:,1) =',FullRankStencils%StencilZ(Gidx,:,1)
+!        print*,'dsigma(Gidx,3)=',dsigma(Gidx,3)
+!        print*,'FullRankStencils%StencilZ(Gidx,:,2) =',FullRankStencils%StencilZ(Gidx,:,2)
+!        print*,'dsigma(Gidx,2) =',dsigma(Gidx,2)
+!        print*,'dsigma(Gidx,5) =',dsigma(Gidx,5)
+!        print*,'A_val=',A_val(nnz+1:nnz+stencilrank)
+!        read*
                 A_colind(nnz+1:nnz+stencilrank) = FullRankStencils%Indexes(Gidx,:)
                 A_rowptr(nnz+1:nnz+stencilrank) = Gidx
                 nnz = nnz + stencilrank
@@ -136,9 +144,9 @@ DO j = 1+GhostGridY, Ny-GhostGridY ! FIXME: Problem here if GhostGridY is zero, 
                     !A_val(nnz+1:nnz+stencilrank) = zero
                     !YZ cross derivative not defined if Ny=1
                 ELSE IF (Ny-2*GhostGridY>1) THEN
-                    A_val(nnz+1:nnz+stencilrank) =  two*(dsigma(Gidx,4)*FineGrid%DiffStencils%FullRankStencilYZ(Gidx,:)) !to test: remove the zero factor... FullRankStencilYZ(Gidx,:) !
+                    A_val(nnz+1:nnz+stencilrank) =  two*(dsigma(Gidx,4)*FineGrid%DiffStencils%FullRankStencilYZ(Gidx,1:stencilrank)) !to test: remove the zero factor... FullRankStencilYZ(Gidx,:) !
                     !
-                    A_colind(nnz+1:nnz+stencilrank) = FineGrid%DiffStencils%FullRankIndexYZ(Gidx,:)
+                    A_colind(nnz+1:nnz+stencilrank) = FineGrid%DiffStencils%FullRankIndexYZ(Gidx,1:stencilrank)
                     A_rowptr(nnz+1:nnz+stencilrank) = Gidx
                     nnz = nnz + stencilrank
                 ENDIF

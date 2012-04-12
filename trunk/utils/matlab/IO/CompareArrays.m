@@ -10,6 +10,13 @@ IOmethod = 1; %0:binary ; 1:classical unformatted ; 2:unformatted ftn95
 % byteorder = 'ieee-be'; % IEEE Big-Endian format 
 byteorder = 'ieee-le'; % IEEE Little-Endian format
 
+filename = '/Users/apek/OW3Dtest/R.bin';
+R = LoadRealArray(filename,IOmethod, byteorder);
+
+filename = '/Users/apek/OW3Dtest/P.bin';
+P = LoadRealArray(filename,IOmethod, byteorder);
+return
+
 filename='../W.bin';
 W = LoadRealArray(filename,IOmethod, byteorder);
 

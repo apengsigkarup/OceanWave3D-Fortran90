@@ -25,6 +25,9 @@ Nxg = CompGrid%Nx + 2*GhostGridX
 Nyg = CompGrid%Ny + 2*GhostGridY
 Nzg = CompGrid%Nz + GhostGridZ
 
+!print*,'WARNING (APEK): error in SUBROUTINE ConstructTableCrossDerivatives. It is not setup correctly for 2D cases.'
+!STOP
+
 rank = 2*kappa+1
 fullrank = rank**3
 ! ALLOCATE the corresponding DiffStencils elements... (assumed here that rank=ranka=rankb...)

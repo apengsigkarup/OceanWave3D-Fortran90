@@ -40,6 +40,7 @@ IF (Nzf>Nzc) THEN; zcoarsen = 1; ENDIF
 ! *******************************************
 
 IF (xcoarsen==1) THEN
+!  print*,'X-coarsen'
     IF (GhostGridX==1) THEN
         ! We have Ghost Layers present
         ! OMIT Ghost Point Layer's from restriction
@@ -48,6 +49,8 @@ IF (xcoarsen==1) THEN
 	DO ifine = 1+GhostGridX , Nxf+GhostGridX, 2
 		dx_W = xf(ifine,1+GhostGridY) - xf(ifine-1,1+GhostGridY) ! FIXME: y-index
 		dx_E = xf(ifine+1,1+GhostGridY) - xf(ifine,1+GhostGridY) ! FIXME: y-index
+!        print*,'dx_W=',dx_W
+!        print*,'dx_E=',dx_E
 		dxc  = one/(dx_W + dx_E)
 		DO kfine = 1+GhostGridZ , Nzf+GhostGridZ-1 ! FREE SURFACE LAYER NOT INCLUDED SINCE THERE WE USE DIRECT INJECTION
 			DO jfine = 1+GhostGridY , Nyf+GhostGridY
@@ -67,6 +70,7 @@ ENDIF
 ! *******************************************
 
 IF (ycoarsen==1) THEN
+!  print*,'Y-coarsen'
     IF (GhostGridY==1) THEN
         ! We have Ghost Layers present
         ! OMIT Ghost Point Layer's from restriction
@@ -94,6 +98,7 @@ ENDIF
 ! *******************************************
 
 IF (zcoarsen==1) THEN
+!  print*,'Z-coarsen'
     IF (GhostGridZ==1) THEN
         ! We have Ghost Layers present
         ! OMIT Ghost Point Layer's from restriction

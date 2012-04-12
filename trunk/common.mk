@@ -14,12 +14,12 @@ BUILDDIR = $(PWD)/../build
 
 # Choose the Fortran compiler on this system
 # E.g. pathf90, f90, gfortran, gf90, ifort
-#FC = gfortran
+FC = gfortran
 #FC = gfortran44
-FC = gfortran-4.4
+#FC = gfortran-4.4
 #FC = gf90
 
-USER = botp
+#USER = botp
 
 # Compiler-dependent section
 ifeq ($(USER),botp)
@@ -73,7 +73,7 @@ ifeq ($(FC),gfortran)
 #  LINLIB   = -lharwell -lskit -latlas -llapack -l_VTK_IO
 #  LINLIB   = -lharwell -lskit -latlas -l_VTK_IO -framework veclib
   LINLIB   = -lharwell -lskit -latlas -framework veclib
-  DBFLAGS  = -pg -g -O
+  DBFLAGS  = -pg -g -O -fcheck=all -ffpe-trap=invalid,zero,overflow
   OPTFLAGS = -O2
 endif
 
