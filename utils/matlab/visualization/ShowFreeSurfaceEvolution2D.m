@@ -12,18 +12,19 @@ curdir = cd;
 
 % Path for data files here
 % dirpath = '/Users/apek/Documents/Fortran/SWENSE3D/bin';
-dirpath = '/Users/apek/CVS/tests/OleLindberg';
+%dirpath = '/Users/apek/CVS/tests/OleLindberg';
+dirpath = '/Users/apek/OW3Dtest';
 cd(dirpath)
 %
 %************************************************************************
 % *** Set these values to correspond to the run at hand.***
 initialstep = 0;
-Nsteps = 200; %915;
+Nsteps = 300; %915;
 jump   = 1;
 dt     = .0245
 g      = 9.81;
 plotmethod = 2;  % 1-> 2D, 2->3D
-Amax=1.5;       % To set the scale of the z-axis plot
+Amax=0.125;       % To set the scale of the z-axis plot
 IOmethod = 1; %0:binary ; 1:classical unformatted ; 2:unformatted ftn95
 fac = 1;       %1e-1;
 %
@@ -113,7 +114,7 @@ for tstep = initialstep : jump : Nsteps
                 %             plot(X,E,'b',X,P,'r')
                 axis([X(1) X(end) -Amax Amax])
             else
-                plot(Y,E,'b',Y,P,'r')
+                plot(Y,E,'b') %,Y,P,'r')
                 axis([Y(1) Y(end) -0.1 0.15])
             end
             grid on
@@ -140,6 +141,7 @@ for tstep = initialstep : jump : Nsteps
     end
     drawnow
     %hold on
+    E'
     pause(0.3)
     % pause
 end

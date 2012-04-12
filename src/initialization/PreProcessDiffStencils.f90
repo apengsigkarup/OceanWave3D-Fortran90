@@ -14,31 +14,43 @@ INTEGER, DIMENSION(:), ALLOCATABLE :: idx
 Nx = FineGrid%Nx
 Ny = FineGrid%Ny
 Nz = FineGrid%Nz
+!print*,'Nx=',Nx
+!print*,'Ny=',Ny
+!print*,'Nz=',Nz
 ! Derivatives in x- and y-directions
 !    Neumann conditions imposed by symmetric reflections
 !    near walls. Central stencils everywhere.
 rank = 2*alpha+1
+!print*,'allocation'
 ALLOCATE( DiffStencils%StencilX(Nx+2*GhostGridX,rank,2),STAT=STAT)
-DiffStencils%StencilX=zero
 IF (STAT/=0) THEN
 	PRINT*,'Error: Could not allocate memory for differentiation stencil (X).'
 	STOP
 ENDIF
+DiffStencils%StencilX=zero
 rank = 2*beta+1
+!print*,'allocation'
 ALLOCATE( DiffStencils%StencilY(Ny+2*GhostGridY,rank,2),STAT=STAT)
-DiffStencils%StencilY=zero
+!print*,'hej'
 IF (STAT/=0) THEN
 	PRINT*,'Error: Could not allocate memory for differentiation stencil (Y).'
 	STOP
 ENDIF
+DiffStencils%StencilY=zero
+
+print*,'Building stencils...'
 DO order = 1,2
     IF (Nx>1) THEN
+!    print*,'FineGrid%x=',FineGrid%x
 		CALL BuildStencilsGridX(alpha,order,FineGrid%x,DiffStencils%StencilX(:,:,order),Nx+2*GhostGridX,Ny+2*GhostGridY)
+!    print*,'DiffStencils%StencilX(:,:,order) = ',DiffStencils%StencilX(:,:,order)
+!    read*
 	ENDIF
 	IF (Ny>1) THEN
 		CALL BuildStencilsGridY(beta,order,FineGrid%y,DiffStencils%StencilY(:,:,order),Nx+2*GhostGridX,Ny+2*GhostGridY)
 	ENDIF
 END DO
+!print*,'DONE!'
 
 ! Derivatives in z-direction
 !    One-sided stencils near free surface.

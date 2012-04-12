@@ -8,6 +8,7 @@ SUBROUTINE MGPreProcess (FineGrid,GhostGridX,GhostGridY,GhostGridZ,MGCoarseningS
 USE Precision
 USE Constants
 USE MGLevels
+USE GlobalVariables, ONLY: filename, formattype
 IMPLICIT NONE
 INTEGER :: k, GhostGridX, GhostGridY, GhostGridZ, alpha, beta, gamma, Precond, MGmaxgrids
 INTEGER :: xcoarsen, ycoarsen, zcoarsen, MGCoarseningStrategy, CurvilinearONOFF
@@ -44,6 +45,9 @@ CALL CheckError(STAT,2)
 x_fine = FineGrid%x
 y_fine = FineGrid%y
 z_fine = FineGrid%z
+
+!print*,'x_fine=',x_fine
+!read*
 
 ! Determine grids using combined standard coarsening and semi-coarsening
 ! FIXME: should be based on spatial resolution parameters, e.g. dx, dy, dz 
@@ -222,6 +226,16 @@ DO k = MG_N_levels-1, 1, -1
         	arrLevels(k+1)%hx(1+GhostGridX:arrLevels(k+1)%Nx+GhostGridX:XFAC,1+GhostGridY:arrLevels(k+1)%Ny+GhostGridY:YFAC)
 		arrLevels(k)%hxx(1+GhostGridX:Nxg-GhostGridX,1+GhostGridY:Nyg-GhostGridY) = &
         	arrLevels(k+1)%hxx(1+GhostGridX:arrLevels(k+1)%Nx+GhostGridX:XFAC,1+GhostGridY:arrLevels(k+1)%Ny+GhostGridY:YFAC)
+        IF (GhostGridX==1) THEN
+            arrLevels(k)%x(1,1+GhostGridY:Nyg-GhostGridY) = arrLevels(k)%x(2,1+GhostGridY:Nyg-GhostGridY) - &
+                                    (arrLevels(k)%x(3,1+GhostGridY:Nyg-GhostGridY) - arrLevels(k)%x(2,1+GhostGridY:Nyg-GhostGridY))
+            arrLevels(k)%x(Nxg,1+GhostGridY:Nyg-GhostGridY) = arrLevels(k)%x(Nxg-GhostGridX,1+GhostGridY:Nyg-GhostGridY) + &
+                                    (arrLevels(k)%x(Nxg-GhostGridX,1+GhostGridY:Nyg-GhostGridY) - &
+                                    arrLevels(k)%x(Nxg-2*GhostGridX,1+GhostGridY:Nyg-GhostGridY))
+        END IF
+!print*,'TESTER lige x-grid i MGPreProcess...'
+!print*,'arrLevels(k)%x=',arrLevels(k)%x
+!read*        
 		IF (Nyg>1) THEN ! FIXME: should be GhostGridY==1?
 			ALLOCATE(dx(arrLevels(k)%Ny))
 			dx = arrLevels(k)%x(3,1+GhostGridY:arrLevels(k)%Ny+GhostGridY) - &
@@ -252,6 +266,13 @@ DO k = MG_N_levels-1, 1, -1
         	arrLevels(k+1)%hy(1+GhostGridX:arrLevels(k+1)%Nx+GhostGridX:XFAC,1+GhostGridY:arrLevels(k+1)%Ny+GhostGridY:YFAC)
 		arrLevels(k)%hyy(1+GhostGridX:Nxg-GhostGridX,1+GhostGridY:Nyg-GhostGridY) = &
         	arrLevels(k+1)%hyy(1+GhostGridX:arrLevels(k+1)%Nx+GhostGridX:XFAC,1+GhostGridY:arrLevels(k+1)%Ny+GhostGridY:YFAC)
+        IF (GhostGridY==1) THEN
+            arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridX,1) = arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridX,2) - &
+                                    (arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridX,3) - arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridx,2))
+            arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridX,Nyg) = arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridX,Nyg-GhostGridY) + &
+                                    (arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridX,Nyg-GhostGridY) - &
+                                    arrLevels(k)%y(1+GhostGridX:Nxg-GhostGridx,Nyg-2*GhostGridY))
+        END IF
 		IF (Nxg>1) THEN ! FIXME: should be GhostGridX==1?
 			ALLOCATE(dy(arrLevels(k)%Nx))
 			dy = arrLevels(k)%y(1+GhostGridX:arrLevels(k)%Nx+GhostGridX,3) - &
@@ -294,14 +315,37 @@ END DO
 ! SETUP LINEAR LOW-ORDER SYSTEM OPERATORS FOR EACH GRID LEVEL
 DO k = MG_N_levels, 1, -1
 
+!print*,'GhostGridX=',GhostGridX
+!print*,'GhostGridY=',GhostGridY
+!print*,'GhostGridZ=',GhostGridZ
+!print*,'alpha=',alpha
+!print*,'beta=',beta
+!print*,'gamma=',gamma
+!print*,'CurvilinearONOFF=',CurvilinearONOFF
 	CALL PreparePreconditioner(arrLevels(k)%PreconditioningMatrix,arrLevels(k),GhostGridX, GhostGridY, GhostGridZ, &
 		alpha, beta, gamma, 1, CurvilinearONOFF)
+
+IF (0==1) THEN
+    WRITE(filename,'(a,i4.4,a4)') 'P',k,'.bin'        
+    print*,'filename=',filename
+    print*,'nnz=',arrLevels(k)%PreconditioningMatrix%nnz
+    CALL StoreSparseMatrix(arrLevels(k)%PreconditioningMatrix,filename,formattype)
+    print*,'Store preconditioning matrix for level k=',k
+!READ*
+END IF
 
 	IF (k==1) THEN
 		! Prepare for using direct LU-FACTORIZATION at coarsest gridlevel
 		! we can only factor on one level with current setup due to global variables in LUFactor subroutine
 		CALL FactorPreconditioner(arrLevels(k)%PreconditioningMatrix, &
     		 (arrLevels(k)%Nx+2*GhostGridX)*(arrLevels(k)%Ny+2*GhostGridY)*(arrLevels(k)%Nz+GhostGridZ))
+    !         END IF
+!             print*,'LU factorization of coarsest ceoffciient matrix in multigrid preconditinoing strategy done...'
+!             print*,'k=',k
+!print*,'arrLevels(k)%PreconditioningMatrix%val     = ',arrLevels(k)%PreconditioningMatrix%val
+!print*,'arrLevels(k)%PreconditioningMatrix%col_ind = ',arrLevels(k)%PreconditioningMatrix%col_ind
+!print*,'arrLevels(k)%PreconditioningMatrix%row_ptr = ',arrLevels(k)%PreconditioningMatrix%row_ptr
+!             read*
 	ELSE
 		! Convert COO matrix to CSR matrix
 		CALL ConvertCOOtoCSR(arrLevels(k)%PreconditioningMatrix,arrLevels(k)%IterationMatrix)
@@ -309,26 +353,46 @@ DO k = MG_N_levels, 1, -1
 		CALL CSRdiaREORDER(arrLevels(k)%IterationMatrix%nrow,arrLevels(k)%IterationMatrix%nnz,&
 			arrLevels(k)%IterationMatrix%val,arrLevels(k)%IterationMatrix%col_ind,arrLevels(k)%IterationMatrix%row_ptr)
 	END IF
-
 	! Determine stencils for use with the BuildLinearSystem subroutines
 	IF (CurvilinearONOFF==1) THEN
-	   CALL DetermineGenericStencils(arrLevels(k)%CurvilinearStuff%DiffStencils,gamma) ! FIXME: chosen gamma, assuming that alpha=beta=gamma
-           CALL PreProcessDiffStencilsZ(arrLevels(k),arrLevels(k)%DiffStencils,GhostGridZ,gamma)
+	    CALL DetermineGenericStencils(arrLevels(k)%CurvilinearStuff%DiffStencils,gamma) ! FIXME: chosen gamma, assuming that alpha=beta=gamma
+        CALL PreProcessDiffStencilsZ(arrLevels(k),arrLevels(k)%DiffStencils,GhostGridZ,gamma)
 	ENDIF
-
 END DO
+
+!k=1
+!             print*,'k=',k
+!print*,'arrLevels(k)%PreconditioningMatrix%val     = ',arrLevels(k)%PreconditioningMatrix%val
+!print*,'arrLevels(k)%PreconditioningMatrix%col_ind = ',arrLevels(k)%PreconditioningMatrix%col_ind
+!print*,'arrLevels(k)%PreconditioningMatrix%row_ptr = ',arrLevels(k)%PreconditioningMatrix%row_ptr
+!read*
 
 ! SETUP indexmaps for ghost points
 DO k = MG_N_levels, 2, -1
 	Nxg = arrLevels(k)%Nx+2*GhostGridX 
 	Nyg = arrLevels(k)%Ny+2*GhostGridY
 	Nzg = arrLevels(k)%Nz+GhostGridZ
-	arrLevels(k)%mapNp = Nxg*Nyg+2*Nxg*(Nzg-1)+2*(Nyg-2)*(Nzg-1)
-	ALLOCATE(arrLevels(k)%iGhost(arrLevels(k)%mapNp))
+!print*,'=================================='
+!print*,'k=',k
+!print*,'(Nxg,Nyg,Nzg)=(',Nxg,',',Nyg,',',Nzg,')'
+    arrLevels(k)%mapNp = 0
+    IF (Nyg>1 .AND. Nxg>1) THEN
+        ! 3D
+        arrLevels(k)%mapNp = Nxg*Nyg+2*Nxg*(Nzg-1)+2*(Nyg-2)*(Nzg-1)
+    ELSE IF (Nxg>1) THEN   ! 2D
+        arrLevels(k)%mapNp = Nxg+2*(Nzg-1)
+    ELSE ! Nyg>1   ! 2D
+        arrLevels(k)%mapNp = Nyg+2*(Nzg-1)
+    END IF
+!print*,'mapNp = ',arrLevels(k)%mapNp
+	ALLOCATE(arrLevels(k)%iGhost(arrLevels(k)%mapNp),STAT=STAT)
+    CALL CheckError(STAT,9)
 	arrLevels(k)%iGhost(arrLevels(k)%mapNp) = 0
-	Gidx = 0
+	Gidx  = 0
 	Count = 0
 	! column major order where first index varies faster than subsequent indexes
+    IF (Nyg>1 .AND. Nxg>1) THEN
+        ! 3D
 	DO jj = 1, Nyg
 		DO ii = 1, Nxg
 			DO kk = 1, Nzg
@@ -340,6 +404,27 @@ DO k = MG_N_levels, 2, -1
 			END DO
 		END DO
 	END DO
+    ELSE IF (Nxg>1) THEN   ! 2D
+		DO ii = 1, Nxg
+			DO kk = 1, Nzg
+				Gidx = Gidx + 1
+				IF (kk==1 .OR. ii==1 .OR. ii==Nxg) THEN
+				    Count = Count + 1				
+					arrLevels(k)%iGhost(Count) = Gidx
+				END IF
+			END DO
+		END DO
+    ELSE ! Nyg>1   ! 2D
+  	    DO jj = 1, Nyg
+			DO kk = 1, Nzg
+				Gidx = Gidx + 1
+				IF (kk==1 .OR. jj==1 .OR. jj==Nyg) THEN
+				    Count = Count + 1				
+					arrLevels(k)%iGhost(Count) = Gidx
+				END IF
+		    END DO
+	    END DO    
+    END IF
 !	if (arrLevels(k)%mapNp/=Count) then
 !	print*,'mapNp=',arrLevels(k)%mapNp
 !	print*,'Count=',Count
@@ -347,6 +432,7 @@ DO k = MG_N_levels, 2, -1
 !	STOP
 !	end if
 END DO
+print*,'Multigrid preprocessing step completed.'
 
 CONTAINS
 

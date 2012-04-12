@@ -4,7 +4,7 @@ USE Precision
 USE Constants
 USE DataTypes
 IMPLICIT NONE
-INTEGER :: GhostGridX, GhostGridY, GhostGridZ, alpha, beta, gamma, kappa, Precond, CurvilinearONOFF
+INTEGER :: GhostGridX, GhostGridY, GhostGridZ, alpha, beta, gamma, kappa, Precond, CurvilinearONOFF, iERR
 INTEGER :: Nxg,Nyg,Nzg,Nx,Ny,Nz
 TYPE (Level_def)       :: FineGrid
 TYPE (SparseArray_COO) :: PreconditioningMatrix
@@ -73,8 +73,17 @@ SELECT CASE (Precond)
 !$$$$$$             DEALLOCATE(FineGrid%CurvilinearStuff%DiffStencils%StencilsZ_XZorYZ)
 
 		ELSE
-			ALLOCATE( FineGrid%dsigmanew(Nzg,Nxg,Nyg,5) )
+			ALLOCATE( FineGrid%dsigmanew(Nzg,Nxg,Nyg,5),STAT=iERR )
+            CALL CheckError(iERR,10)
+            
 		    CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ, alpha,beta,gamma)
+!            print*,'alpha=',alpha
+!            print*,'beta=',beta
+!            print*,'gamma=',gamma
+!            print*,'Nxg=',Nxg
+!            print*,'Nyg=',Nyg
+!            print*,'Nzg=',Nzg
+!            read*            
 			CALL PrepareFullOperatorStencils(FineGrid%DiffStencils,FullRankStencils,alpha,beta,gamma,Nxg,Nyg,Nzg) ! table for generating linear system
 			CALL ALLOCATE_Wavefield_Type(tmp_wavefield, Nx, Ny, Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
 		    CALL DetermineTransformationConstantsArray(Nxg,Nyg,Nzg,FineGrid,FineGrid%dsigmanew,tmp_wavefield)
