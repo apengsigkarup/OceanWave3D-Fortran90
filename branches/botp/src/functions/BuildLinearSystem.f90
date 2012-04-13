@@ -13,6 +13,9 @@ REAL(KIND=long), DIMENSION(Nx*Ny*Nz), INTENT(IN) :: PHI
 !
 INTEGER :: Gidx3 !Index to look for boundaries
 
+!print*,'PHI=',PHI
+!read*
+
 Gidx3  = 1
 Gidx   = 0
 output = zero
@@ -271,4 +274,9 @@ ENDIF
     Gidx  = k + (i-1)*Nz + (j-1)*Nx*Nz
     output(Gidx)  = PHI(Gidx)
   ENDIF
+  
+!print*,'output=',output
+!read*
+  
+  
 END SUBROUTINE BuildLinearSystem

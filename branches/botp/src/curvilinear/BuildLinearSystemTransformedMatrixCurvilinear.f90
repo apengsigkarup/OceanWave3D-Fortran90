@@ -17,6 +17,8 @@ REAL(KIND=long) :: sigmax, sigmay, sigmaxxyy, sigmaz, stencilweights2
 REAL(KIND=long), DIMENSION(:), ALLOCATABLE    :: A_val
 INTEGER, DIMENSION(:), ALLOCATABLE :: A_colind, A_rowptr
 
+!print*,'BUILDING a matrix using BuildLinearSystemTransformedMatrixCurvilinear subroutine... '
+
 ! ALLOCATE TEMPORARY VECTORS FOR SPARSE OPERATOR ASSEMBLY
 rank = 2*kappa+1
 Nxg = CompGrid%Nx + 2*GhostGridX

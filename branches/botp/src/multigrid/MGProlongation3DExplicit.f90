@@ -29,6 +29,14 @@ Nyc = Nyc-2*GhostGridY
 Nzf = Nzf-GhostGridZ
 Nzc = Nzc-GhostGridZ
 
+!print*,'Nxf=',Nxf
+!print*,'Nxc=',Nxc
+!print*,'Nyf=',Nyf
+!print*,'Nyc=',Nyc
+!print*,'Nzf=',Nzf
+!print*,'Nzc=',Nzc
+!STOP
+
 ! Determine coarsening strategy for each dimension
 xcoarsen = 0; ycoarsen = 0; zcoarsen = 0;
 XFAC = 1; YFAC = 1; ZFAC = 1;
@@ -43,6 +51,10 @@ IF (Nzf>Nzc) THEN; zcoarsen = 1; ZFAC=2; ENDIF
 ! each direction.
 
 ! DIRECT INJECTION (OMIT FREE SURFACE LAYER)
+!print*,'GhostGridX=',GhostGridX
+!print*,'GhostGridY=',GhostGridY
+!print*,'GhostGridZ=',GhostGridZ
+!STOP
 PHIfine(1+GhostGridZ:Nzf+GhostGridZ-1:ZFAC,1+GhostGridX:Nxf+GhostGridX:XFAC,1+GhostGridY:Nyf+GhostGridY:YFAC) = &
 	PHIcoarse(1+GhostGridZ:Nzc+GhostGridZ-1,1+GhostGridX:Nxc+GhostGridX,1+GhostGridY:Nyc+GhostGridY)
 

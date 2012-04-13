@@ -22,7 +22,7 @@ SUBROUTINE TestCodeDucrozet1
         STOP
      END IF
   ENDIF
-
+     PRINT*,'HELLO1'
   ! Determine linear sigma-coefficients
   tmp2D = zero
   ALLOCATE(FineGrid%dsigmanew(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,5))
@@ -35,6 +35,7 @@ SUBROUTINE TestCodeDucrozet1
   CALL DEALLOCATE_Wavefield_Type(Wavefield_tmp, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, 0)
   !CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
   !	FineGrid,FineGrid%dsigmanew,tmp2D,tmp2D,tmp2D,tmp2D,tmp2D)
+PRINT*,'HELLO2'
 
   ! Construct preconditioning matrix
 
@@ -172,13 +173,17 @@ SUBROUTINE TestCodeDucrozet1
         stop
      ENDIF
   ENDIF
+PRINT*,'HELLO3'
 
   CALL BuildLinearSystemTransformedMatrixCurvilinear(FineGrid, alphaprecond, GhostGridX, GhostGridY, GhostGridZ)
+PRINT*,'HELLO4'
 
   CALL CleanSparseMatrixCOO(FineGrid%PreconditioningMatrix)
+PRINT*,'HELLO5'
 
   filename = "SparseMatrix.bin"
   CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
+PRINT*,'HELLO6'
 
   CALL FactorPreconditioner(FineGrid%PreconditioningMatrix, &
        (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ))

@@ -17,6 +17,10 @@ Nxg = Nx+2*GhostGridX
 Nyg = Ny+2*GhostGridY
 Nzg = Nz+GhostGridZ
 
+!print*,'r=',r
+!print*,'u=',u
+!read*
+
 ! Initial Guess on solution
 u = zero
 

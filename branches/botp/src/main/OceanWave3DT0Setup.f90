@@ -166,7 +166,6 @@ SUBROUTINE OceanWave3DT0Setup
   print*,'done with ICs'
   !
   IF (.FALSE.) THEN
-     !IF (.TRUE.) THEN
      !
      ! Test code to validate buildlinearsystem subroutines.
      !
@@ -213,11 +212,12 @@ SUBROUTINE OceanWave3DT0Setup
      ! Prepare for Multigrid
      CALL MGPreProcess ( FineGrid, GhostGridX, GhostGridY, GhostGridZ, MGCoarseningStrategy, alphaprecond, betaprecond, &
           gammaprecond, Precond, MGmaxgrids, CurvilinearONOFF)
-
   ENDIF
+  
   !
   ! DETERMINE HIGH-ORDER FINITE DIFFERENCE STENCILS
   ! Now, determine fullrank stencils for the x- , y- and z- directions;
+print*,'Determine finite difference stencils for full system...'
   IF (curvilinearONOFF==0) THEN
      CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
      ! GD: Determine the cross derivatives coefficients
@@ -250,15 +250,93 @@ SUBROUTINE OceanWave3DT0Setup
      CALL ConstructTableCrossDerivatives_Curvilinear(FineGrid, FineGrid%CurvilinearStuff%DiffStencils, kappa, &
           GhostGridX, GhostGridY, GhostGridZ)
   END IF
+print*,'...done!'
 !
   ! GD: Test to define correct initial dpatail derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
   !************************************************************************
   !
+  ! Debugging setups
+  !
+  !************************************************************************
+
+  IF (0==1) THEN
+
+    ! Output preconditioner
+    IF (Precond==1) THEN
+      filename = "SparseMatrix.bin"
+      CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
+      print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
+    END IF
+
+    ! IF SIMULATION IS LINEAR THEN DETERMINE THE SIGMA-COEFFICIENTS FOR THE TRANSFORMED LAPLACE PROBLEM
+    IF (LinearONOFF==0) THEN
+       CALL ALLOCATE_Wavefield_Type(Wavefield_tmp, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
+       CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
+          FineGrid%Nz+GhostGridZ,FineGrid,FineGrid%dsigmanew,Wavefield_tmp)
+       CALL DEALLOCATE_Wavefield_Type(Wavefield_tmp, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, 0)
+    ENDIF
+
+    ! Output linear system matrix 
+    ALLOCATE(ee((FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)))
+    ALLOCATE(tm((FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)))
+    ALLOCATE(A((FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
+             (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)))
+    ee = zero
+    tm = zero
+    A  = zero
+    DO i = 1 , (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)
+        ee(i) = one
+        IF (curvilinearONOFF==1) THEN
+           !   CALL BuildLinearSystemTransformedCurvilinear(FineGrid, ee, tm,GhostGridX,GhostGridY,GhostGridZ,kappa)
+           CALL BuildLinearSystemTransformedCurvilinear(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
+               FineGrid%Nz+GhostGridZ,ee,tm,FineGrid,alpha,beta,gamma)
+        ELSE
+           CALL BuildLinearSystem(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
+               FineGrid%Nz+GhostGridZ,ee,tm,FineGrid,alpha,beta,gamma)
+        END IF
+        A(:,i) = tm
+        ee(i) = zero
+    END DO
+    filename = "A.bin"
+    CALL StoreRealArray(A,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
+        (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),filename,formattype)
+    IF (curvilinearONOFF==1) THEN
+        print*,'Linear coefficient matrix A (curvilinear routine) stored in A.bin.'		
+    ELSE
+        print*,'Linear coefficient matrix A stored in A.bin.'		
+    END IF
+print*,'curvilinearONOFF=',curvilinearONOFF
+
+    ! save the vertical derivative for linear stability analysis...
+    ee = zero
+    tm = zero
+    A  = zero
+    DO i = 1 , (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)
+        ee(i) = one
+        CALL DiffZArbitrary(ee,tm,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ, &
+            FineGrid%DiffStencils,gamma)
+        A(:,i) = tm
+        ee(i) = zero
+    END DO
+    filename = "DMz.bin"
+    CALL StoreRealArray(A,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
+        (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),filename,formattype)
+    print*,'Matrix DMz stored in DMz.bin.'		
+    
+    DEALLOCATE(ee,tm,A)
+    !   print*,'stopped here for now...'
+    stop
+
+  END IF
+
+  !************************************************************************
+  !
   ! Step through time and compute the wave flow.
   !
   !************************************************************************
+
   ! STORE INITIAL CONDITION
   IF (StoreDataONOFF>0) THEN
      ! GD: SWENSE storage if necessary

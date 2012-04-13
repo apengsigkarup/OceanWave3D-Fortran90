@@ -1,4 +1,5 @@
 SUBROUTINE StoreSparseMatrix(SparseMatrix,filename,formattype)
+! By Allan P. Engsig-Karup
 USE Precision
 USE Constants
 USE DataTypes

@@ -35,3 +35,4 @@ switch IOmethod
         fclose(fid);
 end
 A = sparse(A);
+return

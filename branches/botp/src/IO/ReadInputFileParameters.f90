@@ -154,12 +154,12 @@ SUBROUTINE ReadInputFileParameters
   IF (CFL/=zero) THEN
      ! GD: FIXME for 2D-3D case with propagation along y...
      IF(FineGrid%Nx==1) THEN
-    	PRINT*,'Careful with CFL constant...'
-        STOP
+        dt = CFL*dy !/c
+        WRITE (*,903) '   CFL constant given by user (dt=CFL*dy)', CFL
      ELSE
         dt = CFL*dx !/c
+        WRITE (*,903) '   CFL constant given by user (dt=CFL*dx)', CFL
      ENDIF
-     WRITE (*,903) '   CFL constant given by user (dt=CFL*dx)', CFL
   ENDIF
   WRITE (*,903) '   Size of time increment: ', dt
 
@@ -343,10 +343,11 @@ SUBROUTINE ReadInputFileParameters
   ! CURVILINEAR
   READ(FILEIP(1),*) curvilinearONOFF
   IF (curvilinearONOFF==1 .AND. FineGrid%Nx>1 .AND. FineGrid%Ny>1) THEN
+     ! NOTE: It is only possible to run the curvilinear model for 3D cases, i.e. 2D cases excluded
      WRITE(*,'(A/)') '   Curvilinear model employed.'
   ELSE
      WRITE(*,'(A/)') '   Standard Cartesian model employed.'
-     curvilinearONOFF = 0
+     curvilinearONOFF = 0    ! Make sure it is the standard model which is employed (also for curvilinear 2D choices)
   END IF
 
   READ(FILEIP(1),*,ERR=32,END=32)RandomWave%ispec, RandomWave%Tp, RandomWave%Hs, RandomWave%h0,   &

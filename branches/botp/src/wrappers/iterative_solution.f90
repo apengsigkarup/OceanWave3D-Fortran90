@@ -53,11 +53,18 @@ iterations = 0
    ELSE
        CALL gmres(n_rows,rhss,sol,ipar,fpar,workspace)  ! initial guess given as input using "sol"
    ENDIF
+!print*,'*** AFTER ITERATIVE SOLVER ITERATION ***'   
    IF (ipar(1).EQ.1) THEN
 	  ! DIRECT MATRIX-VECTOR PRODUCT (Determine residual)
       iterations=iterations+1
+!      print*,'residual before=',workspace(ipar(8):ipar(8)+n_rows-1)
+!      print*,'solution before=',workspace(ipar(9):ipar(9)+n_rows-1)
+!      read*
 	  CALL A_times_x(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,workspace(ipar(8)), &
       	   workspace(ipar(9)),FineGrid,alpha,beta,gamma)
+!      print*,'residual after=',workspace(ipar(8):ipar(8)+n_rows-1)
+!      print*,'solution after=',workspace(ipar(9):ipar(9)+n_rows-1)
+!      read*
       GOTO 10
    ELSE IF (ipar(1).EQ.2) THEN
 	   print*,'Error ipar(1)==2.'
@@ -82,8 +89,14 @@ iterations = 0
 		STOP
 	  ELSE IF (Precond==3) THEN
 		  ! Multigrid
+!      print*,'residual before precond=',workspace(ipar(8):ipar(8)+n_rows-1)
+!      print*,'solution before precond=',workspace(ipar(9):ipar(9)+n_rows-1)
+!      read*
 		CALL MultiGridSolveLinearSystem(workspace(ipar(8)),workspace(ipar(9)),FineGrid%Nx,FineGrid%Ny,&
 		        FineGrid%Nz,GhostgridX,GhostGridY,GhostGridZ,cyclet,maxit,reltol,alpha,beta,gamma)
+!      print*,'residual after precond=',workspace(ipar(8):ipar(8)+n_rows-1)
+!      print*,'solution after precond=',workspace(ipar(9):ipar(9)+n_rows-1)
+!      read*
 	  END IF
 	  GOTO 10
    ELSE IF (ipar(1).EQ.4) THEN

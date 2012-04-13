@@ -117,7 +117,7 @@ TYPE Level_def
 	TYPE (SparseArray_COO) :: PreconditioningMatrix
 	TYPE (SparseArray_CSR) :: IterationMatrix ! for use with jacobi or gauss-seidel
 	INTEGER :: mapNp ! number of points in iGhost
-	INTEGER, DIMENSION(:), POINTER :: iGhost ! global indexes for ghost points
+	INTEGER, DIMENSION(:), ALLOCATABLE :: iGhost ! global indexes for ghost points
 END TYPE Level_def
 
 ! DEFINE STRUCT FOR STREAM FUNCTION SOLUTION PARAMETERS

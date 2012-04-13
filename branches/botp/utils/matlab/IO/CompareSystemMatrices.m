@@ -1,5 +1,5 @@
 close all
-% clear all
+clear all
 clc
 
 IOmethod = 1; %0:binary ; 1:classical unformatted ; 2:unformatted ftn95
@@ -8,11 +8,58 @@ IOmethod = 1; %0:binary ; 1:classical unformatted ; 2:unformatted ftn95
 % byteorder = 'ieee-be'; % IEEE Big-Endian format 
 byteorder = 'ieee-le'; % IEEE Little-Endian format
 
+% multigrid matrices
+filename = '/Users/apek/OW3Dtest/P0001.bin' % preconditioning matrix
+[Asp1,coo.i,coo.j,coo.a] = LoadSparseMatrix(filename,IOmethod,byteorder);
+coo.nrow = size(Asp1,1);
+coo.nnz  = nnz(Asp1);
+figure
+spy(Asp1)
+
+filename = '/Users/apek/OW3Dtest/P0002.bin' % preconditioning matrix
+[Asp2,coo.i,coo.j,coo.a] = LoadSparseMatrix(filename,IOmethod,byteorder);
+coo.nrow = size(Asp2,1);
+coo.nnz  = nnz(Asp2);
+figure
+spy(Asp2)
+
+return
+
 % Preconditioning matrix
-filename = '../SparseMatrix.bin'
+filename = '/Users/apek/OW3Dtest/SparseMatrix.bin' % preconditioning matrix
 [Asp,coo.i,coo.j,coo.a] = LoadSparseMatrix(filename,IOmethod,byteorder);
 coo.nrow = size(Asp,1);
 coo.nnz  = nnz(Asp);
+
+% Construct smoother
+iwest  = 1:6;
+ieast  = 109:114;
+isouth = 7 : 6 : 109-1;
+ighost = [iwest ieast isouth]; % indexs to ghost values
+[M,N] = GaussSeidelsplitting(Asp,0);
+G = M\N;
+eigen = eig(full(G));
+plot(real(eigen),imag(eigen),'x')
+
+I = eye(114); I = sparse(I);
+Asp(ighost,:) = I(ighost,:);
+[M,N] = GaussSeidelsplitting(Asp,0);
+G = M\N;
+eigen = eig(full(G));
+hold on
+plot(real(eigen),imag(eigen),'ro')
+axis equal
+ang = linspace(0,2*pi,100);
+plot(sin(ang),cos(ang),'k--')
+return
+
+% Matrix-vector product routine
+filename = '/Users/apek/OW3Dtest/A.bin'
+Adp = LoadRealArray(filename,IOmethod, byteorder);
+
+% Matrix-vector product routine
+filename = '/Users/apek/OW3Dtest/DMz.bin'
+DMz = LoadRealArray(filename,IOmethod, byteorder);
 
 % Let make a test
 if (0) 
@@ -41,7 +88,23 @@ end
 
 % return
 
+subplot(1,3,1)
 spy(Asp)
+subplot(1,3,2)
+spy(Adp)
+subplot(1,3,3)
+spy(Asp-Adp)
+%return
+%spy(DMz)
+
+% Check linear stability
+g= 9.81;
+isurface = [12:6:(12+17*6-1)];
+[eigen3,JAC,J12] = CheckLinearStability(g,Adp,DMz,isurface);
+figure
+plot(real(eigen3),imag(eigen3),'x')
+axis([-1 1 -norm(eigen3,inf) norm(eigen3,inf)])
+return
 
 csr = ConvertSparseCOO2CSR(coo);
 

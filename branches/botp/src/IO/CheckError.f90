@@ -19,6 +19,10 @@ IF (STAT/=0) THEN
 	     WRITE (*,'(A)') 'Error: Could not allocate necessary memory storage for SUBROUTINE PrepareFullOperatorStencils.'
 	  CASE (8)
 	     WRITE (*,'(A)') 'Error: Problem allocating sparse matrix arrays in SUBROUTINE GetSparseLinearLaplaceMatrix.'
+      CASE (9) 
+         WRITE (*,'(A)') 'Error: Problem allocating an index map for ghost points in SUBROUTINE MGPreProcess.'
+      CASE (10)
+         WRITE (*,'(A)') 'Error: PRoblem allocating FineGrid%dsigmanew in SUBROUTINE PreparePreconditioner.'      
 	  CASE DEFAULT
 	     WRITE (*,'(A)') 'Error: unspecified error number (ERR) from calling routine.'
    END SELECT
