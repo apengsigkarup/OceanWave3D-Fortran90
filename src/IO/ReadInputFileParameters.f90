@@ -183,9 +183,14 @@ SUBROUTINE ReadInputFileParameters
 
   READ (FILEIP(1),*) g
 
-  READ (FILEIP(1),*) solver, Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
+  READ (FILEIP(1),*,err=141) solver, Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
        nu(1), nu(2), MGmaxgrids
-  SELECT CASE (solver)
+  GO TO 142
+141 solver=1
+  BACKSPACE(fileip(1))
+  READ (FILEIP(1),*,err=141) Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
+       nu(1), nu(2), MGmaxgrids
+142  SELECT CASE (solver)
       CASE(0)
          WRITE(*,*) '   Defect correction (DC) method is chosen.'
       CASE DEFAULT
