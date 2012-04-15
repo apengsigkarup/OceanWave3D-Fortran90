@@ -19,7 +19,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 FC = gf90
 
-#USER = botp
+USER = botp
 
 # Compiler-dependent section
 ifeq ($(USER),botp)
