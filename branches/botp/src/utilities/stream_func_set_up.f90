@@ -41,6 +41,7 @@ SUBROUTINE stream_func_set_up(grav,depth,period,i_wavel_or_per,wave_l,    &
      wavel_or_per='period'
      height=wave_H/(grav*period**2)
   END IF
+  E_or_S_vel = E_or_S_vel/(grav*wave_H)**0.5
 ! Compute the Stream Function coefficients.
 ! This subroutine is basically Fenton's
 ! original code, with output turned off, turned into a subroutine.
