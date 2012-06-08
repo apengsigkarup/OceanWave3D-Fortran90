@@ -10,7 +10,7 @@ SUBROUTINE ReadInputFileParameters
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
-  INTEGER ios, i, nxIC, nyIC
+    INTEGER ios, i, nxIC, nyIC
   REAL(kind=long) :: xtankIC, ytankIC, t0IC
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
@@ -335,13 +335,25 @@ SUBROUTINE ReadInputFileParameters
      WRITE(*,*) '    Total relaxation zones defined: ',relaxNo
      ALLOCATE( RelaxZones(relaxNo) )
      DO i=1,relaxNo
+        READ (FILEIP(1),443,err=43) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
+             RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
+             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees,            &
+             RelaxZones(i)%PhiOnOff
+        go to 44
+!hbb
+!hbb  I struggled here to get this read to be backward compatible.  The key was to explicitly define 
+! the format of the read statement.  
+!hbb
+443     format(4F16.6,I8,F16.6,A1,I8,A1,F16.6,I8)
+43      continue
+        backspace(FILEIP(1))
         READ (FILEIP(1),*) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
              RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
              RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees
-
+        RelaxZones(i)%PhiOnOff=1 ! Default is to relax both phi and eta
+44      continue
      ENDDO
   ENDIF
-
   ! SWENSE
   READ(FILEIP(1),*) swenseONOFF, swenseTransientTime, swenseDir, West_refl, East_refl, North_refl, South_refl
 

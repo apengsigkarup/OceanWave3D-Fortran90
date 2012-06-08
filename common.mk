@@ -12,6 +12,8 @@ INSTALLDIR = $(HOME)/bin
 # Build directory where object files are stored 
 BUILDDIR = $(PWD)/../build
 
+# The build environment is set either by the choice of a compiler 
+# flag, or by creating a block for a specific $USER.  
 # Choose the Fortran compiler on this system
 # E.g. pathf90, f90, gfortran, gf90, ifort
 #FC = gfortran
@@ -19,26 +21,9 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 FC = gf90
 
-USER = botp
+#USER = botp
 
-# Compiler-dependent section
-ifeq ($(USER),botp)
-  # botp kubuntu, 10.04-64bit
-  FC       = gfortran-4.4
-  LIBDIRS  = -L$(HOME)/lib/ 
-  LINLIB   = -lharwell -lskit -llapack_LINUX_Gfortran4-4-3 -lblas 
-  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
-endif
-
-
-ifeq ($(USER),olli)
-  # olli linux machine
-  LIBDIRS  = -L$(HOME)/lib/ -Ldep/SPARSKIT2/ -Ldep/Harwell/
-  LINLIB   = -lharwell -lskit -llapack -lblas 
-  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
-endif
+# First the blocks based on compiler name:  
 
 ifeq ($(FC),gfortran44)
   # gbar linux machines
@@ -94,5 +79,25 @@ ifeq ($(FC),f90)
 #  OPTFLAGS = -g -fast
 endif
 
+# Then this the blocks for specific users (this clobbers the above info.)
+
+ifeq ($(USER),botp)
+  # botp kubuntu, 10.04-64bit
+  FC       = gfortran-4.4
+  LIBDIRS  = -L$(HOME)/lib/ 
+  LINLIB   = -lharwell -lskit -llapack_LINUX_Gfortran4-4-3 -lblas 
+  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+endif
+
+
+ifeq ($(USER),olli)
+  # olli linux machine
+  FC       = gfortran
+  LIBDIRS  = -L$(HOME)/lib/ -Ldep/SPARSKIT2/ -Ldep/Harwell/
+  LINLIB   = -lharwell -lskit -llapack -lblas 
+  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+endif
 
 

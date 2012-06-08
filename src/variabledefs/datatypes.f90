@@ -134,6 +134,7 @@ TYPE RelaxZone
 	REAL(KIND=long), DIMENSION(:), POINTER :: gam    ! relaxation function values
 	CHARACTER(len=1)               :: XorY           ! coordinate direction for relaxation funtion
 	INTEGER                        :: WavegenOnOff   ! turn on wavegeneration in the zone (0=off,1=on)
+	INTEGER                        :: PhiOnOff       ! relax phi as well as eta (1) or just eta (0).  
 	CHARACTER(len=1)               :: XorYgen        ! coordinate direction for generation
     REAL(KIND=long), DIMENSION(:), POINTER :: Ea, Pa ! Storage for analytical solution
     REAL(KIND=long)                :: degrees        ! coordinate rotation angle in degrees
