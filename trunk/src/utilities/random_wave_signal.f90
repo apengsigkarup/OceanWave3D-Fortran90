@@ -70,14 +70,13 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      fn = zero
      IF(i_spec==2)THEN
         open(21,file=inc_wave_file,status='old')
-        READ(21,'(A)')header
+        READ(21,'(A)',err=15)header
         READ(21,*)dt_inc
-        ns_inc=1 ! initialize the stride
         IF(ABS(dt-dt_inc)>1.e-6)THEN
-           ns_inc=NINT(dt/dt_inc)
-           dt=real(ns_inc,long)*dt_inc
-           WRITE(6,12)ns_inc,dt
-12         FORMAT('Using 1 out of every ',i4,' time steps, with dt=',e10.3,//)
+           print *, 'random_wave_signal.f90: The .inp and .iwf time steps do not agree.'
+           print *, header
+           print *, dt,dt_inc
+           stop
         END IF
         do i=1,n1
            READ(21,*,end=13)eta0(i)
@@ -91,6 +90,9 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
         do i=ndat+1,n1
            eta0(i)=zero
         end do
+        go to 14
+15      print *, 'random_wave_signal.f90: No header line in the .iwf'
+        stop
 14      CLOSE(21)
         CALL drealft (eta0, n1, 1)
         !
