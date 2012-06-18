@@ -342,7 +342,7 @@ SUBROUTINE ReadInputFileParameters
         go to 44
 !hbb
 !hbb  I struggled here to get this read to be backward compatible.  The key was to explicitly define 
-! the format of the read statement.  
+! the format of the read statement.  I think it may still be problematic though...
 !hbb
 443     format(4F16.6,I8,F16.6,A1,I8,A1,F16.6,I8)
 43      continue
@@ -354,6 +354,37 @@ SUBROUTINE ReadInputFileParameters
 44      continue
      ENDDO
   ENDIF
+  !
+  ! Pressure damping zones
+  !
+  READ (FILEIP(1),*,err=64) PDampingONOFF,NDampZones 
+   IF (PDampingOnOff /=0) then
+     ALLOCATE(PDampZones(NDampZones))
+     Do i=1,NDampZones
+        READ (FILEIP(1),*,err=63) PDampZones(i)%BBox(1), PDampZones(i)%BBox(2),       &
+             PDampZones(i)%BBox(3), PDampZones(i)%BBox(4), PDampZones(i)%g0Phi,         &
+             PDampZones(i)%g0Eta, PDampZones(i)%type  
+        If (PDampZones(i)%type == 0) Then
+           print *, 'Pressure damping the velocity is not yet implemented. Using Potential.'
+           PDampZones(i)%type=1;
+     END If
+     END Do
+     print *, ' '
+     print *, 'Found ', NDampZones, ' pressure damping zones.'
+     go to 65
+  END IF
+  go to 65
+652 format(2I8)
+653 format(7F16.6,I8)
+63 print *, 'ReadInputFileParameters:  Error reading pressure damping zones line.'
+  stop
+64 continue
+  print *, ' '
+  print *, 'No Pressure damping line found, the feature is off.'
+  backspace(FILEIP(1))
+65 continue
+  print *, ' '
+
   ! SWENSE
   READ(FILEIP(1),*) swenseONOFF, swenseTransientTime, swenseDir, West_refl, East_refl, North_refl, South_refl
 
@@ -391,7 +422,7 @@ SUBROUTINE ReadInputFileParameters
   ! REUSABLE OUTPUT FORMATS
 900 FORMAT (A,I5,A,I5,A,I5,A)
 901 FORMAT (A,I2,A,I2,A,I2,A)
-902 FORMAT (A,I3)
+902 FORMAT (A,I8)
 903 FORMAT (A,E9.4)
 
 END SUBROUTINE ReadInputFileParameters

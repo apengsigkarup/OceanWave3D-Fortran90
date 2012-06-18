@@ -19,6 +19,8 @@ SELECT CASE (ABS(ftype))
 		gam = one - tmp**param
 	CASE (10) ! third order poly. with clamped BCs
 		gam = three*tmp**2-two*tmp**3
+        CASE (11)
+                gam=(exp(tmp**param)-1)/(exp(one)-one)
 END SELECT
 IF (dir==-1) THEN ! REVERSE
 	gam = gam(n:1:-1)  ! FIXME: not just for x

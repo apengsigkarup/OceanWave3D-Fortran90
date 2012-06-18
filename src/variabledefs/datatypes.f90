@@ -140,9 +140,25 @@ TYPE RelaxZone
     REAL(KIND=long)                :: degrees        ! coordinate rotation angle in degrees
 END TYPE RelaxZone
 
+! Pressure Damping Zones.  
+! Friction damping on eta, i.e. -gamEta*eta is added to the kinematic free-surface boundary 
+! condition.  
+! Friction damping on either phi or grad phi:  -gamPhi*phi or L^-1(Div gamPhi*Grad phi) 
+! are added to the dynamic free-surface boundary condition. 
+!
+TYPE PDampZone
+	REAL(KIND=long)                :: BBox(4)        ! Bounding box [xmin xmax ymin ymax]
+	REAL(KIND=long)                :: g0Phi, g0Eta   
+	INTEGER                        :: idx(4)         ! index list start stop [xmin xmax ymin ymax]
+	INTEGER                        :: nx, ny         ! number of points in the zone
+	INTEGER                        :: type           ! GradPhi (0) or Phi (1)
+	REAL(KIND=long), DIMENSION(:), allocatable :: gamPhi, gamEta  ! Damper function values
+END TYPE PDampZone
+
 ! New type for wavefield definition on Free Surface (scattered and incident)
 TYPE Wavefield_FS
-	REAL(KIND=long), DIMENSION(:,:), POINTER :: E, Ex, Exx, Ey, Eyy, P, Px, Py, W, P0     ! Scattered wavefield
+	REAL(KIND=long), DIMENSION(:,:), POINTER :: E, Ex, Exx, Ey, Eyy, P, Px, Py, W     ! Scattered wavefield
+        REAL(KIND=long), DIMENSION(:,:), POINTER :: P0, NuD, Pd    ! Pressure terms on the FS
 	REAL(KIND=long), DIMENSION(:,:), POINTER :: Qr_x, Mr_t     ! Breaking model terms
 	REAL(KIND=long), DIMENSION(:,:), POINTER :: E_I, Ex_I, Exx_I, Ey_I, Eyy_I, Et_I   ! Incident wavefield (free surface)
 	REAL(KIND=long), DIMENSION(:,:,:), POINTER :: EtatHist, WHist

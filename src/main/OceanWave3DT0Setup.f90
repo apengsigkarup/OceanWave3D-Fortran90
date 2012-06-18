@@ -150,6 +150,15 @@ SUBROUTINE OceanWave3DT0Setup
      ENDIF
   ENDIF
   !
+  ! Set up the Pressure Damping Zones if any.
+  !
+  If (NDampZones /=0) THEN
+     Call PreprocessPDampingZones
+     print *, ' '
+     print *, 'Pressure damping zones are set up'
+     print *, ' '
+  END If
+  !
   ! Allocate space for the solution variables and wavefield.
   !
   print*,'do initialization...'
