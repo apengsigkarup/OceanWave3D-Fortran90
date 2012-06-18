@@ -1,31 +1,35 @@
 !>
-!! Evaluate a pressure forcing term in the unsteady
-!! dynamic free surface condition.
+!! Evaluate a pressure forcing terms in the unsteady
+!! kinematic and dynamic free surface conditions.
 !!
-!!    dP/dt = rhsP + Wavefield%P0
+!!    dE/dt = rhsE + Wavefield%NuD
+!!    dP/dt = rhsP + Wavefield%P0 + Wavefield%Pd
 !!
-!! Wavefield%P0 is in general of the form
+!! Wavefield%P0 represents an applied pressure patch on the free surface to model 
+!! for example a simple geometry.  It is in general of the form
 !!    
 !!    Wavefield%P0 = -p/rho
 !!
-!! with rho the density of the fluid and p the free surface pressure.
+!! with rho the density of the fluid and p the applied free surface pressure.
 !!
 !! This function needs to be updated and recompiled for 
 !! changes to take effect.
+!!
+!! NuD and Pd are friction damping terms applied to absorb waves.  
 !<
 SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
   USE Precision
   USE Constants
   USE DataTypes
-  USE GlobalVariables, ONLY: PressureTermONOFF, Lz
+  USE GlobalVariables, ONLY: PressureTermONOFF, Lz, NDampZones, PDampingOnOff, PDampZones
   IMPLICIT NONE
-  INTEGER :: Nx,Ny, i, j
+  INTEGER :: Nx,Ny, i, j, k
   REAL(KIND=long) :: t, g, x0, y0, sigma, sigmay, Lx, Ly, dx, Fr, V
   !REAL(KIND=long), DIMENSION(Nx,Ny), INTENT(OUT) :: term ! includes ghost points
   TYPE (Level_def), INTENT(IN) :: FineGrid
   TYPE (Wavefield_FS), INTENT(OUT) :: Wavefield
   !
-  ! 
+  ! The implemented types of pressure patches are:  
   ! 
   !  PressureTermOnOff=0  -> No pressure (default) 
   !  PressureTermOnOff=1  -> Stationary 2D Gaussian hump
@@ -123,6 +127,18 @@ SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
         END DO
      END DO
   endif
+!
+! Pressure damping terms.  
+!
+  If (PDampingOnOff /= 0) Then
+     Do j=1,Ny
+        Do i=1,Nx
+           k=(j-1)*Nx+i
+           Wavefield%NuD(i,j)=-PDampZones(1)%gamEta(k)*Wavefield%E(i,j)
+           Wavefield%Pd(i,j)=-PDampZones(1)%gamPhi(k)*Wavefield%P(i,j)
+        END Do
+     END Do
+  END If
 END SUBROUTINE funPressureTerm
 
 !>

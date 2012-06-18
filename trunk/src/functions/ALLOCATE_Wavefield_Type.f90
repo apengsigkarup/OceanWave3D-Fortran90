@@ -17,7 +17,7 @@ Nz_ext = Nz+GhostGridZ
 NULLIFY(Wavefield%E,Wavefield%Ex,Wavefield%Exx,Wavefield%Ey,Wavefield%Eyy,Wavefield%P0)
 NULLIFY(Wavefield%P,Wavefield%Px,Wavefield%Py,Wavefield%W,Wavefield%Qr_x,Wavefield%Mr_t)
 NULLIFY(Wavefield%E_I,Wavefield%Ex_I,Wavefield%Exx_I,Wavefield%Ey_I,Wavefield%Eyy_I)
-NULLIFY(Wavefield%EtatHist, Wavefield%WHist)
+NULLIFY(Wavefield%EtatHist, Wavefield%WHist, Wavefield%NuD, Wavefield%Pd)
 NULLIFY(Wavefield%P_I_s,Wavefield%Px_I_s,Wavefield%Py_I_s,Wavefield%Pz_I_s)
 NULLIFY(Wavefield%E_I_bp,Wavefield%Ex_I_bp,Wavefield%Ey_I_bp)
 NULLIFY(Wavefield%Px_I_bp,Wavefield%Py_I_bp,Wavefield%Pz_I_bp)
@@ -25,10 +25,11 @@ NULLIFY(Wavefield%SourceEx,Wavefield%SourcePx)
 NULLIFY(Wavefield%SourceEy,Wavefield%SourcePy)
 NULLIFY(Wavefield%GidxTableBP)
 !
-ALLOCATE(Wavefield%E(Nx_ext,Ny_ext), Wavefield%W(Nx_ext,Ny_ext), Wavefield%P(Nx_ext,Ny_ext), &
-     Wavefield%P0(Nx_ext,Ny_ext),Wavefield%Qr_x(Nx_ext,Ny_ext),Wavefield%Mr_t(Nx_ext,Ny_ext))
+ALLOCATE(Wavefield%E(Nx_ext,Ny_ext), Wavefield%W(Nx_ext,Ny_ext), Wavefield%P(Nx_ext,Ny_ext),  &
+     Wavefield%P0(Nx_ext,Ny_ext),Wavefield%Qr_x(Nx_ext,Ny_ext),Wavefield%Mr_t(Nx_ext,Ny_ext), &
+     Wavefield%NuD(Nx_ext,Ny_ext), Wavefield%Pd(Nx_ext,Ny_ext))
 Wavefield%E=zero; Wavefield%P=zero; Wavefield%W=zero; Wavefield%P0=zero; Wavefield%Qr_x=zero;
-Wavefield%Mr_t=zero
+Wavefield%Mr_t=zero; Wavefield%NuD=zero; Wavefield%Pd=zero
 IF (Nx>1) THEN
 	ALLOCATE(Wavefield%Ex(Nx_ext,Ny_ext), Wavefield%Exx(Nx_ext,Ny_ext), Wavefield%Px(Nx_ext,Ny_ext))
 	Wavefield%Ex=zero; Wavefield%Exx=zero; Wavefield%Px=zero
