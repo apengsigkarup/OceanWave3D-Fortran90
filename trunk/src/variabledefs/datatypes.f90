@@ -20,11 +20,25 @@ TYPE SparseArray_COO
 ! Sparse storage using: Coordinate (COO) format
 ! Used by the harwell library routines
 	REAL(KIND=long), DIMENSION(:), POINTER :: val ! Array values
-	INTEGER, DIMENSION(:), POINTER :: col_ind  ! Column indice vector
+	INTEGER, DIMENSION(:), POINTER :: col_ind  ! Column pointer
 	INTEGER, DIMENSION(:), POINTER :: row_ptr  ! Row pointer
 	INTEGER :: nnz ! number of nonzero elements
 	INTEGER :: nrow ! rank of matrix
 END TYPE SparseArray_COO
+
+TYPE SparseArray_COO_HBB
+! Sparse storage using: Coordinate (COO) format
+! Used by the harwell library routines.  This version without pointers 
+! and with all the variables.  
+	REAL(KIND=long), allocatable:: val(:) ! Array values
+	INTEGER, allocatable :: irn(:), icn(:)! Row and Column pointers
+	INTEGER :: nnz ! number of nonzero elements
+	INTEGER :: nrow ! rank of matrix
+        REAL(KIND=long) :: CNTL(10)
+        INTEGER :: ICNTL(20), KEEP(50), MAXS, MAXIS
+        INTEGER, ALLOCATABLE :: INFOHSL(:), IS_HSL(:)
+        REAL(KIND=long), ALLOCATABLE :: COLSCA(:), ROWSCA(:), SS(:), RINFO(:)
+END TYPE SparseArray_COO_HBB
 
 ! DERIVED DATA TYPE FOR DIFFERENTIAL OPERATIONS
 !	DIMENSIONS: Global index, Stencil, order
@@ -151,8 +165,10 @@ TYPE PDampZone
 	REAL(KIND=long)                :: g0Phi, g0Eta   
 	INTEGER                        :: idx(4)         ! index list start stop [xmin xmax ymin ymax]
 	INTEGER                        :: nx, ny         ! number of points in the zone
-	INTEGER                        :: type           ! GradPhi (0) or Phi (1)
-	REAL(KIND=long), DIMENSION(:), allocatable :: gamPhi, gamEta  ! Damper function values
+	INTEGER                        :: type           ! Damp GradPhi (0) or Phi (1)
+	REAL(KIND=long), allocatable :: gamPhi(:), gamEta(:)  ! Damper function values
+        TYPE(SparseArray_COO_HBB) :: Lop                 ! The 2D Laplacian operator in the damping zone
+        REAL(kind=long), allocatable :: Grad(:,:,:)      ! The 2D gradient operator in the damping zone
 END TYPE PDampZone
 
 ! New type for wavefield definition on Free Surface (scattered and incident)

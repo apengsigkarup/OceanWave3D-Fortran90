@@ -18,6 +18,7 @@ PROGRAM OceanWave3D
   !
   ! Step through time and solve the problem 
   !
+  print *, '  Starting to time step.'
   DO tstep=1,Nsteps-1 
      CALL OceanWave3DTakeATimeStep 
   END DO  

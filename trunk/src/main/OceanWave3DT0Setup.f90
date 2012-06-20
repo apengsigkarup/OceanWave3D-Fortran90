@@ -226,7 +226,7 @@ SUBROUTINE OceanWave3DT0Setup
   !
   ! DETERMINE HIGH-ORDER FINITE DIFFERENCE STENCILS
   ! Now, determine fullrank stencils for the x- , y- and z- directions;
-print*,'Determine finite difference stencils for full system...'
+  print*,'Determine finite difference stencils for the system matrix...'
   IF (curvilinearONOFF==0) THEN
      CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
      ! GD: Determine the cross derivatives coefficients
@@ -259,10 +259,12 @@ print*,'Determine finite difference stencils for full system...'
      CALL ConstructTableCrossDerivatives_Curvilinear(FineGrid, FineGrid%CurvilinearStuff%DiffStencils, kappa, &
           GhostGridX, GhostGridY, GhostGridZ)
   END IF
-print*,'...done!'
+  print*,'...done!'
 !
-  ! GD: Test to define correct initial dpatail derivaties...
+  ! GD: Test to define correct initial spatail derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+
+
 
   !************************************************************************
   !
@@ -316,7 +318,7 @@ print*,'...done!'
     ELSE
         print*,'Linear coefficient matrix A stored in A.bin.'		
     END IF
-print*,'curvilinearONOFF=',curvilinearONOFF
+    print*,'curvilinearONOFF=',curvilinearONOFF
 
     ! save the vertical derivative for linear stability analysis...
     ee = zero
