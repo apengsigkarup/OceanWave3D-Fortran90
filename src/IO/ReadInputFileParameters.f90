@@ -358,16 +358,16 @@ SUBROUTINE ReadInputFileParameters
   ! Pressure damping zones
   !
   READ (FILEIP(1),*,err=64) PDampingONOFF,NDampZones 
-   IF (PDampingOnOff /=0) then
+  IF (NDampZones>1)THEN
+     print *, 'Only one pressure damping zone is currently supported.'
+     stop
+  END IF
+  IF (PDampingOnOff /=0) then
      ALLOCATE(PDampZones(NDampZones))
      Do i=1,NDampZones
         READ (FILEIP(1),*,err=63) PDampZones(i)%BBox(1), PDampZones(i)%BBox(2),       &
              PDampZones(i)%BBox(3), PDampZones(i)%BBox(4), PDampZones(i)%g0Phi,         &
              PDampZones(i)%g0Eta, PDampZones(i)%type  
-        If (PDampZones(i)%type == 0) Then
-           print *, 'Pressure damping the velocity is not yet implemented. Using Potential.'
-           PDampZones(i)%type=1;
-     END If
      END Do
      print *, ' '
      print *, 'Found ', NDampZones, ' pressure damping zones.'
