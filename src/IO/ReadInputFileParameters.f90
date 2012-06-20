@@ -10,7 +10,7 @@ SUBROUTINE ReadInputFileParameters
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
-    INTEGER ios, i, nxIC, nyIC
+    INTEGER ios, i, nxIC, nyIC, iflag_phi
   REAL(kind=long) :: xtankIC, ytankIC, t0IC
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
@@ -334,25 +334,26 @@ SUBROUTINE ReadInputFileParameters
   IF (relaxONOFF==1) THEN
      WRITE(*,*) '    Total relaxation zones defined: ',relaxNo
      ALLOCATE( RelaxZones(relaxNo) )
+     ! 
      DO i=1,relaxNo
-        READ (FILEIP(1),443,err=43) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
+        READ (FILEIP(1),*, err=43) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
              RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
-             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees,            &
-             RelaxZones(i)%PhiOnOff
-        go to 44
-!hbb
-!hbb  I struggled here to get this read to be backward compatible.  The key was to explicitly define 
-! the format of the read statement.  I think it may still be problematic though...
-!hbb
-443     format(4F16.6,I8,F16.6,A1,I8,A1,F16.6,I8)
-43      continue
-        backspace(FILEIP(1))
-        READ (FILEIP(1),*) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
-             RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
-             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees
-        RelaxZones(i)%PhiOnOff=1 ! Default is to relax both phi and eta
-44      continue
-     ENDDO
+             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees !, RelaxZones(i)%PhiOnOff
+        RelaxZones(i)%PhiOnOff=1
+        !        print *, i,'yes',RelaxZones(i)%BBox(1),RelaxZones(i)%PhiOnOff
+     END DO
+     go to 44
+     !hbb
+     !hbb  I struggled here to get this read to be backward compatible and finally gave up... 
+     !hbb  The feature is implemented, but turned off for now.  Pressure damping on the 
+     !hbb  velocity is a much better solution.  
+     !hbb
+     !443  format(4F10.2,I2,F10.2,A1,I2,A1,F10.2,I2)
+     !443     format(4F16.6,I8,F16.6,A1,I8,A1,F16.6,I8)
+43   print *, 'Error reading the relaxation zone lines.' !  Note the new format that requires '
+     ! print *, 'a value for PhiOnOff=0 (off) or 1 (on) at the end of each zone defn. line.'
+     stop
+44   continue
   ENDIF
   !
   ! Pressure damping zones
