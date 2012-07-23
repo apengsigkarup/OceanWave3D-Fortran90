@@ -1,5 +1,5 @@
 SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
-     grav, inc_wave_file, kh_max, seed, seed2, eta, Vs, etat0, Vst0, nf)
+     grav, inc_wave_file, kh_max, seed, seed2, eta, Vs, etat0, Vst0, nf, time0)
   !-----------------------------------------------------------------------
   !
   ! Generate a psuedo-random long crested wave over N1 time steps at
@@ -22,7 +22,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
   CHARACTER(len=30) inc_wave_file, header
   integer, parameter :: long=selected_real_kind(12,99)
   integer i_spec, seed, seed2, n1, n2, j0, nf
-  real(kind=long) :: Tp, Hs, dx, dt, depth
+  real(kind=long) :: Tp, Hs, dx, dt, depth, time0
   real(kind=long) :: Vs(n2,n1,*), eta(n2,n1), Vst0(nf,*), etat0(nf)
 
   ! Local variables
@@ -240,7 +240,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      phifact=grav/omega
      !
      do i=1,n1
-        t=(i-1)*dt
+        t=time0+(i-1)*dt
         eta0(i)=amp*cos(-omega*t)
         do j=1,n2
            x=(j-j0)*dx

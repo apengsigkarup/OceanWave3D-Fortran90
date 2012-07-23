@@ -36,6 +36,22 @@ SUBROUTINE OceanWave3DT0Setup
      CALL FilterInit(filtercoefficients,filtercoefficients2)
   ENDIF
 
+  !
+  ! Allocate space for the solution variables and wavefield.
+  !
+  print*,'do initialization...'
+  CALL InitializeVariables
+  !
+  ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
+  time=zero
+  !
+  ! Set up the initial conditions and the bathymetry data
+  !
+  print*,'setup ICs...'
+  CALL SetupInitialConditions
+  time=time0
+  print*,'done with ICs'
+  !
   IF (relaxONOFF>0) THEN
      CALL PreprocessRelaxationZones
      PRINT*,'  Relaxation zones have been setup.'
@@ -146,7 +162,7 @@ SUBROUTINE OceanWave3DT0Setup
         CALL random_wave_signal(RandomWave%ispec, n_fft, n_wavem, j_wavem-1, RandomWave%dx, dt,   &
              RandomWave%Tp, RandomWave%Hs, RandomWave%h0, g, RandomWave%inc_wave_file,          &
              RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%eta,              &
-             RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf)
+             RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf, time0)
      ENDIF
   ENDIF
   !
@@ -158,22 +174,6 @@ SUBROUTINE OceanWave3DT0Setup
      print *, 'Pressure damping zones are set up'
      print *, ' '
   END If
-  !
-  ! Allocate space for the solution variables and wavefield.
-  !
-  print*,'do initialization...'
-  CALL InitializeVariables
-  !
-  ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
-  time=zero
-  !
-  ! Set up the initial conditions and the bathymetry data
-  !
-  print*,'setup ICs...'
-  CALL SetupInitialConditions
-  time=time0
-  print*,'done with ICs'
-  !
   IF (.FALSE.) THEN
      !
      ! Test code to validate buildlinearsystem subroutines.
