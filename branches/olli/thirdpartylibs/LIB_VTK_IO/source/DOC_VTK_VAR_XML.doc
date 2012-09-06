@@ -1,0 +1,170 @@
+!!\section{VTK\_VAR\_XML}
+!!
+!!VTK\_VAR\_XML is an interface to 12 different functions; there are 6 functions for scalar variables (1 for each supported
+!!precision: R8P, R4P, I8P, I4P, I2P and I1P) and 6 for vectorial variables (1 for each supported precision: R8P, R4P, I8P,
+!!I4P, I2P and I1P)
+!!This function saves the data variables related to geometric mesh. The inputs that must be passed change depending on the
+!!data variables type.
+!!
+!!\subsection{VTK\_VAR\_XML SCALAR DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Scalar Data Signature}]
+!!function VTK_VAR_XML(NC_NN,varname,var) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save scalar data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Scalar Data Variables}]
+!!integer(I4P), intent(IN):: NC_NN        ! number of cells or nodes
+!!character(*), intent(IN):: varname      ! variable name
+!!real(R8P or...
+!!     R4P) or...
+!!integer(I8P or...
+!!        I4P or...
+!!        I2P or...
+!!        I1P), intent(IN):: var(1:NC_NN) ! variable to be saved
+!!integer(I4P)::             E_IO         ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR\_XML variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}var\_location} passed to VTK\_DAT\_XML.
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}var}] contains the values of variables in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!Note that the variables \texttt{var} can be passed both 8-byte real kind, 4-byte real kind, 8-byte integer,
+!!4-byte integer, 2-byte integer and 1-byte integer; XML is very flexible; the dynamic displacement interface will call
+!!the correct function.
+!!
+!!The following is an example of VTK\_VAR\_XML scalar data calling:
+!!
+!!\begin{boxred}{VTK\_VAR\_XML Scalar Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!integer(2)::            var(1:NC_NN)
+!!...
+!!E_IO = VTK_VAR_XML(NC_NN,'Scalar Data',var)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_VAR\_XML VECTORIAL DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Vectorial Data Signature}]
+!!function VTK_VAR_XML(NC_NN,varname, &
+!!                     varX,varY,varZ) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save vectorial data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML Vectorial Data Variables}]
+!!integer(I4P),                      intent(IN):: NC_NN         ! number of cells or nodes
+!!character(*),                      intent(IN):: varname       ! variable name
+!!real(R8P or R4P) or...
+!!integer(I8P or I4P or I2P or I1P), intent(IN):: varX(1:NC_NN) ! x component
+!!real(R8P or R4P) or...
+!!integer(I8P or I4P or I2P or I1P), intent(IN):: varY(1:NC_NN) ! y component
+!!real(R8P or R4P) or...
+!!integer(I8P or I4P or I2P or I1P), intent(IN):: varZ(1:NC_NN) ! z component
+!!integer(I4P)::                                  E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if
+!!                                                              ! IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR\_XML variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}var\_location} passed to VTK\_DAT\_XML.
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}varX}] contains the values of $X$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}varY}] contains the values of $Y$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}varZ}] contains the values of $Z$ component in each nodes or cells. It is a vector of $[1:NC\_NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!Note that the variables \texttt{varX,varY,varZ} can be passed both 8-byte real kind, 4-byte real kind, 8-byte integer,
+!!4-byte integer, 2-byte integer and 1-byte integer; XML is very flexible; the dynamic displacement interface will call
+!!the correct function.
+!!
+!!The following is an example of VTK\_VAR\_XML vectorial data calling:
+!!
+!!\begin{boxred}{VTK\_VAR\_XML Vectorial Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!integer(4)::            varX(1:NC_NN)
+!!integer(4)::            varZ(1:NC_NN)
+!!integer(4)::            varZ(1:NC_NN)
+!!...
+!!E_IO = VTK_VAR_XML(NC_NN,'Vectorial Data', &
+!!                   varX,varY,varZ)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!\subsection{VTK\_VAR\_XML LIST DATA}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML List Data Signature}]
+!!function VTK_VAR_XML(NC_NN, N_COL, varname, &
+!!                     var) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!This kind of call is used to save list data.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_VAR\_XML List Data Variables}]
+!!integer(I4P),                      intent(IN):: NC_NN         ! number of cells or nodes
+!!integer(I4P),                      intent(IN):: N_COL         ! number columns of the list
+!!character(*),                      intent(IN):: varname       ! variable name
+!!real(R8P or R4P) or...
+!!integer(I8P or I4P or I2P or I1P), intent(IN):: var(1:NC_NN:1:N_COL) ! components
+!!integer(I4P)::                                  E_IO          ! Input/Output inquiring flag: $0$ if IO is done, $> 0$
+!!                                                              ! if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_VAR\_XML variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NC\_NN}] indicates the number of all cells or all nodes according to the value of
+!!                                  {\color{RoyalBlue}var\_location} passed to VTK\_DAT\_XML.
+!! \item[{\color{RoyalBlue}N_COL}] indicates the size of the list (number of columns).
+!! \item[{\color{RoyalBlue}varname}] contains the name attribuited the variable saved.
+!! \item[{\color{RoyalBlue}var}] contains the values of the list component in each nodes or cells. It is an array of
+!!                               $[1:NC\_NN,1:N_COL]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!Note that the variable \texttt{var} can be passed both 8-byte real kind, 4-byte real kind, 8-byte integer,
+!!4-byte integer, 2-byte integer and 1-byte integer; XML is very flexible; the dynamic displacement interface will call
+!!the correct function.
+!!
+!!The following is an example of VTK\_VAR\_XML List data calling:
+!!
+!!\begin{boxred}{VTK\_VAR\_XML List Data Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NC_NN=100
+!!integer(4), parameter:: N_COL=5
+!!integer(4)::            var(1:NC_NN,1:N_COL)
+!!...
+!!E_IO = VTK_VAR_XML(NC_NN, N_COL, 'List Data', &
+!!                   var)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
