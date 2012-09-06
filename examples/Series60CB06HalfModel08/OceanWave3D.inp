@@ -1,0 +1,19 @@
+Series 60 Block coefficient CB=0.6
+0  0                           <- Initial condition (0=specified by PressureTermOnOff, 1=NL standing wave, 2=shoaling on a smooth beach, 3=Whalin bar, ... see Initialization.f90:SetupInitialConditions); IncWaveType (0=none, 1=stream function, 2=linear irregular waves)
+4.0 1.0 1.0 513 385 9 1 2 1 1 1 1    <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ (0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                        <- alpha, beta, gamma, alphaprecond, betaprecond, gammaprecond
+4000 0.001 1 0.0 0               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+3 0 10 1e-6 1e-6 1 V 1 1 0    <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.5 1.0 2.0 0 0 1 4 32      <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+10 1  <- StoreDataOnOff, formattaype
+0 6    <- 0/1=linear/nonlinear computations, Applied surface PressureTermOnOff:  0=none, 1=2D Gaussian.  2=3D Gaussian, 3=3D tanh.
+0 4 4 0.08 0.08 0.4  <- SG-filtering on/off, filter half width, poly order
+0 0 1 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+//------------------------------------------------------------------------------
+// The ship file and parameters:
+//------------------------------------------------------------------------------
+shipfile    shipfileS60BC06
