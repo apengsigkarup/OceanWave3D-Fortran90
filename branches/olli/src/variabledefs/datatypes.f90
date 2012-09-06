@@ -20,25 +20,11 @@ TYPE SparseArray_COO
 ! Sparse storage using: Coordinate (COO) format
 ! Used by the harwell library routines
 	REAL(KIND=long), DIMENSION(:), POINTER :: val ! Array values
-	INTEGER, DIMENSION(:), POINTER :: col_ind  ! Column pointer
+	INTEGER, DIMENSION(:), POINTER :: col_ind  ! Column indice vector
 	INTEGER, DIMENSION(:), POINTER :: row_ptr  ! Row pointer
 	INTEGER :: nnz ! number of nonzero elements
 	INTEGER :: nrow ! rank of matrix
 END TYPE SparseArray_COO
-
-TYPE SparseArray_COO_HBB
-! Sparse storage using: Coordinate (COO) format
-! Used by the harwell library routines.  This version without pointers 
-! and with all the variables.  
-	REAL(KIND=long), allocatable:: val(:) ! Array values
-	INTEGER, allocatable :: irn(:), icn(:)! Row and Column pointers
-	INTEGER :: nnz ! number of nonzero elements
-	INTEGER :: nrow ! rank of matrix
-        REAL(KIND=long) :: CNTL(10)
-        INTEGER :: ICNTL(20), KEEP(50), MAXS, MAXIS
-        INTEGER, ALLOCATABLE :: INFOHSL(:), IS_HSL(:)
-        REAL(KIND=long), ALLOCATABLE :: COLSCA(:), ROWSCA(:), SS(:), RINFO(:)
-END TYPE SparseArray_COO_HBB
 
 ! DERIVED DATA TYPE FOR DIFFERENTIAL OPERATIONS
 !	DIMENSIONS: Global index, Stencil, order
@@ -103,7 +89,7 @@ TYPE Level_def
 	TYPE (SparseArray_COO) :: PreconditioningMatrix
 	TYPE (SparseArray_CSR) :: IterationMatrix ! for use with jacobi or gauss-seidel
 	INTEGER :: mapNp ! number of points in iGhost
-	INTEGER, DIMENSION(:), ALLOCATABLE :: iGhost ! global indexes for ghost points
+	INTEGER, DIMENSION(:), POINTER :: iGhost ! global indexes for ghost points
 END TYPE Level_def
 
 ! DEFINE STRUCT FOR STREAM FUNCTION SOLUTION PARAMETERS
@@ -148,42 +134,23 @@ TYPE RelaxZone
 	REAL(KIND=long), DIMENSION(:), POINTER :: gam    ! relaxation function values
 	CHARACTER(len=1)               :: XorY           ! coordinate direction for relaxation funtion
 	INTEGER                        :: WavegenOnOff   ! turn on wavegeneration in the zone (0=off,1=on)
-	INTEGER                        :: PhiOnOff       ! relax phi as well as eta (1) or just eta (0).  
 	CHARACTER(len=1)               :: XorYgen        ! coordinate direction for generation
     REAL(KIND=long), DIMENSION(:), POINTER :: Ea, Pa ! Storage for analytical solution
     REAL(KIND=long)                :: degrees        ! coordinate rotation angle in degrees
 END TYPE RelaxZone
 
-! Pressure Damping Zones.  
-! Friction damping on eta, i.e. -gamEta*eta is added to the kinematic free-surface boundary 
-! condition.  
-! Friction damping on either phi or grad phi:  -gamPhi*phi or L^-1(Div gamPhi*Grad phi) 
-! are added to the dynamic free-surface boundary condition. 
-!
-TYPE PDampZone
-	REAL(KIND=long)                :: BBox(4)        ! Bounding box [xmin xmax ymin ymax]
-	REAL(KIND=long)                :: g0Phi, g0Eta   
-	INTEGER                        :: idx(4)         ! index list start stop [xmin xmax ymin ymax]
-	INTEGER                        :: nx, ny         ! number of points in the zone
-	INTEGER                        :: type           ! Damp GradPhi (0) or Phi (1)
-	REAL(KIND=long), allocatable :: gamPhi(:), gamEta(:)  ! Damper function values
-        TYPE(SparseArray_COO_HBB) :: Lop                 ! The 2D Laplacian operator in the damping zone
-        REAL(kind=long), allocatable :: Grad(:,:,:)      ! The 2D gradient operator in the damping zone
-END TYPE PDampZone
-
 ! New type for wavefield definition on Free Surface (scattered and incident)
 TYPE Wavefield_FS
-	REAL(KIND=long), DIMENSION(:,:), POINTER :: E, Ex, Exx, Ey, Eyy, P, Px, Py, W     ! Scattered wavefield
-        REAL(KIND=long), DIMENSION(:,:), POINTER :: P0, NuD, Pd    ! Pressure terms on the FS
-	REAL(KIND=long), DIMENSION(:,:), POINTER :: Qr_x, Mr_t     ! Breaking model terms
-	REAL(KIND=long), DIMENSION(:,:), POINTER :: E_I, Ex_I, Exx_I, Ey_I, Eyy_I, Et_I   ! Incident wavefield (free surface)
-	REAL(KIND=long), DIMENSION(:,:,:), POINTER :: EtatHist, WHist
-	REAL(KIND=long), DIMENSION(:,:), POINTER :: P_I_s, Pz_I_s, Px_I_s, Py_I_s, Pt_I_s ! Incident wavefield (velocity potential)
+	REAL(KIND=long), DIMENSION(:,:),    POINTER :: E, Ex, Exx, Ey, Eyy, P, Px, Pxx, Py, Pyy, W, P0     ! Scattered wavefield
+	REAL(KIND=long), DIMENSION(:,:),    POINTER :: Qr_x, Mr_t     ! Breaking model terms
+	REAL(KIND=long), DIMENSION(:,:),    POINTER :: E_I, Ex_I, Exx_I, Ey_I, Eyy_I, Et_I   ! Incident wavefield (free surface)
+    REAL(KIND=long), DIMENSION(:,:,:),  POINTER :: EtatHist         ! 
+	REAL(KIND=long), DIMENSION(:,:),    POINTER :: P_I_s, Pz_I_s, Px_I_s, Py_I_s, Pt_I_s ! Incident wavefield (velocity potential)
 	INTEGER :: nbp ! number boundary points
-	REAL(KIND=long), DIMENSION(:), POINTER   :: E_I_bp, Ex_I_bp, Ey_I_bp                ! Incident wavefield on boundary, FIXME: can be removed
-	REAL(KIND=long), DIMENSION(:), POINTER   :: Px_I_bp, Py_I_bp, Pz_I_bp               ! Incident wavefield on boundary
-	REAL(KIND=long), DIMENSION(:,:), POINTER :: SourceEx, SourceEy, SourcePx, SourcePy  ! Incident wavefield for boundary treatment
-	INTEGER, DIMENSION(:,:,:), POINTER       :: GidxTableBP ! Needed for the curvilinear part
+	REAL(KIND=long), DIMENSION(:),      POINTER :: E_I_bp, Ex_I_bp, Ey_I_bp                ! Incident wavefield on boundary, FIXME: can be removed
+	REAL(KIND=long), DIMENSION(:),      POINTER :: Px_I_bp, Py_I_bp, Pz_I_bp               ! Incident wavefield on boundary
+	REAL(KIND=long), DIMENSION(:,:),    POINTER :: SourceEx, SourceEy, SourcePx, SourcePy  ! Incident wavefield for boundary treatment
+	INTEGER,         DIMENSION(:,:,:),  POINTER :: GidxTableBP ! Needed for the curvilinear part
 END TYPE Wavefield_FS
 
 END MODULE

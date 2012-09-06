@@ -1,8 +1,5 @@
 SUBROUTINE OceanWave3DT0Setup
-  !
-  ! This subroutine performs all of the initial set-up work before the time-stepping 
-  ! begins.  
-  !
+
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
@@ -16,6 +13,7 @@ SUBROUTINE OceanWave3DT0Setup
   WRITE (6,2010)
 
   CALL Initialize
+
   CALL ReadInputFileParameters
 
   !CALL SetupCompDomain
@@ -23,6 +21,7 @@ SUBROUTINE OceanWave3DT0Setup
   !
   ! Build the rectangular (x,y) domain and the sigma levels, allocate space for the bathymetry.
   !
+    print*, curvilinearONOFF
   IF (curvilinearONOFF==1) THEN
      CALL SetupCompDomain_test
   ELSE
@@ -36,22 +35,6 @@ SUBROUTINE OceanWave3DT0Setup
      CALL FilterInit(filtercoefficients,filtercoefficients2)
   ENDIF
 
-  !
-  ! Allocate space for the solution variables and wavefield.
-  !
-  print*,'do initialization...'
-  CALL InitializeVariables
-  !
-  ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
-  time=zero
-  !
-  ! Set up the initial conditions and the bathymetry data
-  !
-  print*,'setup ICs...'
-  CALL SetupInitialConditions
-  time=time0
-  print*,'done with ICs'
-  !
   IF (relaxONOFF>0) THEN
      CALL PreprocessRelaxationZones
      PRINT*,'  Relaxation zones have been setup.'
@@ -60,7 +43,10 @@ SUBROUTINE OceanWave3DT0Setup
         ! re-set here for other wave generation types.  -HBB
         SFsol%T=RandomWave%Tp; SFsol%L=g*RandomWave%Tp**2/(two*pi)
      END IF
+    
+     !--------------------------------------------------------------------------
      ! Set time step size...
+     !--------------------------------------------------------------------------
      IF (CFL/=zero) THEN
         IF (FineGrid%Nx>1) THEN
            dxmin = dx
@@ -99,61 +85,38 @@ SUBROUTINE OceanWave3DT0Setup
              e12.6,//)
      ELSEIF(IncWaveType==2)THEN
         !
-        ! A linear regular or irregular wave
+        ! An irregular wave
         !
         print *, ' '
-        IF(RandomWave%ispec==-1)THEN
-           WRITE(6,70)RandomWave%Tp,RandomWave%Hs
-70         FORMAT(' The incident wave is a linear mono-chromatic wave with',/,&
-                ' T=', e10.4,' and H=',e10.4,'.',//)
-        ELSEIF(RandomWave%ispec==0)THEN
-           WRITE(6,71)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
-71         FORMAT(' The incident wave is a P-M spectrum wave with',/,&
+        IF(RandomWave%ispec==0)THEN
+           WRITE(6,70)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
+70         FORMAT(' The incident wave is a P-M spectrum wave with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave%ispec==1)THEN
-           WRITE(6,72)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
-72         FORMAT(' The incident wave is a JONSWAP spectrum wave with ',/, &
+           WRITE(6,71)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
+71         FORMAT(' The incident wave is a JONSWAP spectrum wave with ',/, &
                 'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave%ispec==2)THEN
-           WRITE(6,73)RandomWave%inc_wave_file
-73         FORMAT(' The incident wave will be read from file ',a30,/)
+           WRITE(6,72)RandomWave%inc_wave_file
+72         FORMAT(' The incident wave will be read from file ',a30,/)
         ELSE
-           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1, or 2.'
+           PRINT *, 'ERROR:  RandomWave%ispec must be 0,1, or 2.'
            STOP
         END IF
         !
-        IF(RandomWave%ispec >=0) THEN
-           !
-           ! Build the wave using the nearest power of two which is greater than nsteps since we
-           ! are using FFT's based on powers of two.
-           !
-           i=NINT(LOG(real(Nsteps,long))/LOG(two))
-           IF(two**i<Nsteps)i=i+1
-           n_fft=2**i;
-        ELSE
-           !
-           ! For a monochromatic wave we use Nsteps.
-           !
-           n_fft=Nsteps
-        END IF
+        ! Build the wave using the nearest power of two which is greater than nsteps since we
+        ! are using FFT's based on powers of two.
         !
-        ! The grid is also assumed to be uniform in the relaxation/generation zone(s) and 
-        ! we expect to generate in X-directed relaxation zones.  Other areas are 
-        ! not yet supported.  -HBB
+        i=NINT(LOG(real(Nsteps,long))/LOG(two))
+        IF(two**i<Nsteps)i=i+1
+        n_fft=2**i;
+        !
+        ! The grid is also assumed to be uniform in the relaxation/generation zone.
         !
         RandomWave%dx=FineGrid%x(RelaxZones(1)%idx(1)+1,1)-FineGrid%x(RelaxZones(1)%idx(1),1)
         j_wavem=nint(RandomWave%x0/RandomWave%dx)+2
-        !
-        ! Count the total number of grid points in the x-directed relaxation zones.  
-        n_wavem=0
-        DO i=1,relaxNo
-           If(RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X' &
-                .AND. RelaxZones(i)%WavegenONOFF==1) THEN
-              n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
-           END If
-        END DO
-        n_wavem=n_wavem+GhostGridX ! Include the ghost point at the left boundary.  
-        print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1), &
+        n_wavem=RelaxZones(1)%idx(2)-RelaxZones(1)%idx(1)+1;
+        print *, 'The random wave is centered at x=',FineGrid%x(j_wavem,1), &
              ' in a depth of',RandomWave%h0,', the generation zone contains ',n_wavem, ' points.'
         RandomWave%nf=FineGrid%nx
         !
@@ -162,19 +125,36 @@ SUBROUTINE OceanWave3DT0Setup
         CALL random_wave_signal(RandomWave%ispec, n_fft, n_wavem, j_wavem-1, RandomWave%dx, dt,   &
              RandomWave%Tp, RandomWave%Hs, RandomWave%h0, g, RandomWave%inc_wave_file,          &
              RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%eta,              &
-             RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf, time0)
+             RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf)
+
      ENDIF
   ENDIF
   !
-  ! Set up the Pressure Damping Zones if any.
+  ! Allocate space for the solution variables and wavefield.
   !
-  If (NDampZones /=0) THEN
-     Call PreprocessPDampingZones
-     print *, ' '
-     print *, 'Pressure damping zones are set up'
-     print *, ' '
-  END If
+  print*,'do initialization...'
+  CALL InitializeVariables
+  !
+  ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
+  time=zero
+
+  !-----------------------------------------------------------------------------
+  ! Calculate curvilinear metrics:
+  !-----------------------------------------------------------------------------
+  CALL DetermineGenericStencils(FineGrid%CurvilinearStuff%DiffStencils,kappa)
+  CALL DetermineCurvilinearTransform2D(FineGrid,alpha,beta,gamma,GhostGridX,&
+  GhostGridY,GhostGridZ)
+ 
+  !-----------------------------------------------------------------------------
+  ! Set up the initial conditions and the bathymetry data
+  !-----------------------------------------------------------------------------
+  print*,'setup ICs...'
+  CALL SetupInitialConditions
+  time=time0
+  print*,'done with ICs'
+  !
   IF (.FALSE.) THEN
+     !IF (.TRUE.) THEN
      !
      ! Test code to validate buildlinearsystem subroutines.
      !
@@ -208,9 +188,9 @@ SUBROUTINE OceanWave3DT0Setup
 
      CALL PreparePreconditioner(FineGrid%PreconditioningMatrix,FineGrid,GhostGridX, GhostGridY, GhostGridZ, &
           alphaprecond, betaprecond, gammaprecond, Precond, CurvilinearONOFF)
-!    filename = "SparseMatrix.bin"
-!     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
-!     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
+     filename = "SparseMatrix.bin"
+     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
+     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
      CALL FactorPreconditioner(FineGrid%PreconditioningMatrix, &
           (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ))
 
@@ -221,12 +201,11 @@ SUBROUTINE OceanWave3DT0Setup
      ! Prepare for Multigrid
      CALL MGPreProcess ( FineGrid, GhostGridX, GhostGridY, GhostGridZ, MGCoarseningStrategy, alphaprecond, betaprecond, &
           gammaprecond, Precond, MGmaxgrids, CurvilinearONOFF)
+print*,'Multigrid preprocess finished'
   ENDIF
-  
   !
   ! DETERMINE HIGH-ORDER FINITE DIFFERENCE STENCILS
   ! Now, determine fullrank stencils for the x- , y- and z- directions;
-  print*,'Determine finite difference stencils for the system matrix...'
   IF (curvilinearONOFF==0) THEN
      CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
      ! GD: Determine the cross derivatives coefficients
@@ -259,95 +238,14 @@ SUBROUTINE OceanWave3DT0Setup
      CALL ConstructTableCrossDerivatives_Curvilinear(FineGrid, FineGrid%CurvilinearStuff%DiffStencils, kappa, &
           GhostGridX, GhostGridY, GhostGridZ)
   END IF
-  print*,'...done!'
-!
-  ! GD: Test to define correct initial spatail derivaties...
+ 
+  ! GD: Test to define correct initial dpatail derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
-
-
-
-  !************************************************************************
-  !
-  ! Debugging setups
-  !
-  !************************************************************************
-
-  IF (0==1) THEN
-
-    ! Output preconditioner
-    IF (Precond==1) THEN
-      filename = "SparseMatrix.bin"
-      CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
-      print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
-    END IF
-
-    ! IF SIMULATION IS LINEAR THEN DETERMINE THE SIGMA-COEFFICIENTS FOR THE TRANSFORMED LAPLACE PROBLEM
-    IF (LinearONOFF==0) THEN
-       CALL ALLOCATE_Wavefield_Type(Wavefield_tmp, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
-       CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
-          FineGrid%Nz+GhostGridZ,FineGrid,FineGrid%dsigmanew,Wavefield_tmp)
-       CALL DEALLOCATE_Wavefield_Type(Wavefield_tmp, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, 0)
-    ENDIF
-
-    ! Output linear system matrix 
-    ALLOCATE(ee((FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)))
-    ALLOCATE(tm((FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)))
-    ALLOCATE(A((FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
-             (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)))
-    ee = zero
-    tm = zero
-    A  = zero
-    DO i = 1 , (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)
-        ee(i) = one
-        IF (curvilinearONOFF==1) THEN
-           !   CALL BuildLinearSystemTransformedCurvilinear(FineGrid, ee, tm,GhostGridX,GhostGridY,GhostGridZ,kappa)
-           CALL BuildLinearSystemTransformedCurvilinear(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
-               FineGrid%Nz+GhostGridZ,ee,tm,FineGrid,alpha,beta,gamma)
-        ELSE
-           CALL BuildLinearSystem(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
-               FineGrid%Nz+GhostGridZ,ee,tm,FineGrid,alpha,beta,gamma)
-        END IF
-        A(:,i) = tm
-        ee(i) = zero
-    END DO
-    filename = "A.bin"
-    CALL StoreRealArray(A,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
-        (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),filename,formattype)
-    IF (curvilinearONOFF==1) THEN
-        print*,'Linear coefficient matrix A (curvilinear routine) stored in A.bin.'		
-    ELSE
-        print*,'Linear coefficient matrix A stored in A.bin.'		
-    END IF
-    print*,'curvilinearONOFF=',curvilinearONOFF
-
-    ! save the vertical derivative for linear stability analysis...
-    ee = zero
-    tm = zero
-    A  = zero
-    DO i = 1 , (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ)
-        ee(i) = one
-        CALL DiffZArbitrary(ee,tm,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ, &
-            FineGrid%DiffStencils,gamma)
-        A(:,i) = tm
-        ee(i) = zero
-    END DO
-    filename = "DMz.bin"
-    CALL StoreRealArray(A,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
-        (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),filename,formattype)
-    print*,'Matrix DMz stored in DMz.bin.'		
-    
-    DEALLOCATE(ee,tm,A)
-    !   print*,'stopped here for now...'
-    stop
-
-  END IF
-
   !************************************************************************
   !
   ! Step through time and compute the wave flow.
   !
   !************************************************************************
-
   ! STORE INITIAL CONDITION
   IF (StoreDataONOFF>0) THEN
      ! GD: SWENSE storage if necessary
@@ -403,18 +301,12 @@ SUBROUTINE OceanWave3DT0Setup
      END Do
   END IF
 
+
 2010 FORMAT(/, '*********************************************************',/,&
        '***                                                   ***',/,&
-       '*** OceanWave3D - a coastal engineering tool for      ***',/,&
-       '*** simulation of nonlinear free surface waves.       ***',/,&
-       '*** Copyright (C) 2009 Allan P. Engsig-Karup.         ***',/,&
+       '*** OceanWave3D solver for nonlinear waves.           ***',/,&
        '***                                                   ***',/,&
-       '*** This OceanWave3D program comes with ABSOLUTELY NO ***',/,&
-       '*** WARRANTY. This is free software, and you are      ***',/,&
-       '*** welcome to redistribute it under the conditions   ***',/,&
-       '*** of the GNU General Public License version 3.      ***',/,&
-       '***                                                   ***',/,&
-       '***     Software library developed in 2009 by         ***',/,&
+       '***     Software library extension written in 2009 by ***',/,&
        '***                                                   ***',/,&
        '***     Allan P. Engsig-Karup                         ***',/,&
        '***     Guillaume Ducrozet                            ***',/,&
@@ -422,6 +314,9 @@ SUBROUTINE OceanWave3DT0Setup
        '*** At DTU Informatics                                ***',/,&
        '***    Scientific Computing Section                   ***',/,&
        '***    Technical University of Denmark                ***',/,&
+       '***                                                   ***',/,&
+       '*** Based on the OceanWave3D solver for               ***',/,&
+       '*** for nonlinear waves.                              ***',/,&
        '***                                                   ***',/,&
        '***     Original software library written in 2007 by  ***',/,&
        '***                                                   ***',/,&

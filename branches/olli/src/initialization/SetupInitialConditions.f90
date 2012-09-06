@@ -31,9 +31,13 @@ SUBROUTINE SetupInitialConditions
         ELSEIF(PressureTermOnOff==2)THEN
            print *, 'Initial condition determined by PressureTermOnOff is a 3D moving Gaussian hump'
         END IF
-        Call funInitialFreeSurfaceElevation(g,FineGrid%Nx+2*GhostGridX,&
+print*,'asdfasdfasdfasdfasdfasdf'
+print*,FineGrid%Nx,FineGrid%Ny
+
+Call funInitialFreeSurfaceElevation(g,FineGrid%Nx+2*GhostGridX,&
              FineGrid%Ny+2*GhostGridY,FineGrid,WaveField)
      END IF
+
      IF (Lz <= 0)THEN
         ! Read in the bottom contours from a file.
         OPEN(unit=fileip(4),file=fname_bottom,status='old')
@@ -106,11 +110,13 @@ SUBROUTINE SetupInitialConditions
              (Nx+2*GhostGridX)*(Ny+2*GhostGridY))
      ENDIF
      !GD: test in a curvilinear rotated domain...
+
      IF (curvilinearONOFF == 1) THEN
         !Rotate the physical grid with a given angle...
         tmp2D = FineGrid%x
         FineGrid%x = tmp2D*COS(20*PI/180)-FineGrid%y*SIN(20*PI/180)
         FineGrid%y = tmp2D*SIN(20*PI/180)+FineGrid%y*COS(20*PI/180)
+
      ENDIF
      !
      !
