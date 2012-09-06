@@ -19,6 +19,28 @@ ALLOCATE(tmp2D(Nx,Ny))
 ! FIXME: add this inside the wavefield_FS TYPE ?
 ALLOCATE(rhsE(Nx,Ny), rhsP(Nx,Ny))
 rhsE=zero; rhsP=zero
+
+!------------------------------------------------------------------------------
+! Ship variables:
+!------------------------------------------------------------------------------
+ALLOCATE(wgt_ship(Nx,Ny))
+!ALLOCATE(nx_ship(Nx,Ny))
+
+!------------------------------------------------------------------------------
+! WENO variables:
+!------------------------------------------------------------------------------
+ALLOCATE(FEx(Nx,Ny))
+ALLOCATE(FPx(Nx,Ny))
+ALLOCATE(FEy(Nx,Ny))
+ALLOCATE(FPy(Nx,Ny))
+ALLOCATE(aw(Nx,Ny))
+ALLOCATE(bw(Nx,Ny))
+ALLOCATE(cw(Nx,Ny))
+ALLOCATE(uL(Nx,Ny))
+ALLOCATE(uR(Nx,Ny))
+ALLOCATE(vL(Nx,Ny))
+ALLOCATE(vR(Nx,Ny))
+
 ! Unknown (semi-potential) PHI's inside computational domain of Transformed Laplace problem
 ALLOCATE(PHI(Nz,Nx,Ny), RHS(Nz,Nx,Ny), PHI2(Nz,Nx,Ny), LASTPHI(Nz,Nx,Ny,2))
 PHI  = zero; RHS = zero; LASTPHI = zero

@@ -9,12 +9,13 @@ USE HSL_LU
 IMPLICIT NONE 
 
 ! I/O File handle arrays
-INTEGER           :: FILEIP(4), FILEOP(15)
+INTEGER           :: FILEIP(4), FILEOP(14)
 CHARACTER(len=2) fnt(10)
 CHARACTER(LEN=40) :: filenameINPUT, filename, fname_bottom
 INTEGER           :: STAT
 
 ! DUMMY VARIABLES
+!INTEGER :: i,j,k  !*hbb not a good idea to make these global!  
 REAL(KIND=long) :: dum
 
 CHARACTER(len=72) :: HEAD(4)
@@ -46,7 +47,7 @@ REAL(KIND=long), DIMENSION(:),   ALLOCATABLE :: ee, tm
 INTEGER :: Nsteps, tstep, timemethod, RKSTAGES, extrapolationONOFF
 REAL(KIND=long) :: dt, time, time0, CFL, c, dxmin, dymin, dx, dy, dsigmamin
 
-INTEGER :: solver, Precond, MGCoarseningStrategy, MGmaxgrids, GMRESmaxiterations
+INTEGER :: Precond, MGCoarseningStrategy, MGmaxgrids, GMRESmaxiterations
 
 REAL(KIND=long), DIMENSION(:,:,:), ALLOCATABLE :: PHIfine, PHIcoarse
 
@@ -90,10 +91,6 @@ CHARACTER(len=1) :: relaxXorY
 REAL(KIND=long)  :: relaxTransientTime, relaxDegrees
 TYPE (RelaxZone), DIMENSION(:), ALLOCATABLE :: RelaxZones ! Array with relaxation zone definitions
 
-! Pressure damping ZONES
-INTEGER          :: PDampingONOFF, NDampZones
-TYPE (PDampZone), DIMENSION(:), ALLOCATABLE :: PDampZones ! Array with Pressure damping zone definitions
-
 ! Output Data Parameters
 INTEGER :: StoreDataONOFF, formattype, iKinematics, nOutFiles
 TYPE (OutputParam), DIMENSION(:), ALLOCATABLE :: Output
@@ -110,5 +107,23 @@ REAL(KIND=long) :: swenseTransientTime
 
 ! Curvilinear
 INTEGER :: curvilinearONOFF
+
+!-------------------------------------------------------------------------------
+! Moving ship / pressure distribution parameters / surface integration:
+!-------------------------------------------------------------------------------
+REAL(KIND=long)     :: Uship,Lship,Bship,Dship,x0ship,Fnship
+CHARACTER(len=72)   :: shipfile 
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: wgt_ship
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: nx_ship
+REAL(KIND=long), dimension(:,:), ALLOCATABLE :: dzdxi1,dzdxi2
+
+!-------------------------------------------------------------------------------
+! WENO: 
+!-------------------------------------------------------------------------------
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: FEx,FPx 
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: FEy,FPy
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: aw,bw,cw
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: uL,uR
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: vL,vR
 
 END MODULE GlobalVariables

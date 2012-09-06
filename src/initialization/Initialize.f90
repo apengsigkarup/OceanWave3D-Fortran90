@@ -16,6 +16,7 @@ IF (LEN_TRIM(filenameINPUT)==0) THEN
    ! Set standard input filename when not specified by user
    filenameINPUT = 'OceanWave3D.inp'
 ENDIF
+print*,filenameINPUT
 OPEN (UNIT=FILEIP(1),FILE=filenameINPUT,STATUS='UNKNOWN',ERR=100,IOSTAT=STAT)
 !
 ! Fileip(3) is associated with the initial condition file (if it exists) "OceanWave3D.init". 
@@ -25,7 +26,7 @@ Fileip(4)=4
 !
 ! OUTPUT
 !FILEOP(1) = 8  ! LOG.txt
-FILEOP(1:15) = (/ (i,i=8,22) /)
+FILEOP(1:14) = (/ (i,i=8,21) /)
 ! First file is the log file.
 OPEN (UNIT=FILEOP(1),FILE='LOG.txt',STATUS='UNKNOWN')
 ! Files 2:11 are possible kinematics output files opened and written to in 
@@ -37,9 +38,8 @@ fnt(1:10) = (/ '01','02','03','04','05','06','07','08','09','10' /)
 !         called by the main line.
 ! File 14 is the file 'roller.dat' written to by subroutine detect_breaking
 !         called by the main line.
-! File 15 is the file 'Pdamp.chk' written to by subroutine PreprocessPDampingZones 
-!         called by the main line. 
- 
+
+
 RETURN
 
 ! ERROR HANDLING
