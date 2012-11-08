@@ -10,7 +10,7 @@ SUBROUTINE ReadInputFileParameters
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
-  INTEGER ios, i, nxIC, nyIC
+    INTEGER ios, i, nxIC, nyIC, iflag_phi
   REAL(kind=long) :: xtankIC, ytankIC, t0IC
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
@@ -183,9 +183,14 @@ SUBROUTINE ReadInputFileParameters
 
   READ (FILEIP(1),*) g
 
-  READ (FILEIP(1),*) solver, Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
+  READ (FILEIP(1),*,err=141) solver, Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
        nu(1), nu(2), MGmaxgrids
-  SELECT CASE (solver)
+  GO TO 142
+141 solver=1
+  BACKSPACE(fileip(1))
+  READ (FILEIP(1),*,err=141) Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
+       nu(1), nu(2), MGmaxgrids
+142  SELECT CASE (solver)
       CASE(0)
          WRITE(*,*) '   Defect correction (DC) method is chosen.'
       CASE DEFAULT
@@ -329,13 +334,57 @@ SUBROUTINE ReadInputFileParameters
   IF (relaxONOFF==1) THEN
      WRITE(*,*) '    Total relaxation zones defined: ',relaxNo
      ALLOCATE( RelaxZones(relaxNo) )
+     ! 
      DO i=1,relaxNo
-        READ (FILEIP(1),*) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
+        READ (FILEIP(1),*, err=43) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
              RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
-             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees
-
-     ENDDO
+             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees !, RelaxZones(i)%PhiOnOff
+        RelaxZones(i)%PhiOnOff=1
+        !        print *, i,'yes',RelaxZones(i)%BBox(1),RelaxZones(i)%PhiOnOff
+     END DO
+     go to 44
+     !hbb
+     !hbb  I struggled here to get this read to be backward compatible and finally gave up... 
+     !hbb  The feature is implemented, but turned off for now.  Pressure damping on the 
+     !hbb  velocity is a much better solution.  
+     !hbb
+     !443  format(4F10.2,I2,F10.2,A1,I2,A1,F10.2,I2)
+     !443     format(4F16.6,I8,F16.6,A1,I8,A1,F16.6,I8)
+43   print *, 'Error reading the relaxation zone lines.' !  Note the new format that requires '
+     ! print *, 'a value for PhiOnOff=0 (off) or 1 (on) at the end of each zone defn. line.'
+     stop
+44   continue
   ENDIF
+  !
+  ! Pressure damping zones
+  !
+  READ (FILEIP(1),*,err=64) PDampingONOFF,NDampZones 
+  IF (NDampZones>1)THEN
+     print *, 'Only one pressure damping zone is currently supported.'
+     stop
+  END IF
+  IF (PDampingOnOff /=0) then
+     ALLOCATE(PDampZones(NDampZones))
+     Do i=1,NDampZones
+        READ (FILEIP(1),*,err=63) PDampZones(i)%BBox(1), PDampZones(i)%BBox(2),       &
+             PDampZones(i)%BBox(3), PDampZones(i)%BBox(4), PDampZones(i)%g0Phi,         &
+             PDampZones(i)%g0Eta, PDampZones(i)%type  
+     END Do
+     print *, ' '
+     print *, 'Found ', NDampZones, ' pressure damping zones.'
+     go to 65
+  END IF
+  go to 65
+652 format(2I8)
+653 format(7F16.6,I8)
+63 print *, 'ReadInputFileParameters:  Error reading pressure damping zones line.'
+  stop
+64 continue
+  print *, ' '
+  print *, 'No Pressure damping line found, the feature is off.'
+  backspace(FILEIP(1))
+65 continue
+  print *, ' '
 
   ! SWENSE
   READ(FILEIP(1),*) swenseONOFF, swenseTransientTime, swenseDir, West_refl, East_refl, North_refl, South_refl
@@ -374,7 +423,7 @@ SUBROUTINE ReadInputFileParameters
   ! REUSABLE OUTPUT FORMATS
 900 FORMAT (A,I5,A,I5,A,I5,A)
 901 FORMAT (A,I2,A,I2,A,I2,A)
-902 FORMAT (A,I3)
+902 FORMAT (A,I8)
 903 FORMAT (A,E9.4)
 
 END SUBROUTINE ReadInputFileParameters

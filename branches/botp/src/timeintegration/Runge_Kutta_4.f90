@@ -2,7 +2,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   USE Precision
   USE Constants
   USE DataTypes
-  USE GlobalVariables, ONLY: FineGrid, time, g, dt, GhostGridZ, PHI, gamma, alpha, beta, &
+  USE GlobalVariables, ONLY: FineGrid, time, time0, g, dt, GhostGridZ, PHI, gamma, alpha, beta, &
        RHS, relaxONOFF, LASTPHI, tstep, extrapolationONOFF, LinearONOFF, filteringONOFF, &
        filterALPHA, filterNP, filtercoefficients, GhostGridX, GhostGridY,                &
        swenseONOFF, swenseDir, SFsol, Wavefield , curvilinearONOFF, Wavefield_tmp,       &
@@ -42,7 +42,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      ENDIF
   ENDIF
   !
-  ! Get a possible applied free-surface pressure
+  ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
   CALL funPressureTerm(time,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield)
@@ -65,7 +65,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      ! CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
+     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
   ENDIF
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
@@ -116,7 +116,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
   ENDIF
   !
-  ! Get a possible applied free-surface pressure
+  ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
   CALL funPressureTerm(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield_tmp)
@@ -139,7 +139,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      !     CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
+     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
   ENDIF
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
   IF (LinearONOFF==1) THEN
@@ -180,7 +180,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      ENDIF
   ENDIF
   !
-  ! Get a possible applied free-surface pressure
+  ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
   CALL funPressureTerm(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield_tmp)
@@ -200,7 +200,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      !     CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
+     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
   ENDIF
 
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
@@ -256,7 +256,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
   ENDIF
   !
-  ! Get a possible applied free-surface pressure
+  ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
   CALL funPressureTerm(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield_tmp)
@@ -281,7 +281,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      !     CALL RelaxationModule(Wavefield%E,Wavefield%P,RKtime)
-     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime)
+     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time0)
   ENDIF
   ! Filtering
   IF (filteringONOFF>0) THEN

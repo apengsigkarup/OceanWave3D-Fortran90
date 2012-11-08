@@ -9,5 +9,6 @@ SOURCES += $(LDIR)/Initialize.f90
 SOURCES += $(LDIR)/InitializeVariables.f90
 SOURCES += $(LDIR)/PreProcessDiffStencils.f90
 SOURCES += $(LDIR)/PreprocessRelaxationZones.f90
+SOURCES += $(LDIR)/PreprocessPDampingZones.f90
 SOURCES += $(LDIR)/SetupCompDomain.f90
 SOURCES += $(LDIR)/SetupInitialConditions.f90

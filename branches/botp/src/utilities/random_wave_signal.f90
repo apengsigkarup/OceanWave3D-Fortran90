@@ -1,5 +1,5 @@
 SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
-     grav, inc_wave_file, kh_max, seed, seed2, eta, Vs, etat0, Vst0, nf)
+     grav, inc_wave_file, kh_max, seed, seed2, eta, Vs, etat0, Vst0, nf, time0)
   !-----------------------------------------------------------------------
   !
   ! Generate a psuedo-random long crested wave over N1 time steps at
@@ -22,7 +22,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
   CHARACTER(len=30) inc_wave_file, header
   integer, parameter :: long=selected_real_kind(12,99)
   integer i_spec, seed, seed2, n1, n2, j0, nf
-  real(kind=long) :: Tp, Hs, dx, dt, depth
+  real(kind=long) :: Tp, Hs, dx, dt, depth, time0
   real(kind=long) :: Vs(n2,n1,*), eta(n2,n1), Vst0(nf,*), etat0(nf)
 
   ! Local variables
@@ -70,14 +70,13 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      fn = zero
      IF(i_spec==2)THEN
         open(21,file=inc_wave_file,status='old')
-        READ(21,'(A)')header
+        READ(21,'(A)',err=15)header
         READ(21,*)dt_inc
-        ns_inc=1 ! initialize the stride
         IF(ABS(dt-dt_inc)>1.e-6)THEN
-           ns_inc=NINT(dt/dt_inc)
-           dt=real(ns_inc,long)*dt_inc
-           WRITE(6,12)ns_inc,dt
-12         FORMAT('Using 1 out of every ',i4,' time steps, with dt=',e10.3,//)
+           print *, 'random_wave_signal.f90: The .inp and .iwf time steps do not agree.'
+           print *, header
+           print *, dt,dt_inc
+           stop
         END IF
         do i=1,n1
            READ(21,*,end=13)eta0(i)
@@ -91,6 +90,9 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
         do i=ndat+1,n1
            eta0(i)=zero
         end do
+        go to 14
+15      print *, 'random_wave_signal.f90: No header line in the .iwf'
+        stop
 14      CLOSE(21)
         CALL drealft (eta0, n1, 1)
         !
@@ -238,7 +240,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      phifact=grav/omega
      !
      do i=1,n1
-        t=(i-1)*dt
+        t=time0+(i-1)*dt
         eta0(i)=amp*cos(-omega*t)
         do j=1,n2
            x=(j-j0)*dx

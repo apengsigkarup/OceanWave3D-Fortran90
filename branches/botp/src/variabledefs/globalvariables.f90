@@ -10,7 +10,7 @@ USE OFmodule
 IMPLICIT NONE 
 
 ! I/O File handle arrays
-INTEGER           :: FILEIP(4), FILEOP(14)
+INTEGER           :: FILEIP(4), FILEOP(15)
 CHARACTER(len=2) fnt(10)
 CHARACTER(LEN=40) :: filenameINPUT, filename, fname_bottom
 INTEGER           :: STAT
@@ -90,6 +90,10 @@ INTEGER          :: relaxONOFF, relaxNo
 CHARACTER(len=1) :: relaxXorY
 REAL(KIND=long)  :: relaxTransientTime, relaxDegrees
 TYPE (RelaxZone), DIMENSION(:), ALLOCATABLE :: RelaxZones ! Array with relaxation zone definitions
+
+! Pressure damping ZONES
+INTEGER          :: PDampingONOFF, NDampZones
+TYPE (PDampZone), DIMENSION(:), ALLOCATABLE :: PDampZones ! Array with Pressure damping zone definitions
 
 ! Output Data Parameters
 INTEGER :: StoreDataONOFF, formattype, iKinematics, nOutFiles

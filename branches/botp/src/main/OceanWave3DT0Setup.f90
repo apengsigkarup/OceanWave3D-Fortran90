@@ -36,6 +36,22 @@ SUBROUTINE OceanWave3DT0Setup
      CALL FilterInit(filtercoefficients,filtercoefficients2)
   ENDIF
 
+  !
+  ! Allocate space for the solution variables and wavefield.
+  !
+  print*,'do initialization...'
+  CALL InitializeVariables
+  !
+  ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
+  time=zero
+  !
+  ! Set up the initial conditions and the bathymetry data
+  !
+  print*,'setup ICs...'
+  CALL SetupInitialConditions
+  time=time0
+  print*,'done with ICs'
+  !
   IF (relaxONOFF>0) THEN
      CALL PreprocessRelaxationZones
      PRINT*,'  Relaxation zones have been setup.'
@@ -146,25 +162,18 @@ SUBROUTINE OceanWave3DT0Setup
         CALL random_wave_signal(RandomWave%ispec, n_fft, n_wavem, j_wavem-1, RandomWave%dx, dt,   &
              RandomWave%Tp, RandomWave%Hs, RandomWave%h0, g, RandomWave%inc_wave_file,          &
              RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%eta,              &
-             RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf)
+             RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf, time0)
      ENDIF
   ENDIF
   !
-  ! Allocate space for the solution variables and wavefield.
+  ! Set up the Pressure Damping Zones if any.
   !
-  print*,'do initialization...'
-  CALL InitializeVariables
-  !
-  ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
-  time=zero
-  !
-  ! Set up the initial conditions and the bathymetry data
-  !
-  print*,'setup ICs...'
-  CALL SetupInitialConditions
-  time=time0
-  print*,'done with ICs'
-  !
+  If (NDampZones /=0) THEN
+     Call PreprocessPDampingZones
+     print *, ' '
+     print *, 'Pressure damping zones are set up'
+     print *, ' '
+  END If
   IF (.FALSE.) THEN
      !
      ! Test code to validate buildlinearsystem subroutines.
@@ -217,7 +226,7 @@ SUBROUTINE OceanWave3DT0Setup
   !
   ! DETERMINE HIGH-ORDER FINITE DIFFERENCE STENCILS
   ! Now, determine fullrank stencils for the x- , y- and z- directions;
-print*,'Determine finite difference stencils for full system...'
+  print*,'Determine finite difference stencils for the system matrix...'
   IF (curvilinearONOFF==0) THEN
      CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
      ! GD: Determine the cross derivatives coefficients
@@ -250,10 +259,12 @@ print*,'Determine finite difference stencils for full system...'
      CALL ConstructTableCrossDerivatives_Curvilinear(FineGrid, FineGrid%CurvilinearStuff%DiffStencils, kappa, &
           GhostGridX, GhostGridY, GhostGridZ)
   END IF
-print*,'...done!'
+  print*,'...done!'
 !
-  ! GD: Test to define correct initial dpatail derivaties...
+  ! GD: Test to define correct initial spatail derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+
+
 
   !************************************************************************
   !
@@ -307,7 +318,7 @@ print*,'...done!'
     ELSE
         print*,'Linear coefficient matrix A stored in A.bin.'		
     END IF
-print*,'curvilinearONOFF=',curvilinearONOFF
+    print*,'curvilinearONOFF=',curvilinearONOFF
 
     ! save the vertical derivative for linear stability analysis...
     ee = zero
