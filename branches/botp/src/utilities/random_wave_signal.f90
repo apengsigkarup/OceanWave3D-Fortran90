@@ -102,6 +102,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      ELSE
         CALL build_coeff(eta0, n1, Hs, Tp, dt, seed, seed2, i_spec)
      END IF
+
      ! We truncate the spectrum at k_max.
      n_cut=nint(sqrt(grav*kh_max/depth*tanh(kh_max))/domega)+1
      Print *, 'Truncating the spectrum at T=',twopi/((n_cut-1)*domega), &

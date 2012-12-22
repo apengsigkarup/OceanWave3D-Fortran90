@@ -3,7 +3,7 @@ USE Precision
 USE Constants
 USE DataTypes
 USE GlobalVariables, ONLY: GhostGridX, GhostGridY, GhostGridZ, &
-	swenseONOFF, Wavefield ! FIXME: Wavefield is a problem here?? due to Multigrid algorithm
+	swenseONOFF, Wavefield, Uneumann ! FIXME: Wavefield is a problem here?? due to Multigrid algorithm
 IMPLICIT NONE
 TYPE (Level_def), INTENT(IN) :: GridStruct
 INTEGER::Gidx, Gidx2, Nx, Ny, Nz, i, j, k, alpha, beta, gamma
@@ -66,32 +66,6 @@ IF (Nx==1) THEN
 			   GridStruct%hy(i,j)*dpdy(Gidx+GhostGridZ)
             ! GD: SWENSE addition comes here
             IF (swenseONOFF/=0) THEN
-				output(Gidx) = output(Gidx) + (Wavefield%Pz_I_bp(Gidx3)+GridStruct%hy(i,j)*Wavefield%Py_I_bp(Gidx3))
-            	Gidx3 = Gidx3+1
-            ENDIF
-		ELSE
-			! INTERIOR POINTS
-			output(Gidx) = ddpdyy(Gidx) + GridStruct%dsigmanew(k,i,j,3)*dpds(Gidx) + &
-			   two*( GridStruct%dsigmanew(k,i,j,4)*ddpdsdy(Gidx) ) + &
-			   (GridStruct%dsigmanew(k,i,j,4)**2+GridStruct%dsigmanew(k,i,j,5)**2)*ddpdss(Gidx)
-		END IF
-	END DO
-  END DO
-ELSE IF (Ny==1) THEN
-  j=1
-  DO i = 1+GhostGridX, Nx-GhostGridX
-	DO k = 1, Nz
-!		Gidx = Gidx + 1
-		Gidx  = k + (i-1)*Nz + (j-1)*Nx*Nz
-        IF (k==Nz) THEN
-			! FREE SURFACE
-			output(Gidx) = PHI(Gidx)
-		ELSE IF (k==1) THEN
-			! BOTTOM, DIRECT KIN. BOTTOM CONDITION
-			output(Gidx) = GridStruct%hx(i,j)*dpdx(Gidx+GhostGridZ) + (GridStruct%dsigmanew(k+GhostGridZ,i,j,5) + &
-			   GridStruct%hx(i,j)*GridStruct%dsigmanew(k+GhostGridZ,i,j,2) )*dpds(Gidx+GhostGridZ)
-            ! GD: SWENSE addition comes here
-            IF (swenseONOFF/=0) THEN
 				output(Gidx) = output(Gidx) + (Wavefield%Pz_I_bp(Gidx3)+GridStruct%hx(i,j)*Wavefield%Px_I_bp(Gidx3))
             	Gidx3 = Gidx3+1
             ENDIF
@@ -139,6 +113,7 @@ ENDIF
   ! FIXME: Assumption here is that the plane is aligned with the x- and y-axes. Extend to
   !        general curvilinear coordinates.
   ! West  boundary
+  !CALL waveGenerationFromPaddleSignal
   IF (GhostGridX==1) THEN
     i = 1
     DO j = 1+GhostGridY, Ny-GhostGridY
@@ -147,7 +122,7 @@ ENDIF
       !But keep this loop from 1 to Nz for SWENSE (use of Gidx3...)
 		Gidx  = k + (i-1)*Nz + (j-1)*Nx*Nz
 		Gidx2  = k + (i-1+1)*Nz + (j-1)*Nx*Nz
-		output(Gidx) = dpdx(Gidx2)
+		output(Gidx) = dpdx(Gidx2)! - Uneumann(k,j)
         ! GD: SWENSE addition comes here
         IF (swenseONOFF/=0) THEN
             output(Gidx) = output(Gidx) + Wavefield%Px_I_bp(Gidx3)
@@ -163,7 +138,7 @@ ENDIF
       !But keep this loop from 1 to Nz for SWENSE (use of Gidx3...)
 		Gidx = k + (i-1)*Nz + (j-1)*Nx*Nz
 		Gidx2 = k + (i-1-1)*Nz + (j-1)*Nx*Nz
-		output(Gidx) = dpdx(Gidx2)
+		output(Gidx) = dpdx(Gidx2) !- Uneumann(k,j)
         ! GD: SWENSE addition comes here
         IF (swenseONOFF/=0) THEN
             output(Gidx) = output(Gidx) + Wavefield%Px_I_bp(Gidx3)
@@ -212,7 +187,7 @@ ENDIF
     DO k = 1, Nz
         ! FIXME: change to form below: Gidx = Gidx + 1
 		Gidx = k + (i-1)*Nz + (j-1)*Nx*Nz
-		output(Gidx)  = PHI(Gidx)
+		output(Gidx)  = PHI(Gidx) 
     END DO
     i = Nx; j = 1;
     DO k = 1, Nz
@@ -222,7 +197,7 @@ ENDIF
     i = 1; j = Ny;
     DO k = 1, Nz
 		Gidx = k + (i-1)*Nz + (j-1)*Nx*Nz
-		output(Gidx)  = PHI(Gidx)
+		output(Gidx)  = PHI(Gidx) 
 	END DO
 	i = Nx; j = Ny;
 	DO k = 1, Nz

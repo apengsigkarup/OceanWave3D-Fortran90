@@ -12,6 +12,7 @@ PROGRAM OceanWave3D
   !
   ! Initial set up work:  
   ! 
+  print *, '!!!!!!!!!!!! Branch - botp !!!!!!!!!!!!!!!!!!!'
   CALL OceanWave3DT0Setup
   ! Initialise the timer 
   CALL SYSTEM_CLOCK(CPUinitial, count_rate, count_max)

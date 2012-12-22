@@ -18,4 +18,5 @@ DO i = 1+GhostGridX, Nx-GhostGridX
     Stencil = DiffStencils%StencilY(j-GhostGridY,1:rank,1)
     var(i,j) = (S(i,j-GhostGridY)-DOT_PRODUCT(Stencil(1:rank-1),var(i,j-rank+1:j-1) )) / Stencil(rank)
 END DO
+
 END SUBROUTINE UpdateGhostLayerY

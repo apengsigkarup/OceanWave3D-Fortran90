@@ -12,3 +12,4 @@ SOURCES += $(LDIR)/PreprocessRelaxationZones.f90
 SOURCES += $(LDIR)/PreprocessPDampingZones.f90
 SOURCES += $(LDIR)/SetupCompDomain.f90
 SOURCES += $(LDIR)/SetupInitialConditions.f90
+SOURCES += $(LDIR)/setupwavegenfrompaddle.f90

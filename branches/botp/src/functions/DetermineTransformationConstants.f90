@@ -26,6 +26,10 @@ IF (Ny>1) THEN
     Ey  = Wavefield%Ey
     Eyy = Wavefield%Eyy
 ENDIF
+!write (*,*) 'Eta'
+!write (*,*) E(1,:)
+!write (*,*) 'Eta_y'
+!write (*,*) Ey(1,:)
 ! GD: SWENSE addition for nonlinear
 ! FIXME: during transition period we do not satisfy Ex+Ex_I=0 nor Ey+Ey_I=0...
 ! The incident terms used here are without time ramp...

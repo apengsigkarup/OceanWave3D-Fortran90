@@ -8,10 +8,10 @@ INTEGER FUNCTION fact(n)
       INTEGER p,i
       p = 1   
       do i = 1, n
-	p = p * i
+	    p = p * i
       end do
       fact = p
-      END FUNCTION fact
+END FUNCTION fact
 
 ! Returns the inverse of a matrix calculated by finding the LU
 ! decomposition.  Depends on LAPACK.

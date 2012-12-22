@@ -264,6 +264,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! GD: Test to define correct initial spatail derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
+  ! Wave generation form paddle signal
 
 
   !************************************************************************
@@ -402,11 +403,15 @@ SUBROUTINE OceanWave3DT0Setup
         END IF
      END Do
   END IF
+
+  ! BOTP
+  !
  ALLOCATE( &
   UOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   WOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
   ALLOCATE(dOF(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
+  !CALL setupwavegenfrompaddle
 
 2010 FORMAT(/, '*********************************************************',/,&
        '***                                                   ***',/,&

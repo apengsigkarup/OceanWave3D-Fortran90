@@ -108,6 +108,12 @@ ELSE
          U=zero
       END IF
       !
+      !Do k=1,Nz
+        !Do j=1,Ny
+            !write(*,*) U(k,1,j)
+            !END Do
+    !END Do
+      
       WRITE (fileop(io+1)) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
       ! 
       IF (FineGrid%Ny>1) THEN

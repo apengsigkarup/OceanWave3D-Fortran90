@@ -55,7 +55,7 @@
               Do i=1,2*alpha + 1 
                     etaOF = etaOF + xStencil(i) * WaveField%E(NN(1)-alpha-1+i,1)
               END DO
-        
+      print *, "Surface Elevation in OCW = ", etaOF  
         
       ELSE ! Surface elevation defined in 2D
 

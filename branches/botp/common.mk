@@ -19,19 +19,11 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran
 #FC = gfortran44
 #FC = gfortran-4.4
-FC = gf90
+#FC = gf89
 
-#USER = botp
+USER = botp
 
 # Compiler-dependent section
-ifeq ($(USER),botp)
-  # botp kubuntu, 10.04-64bit
-  FC       = gfortran-4.4
-  LIBDIRS  = -L$(HOME)/lib/ 
-  LINLIB   = -lharwell -lskit -llapack_LINUX_Gfortran4-4-3 -lblas 
-  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
-endif
 
 ifeq ($(FC),gfortran44)
   # gbar linux machines
@@ -91,11 +83,11 @@ endif
 
 ifeq ($(USER),botp)
   # botp kubuntu, 10.04-64bit
-  FC       = gfortran-4.4
-  LIBDIRS  = -L$(HOME)/lib/ 
-  LINLIB   = -lharwell -lskit -llapack_LINUX_Gfortran4-4-3 -lblas 
-  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+  FC       = gfortran-4.6
+  LIBDIRS  = -L$(HOME)/OceanWave3D/branches/botp/ThirdParty/lib/ 
+  LINLIB   = -lharwell_gfortran-4.6 -lskit_gfortran-4.6 -llapack_gfortran-4.6 -lblas 
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
 endif
 
 

@@ -37,7 +37,7 @@
 
       ! Local variables
       !
-      INTEGER :: i,j,k,m,n,b,fact
+      INTEGER :: i,j,k,m,n,b
       REAL(KIND=dp) :: factor
 
       !
@@ -126,7 +126,7 @@
 
       ! Local variables
       !
-      INTEGER :: i,j,m,n,fact,count1,count2
+      INTEGER :: i,j,m,n,count1,count2
       REAL(KIND=dp) :: factor
 
       ! Scaling factor
@@ -197,7 +197,7 @@
 
       ! Local variables
       !
-      INTEGER :: i,m,fact,count1, count2
+      INTEGER :: i,m,count1, count2
       REAL(KIND=dp) :: factor
 
       ! Scaling factor

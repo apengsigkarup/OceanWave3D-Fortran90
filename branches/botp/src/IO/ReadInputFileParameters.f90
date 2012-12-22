@@ -240,8 +240,7 @@ SUBROUTINE ReadInputFileParameters
      print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.bin".'
      print *, ' '
      Do i=1,nOutFiles
-        READ (FILEIP(1),*)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
-             Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+        READ (FILEIP(1),*)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
         !
         ! Check that the requested output ranges exist on this grid.
         !
