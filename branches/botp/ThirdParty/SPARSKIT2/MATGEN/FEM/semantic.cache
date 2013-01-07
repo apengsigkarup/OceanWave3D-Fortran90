@@ -1,0 +1,16 @@
+;; Object FEM/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "FEM/"
+  :tables (list 
+   (semanticdb-table "makefile"
+    :major-mode 'makefile-mode
+    :tags '(("FFLAGS" variable nil nil [1 11]) ("F77" variable (:default-value ("f77")) nil [11 21]) ("FILES" variable (:default-value ("convdif.o" "functns2.o")) nil [54 83]) ("fem.ex" function (:arguments ("$(FILES)" "../../UNSUPP/PLOTS/psgrd.o" "../../libskit32.a")) nil [84 232]) ("clean" function nil nil [232 269]) ("../../libskit.a" function nil nil [269 331]) ("../../UNSUPP/PLOTS/psgrd.o" function (:arguments ("../../UNSUPP/PLOTS/psgrd.f")) nil [331 441]))
+    :file "makefile"
+    :pointmax 441
+    :unmatched-syntax 'nil
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre3"
+  :semanticdb-version "2.0pre3"
+  )

@@ -1,0 +1,57 @@
+
+                         ----------
+                         | UNSUPP |
+                         ---------- 
+
+ This is meant to contain any  subroutine that is not part 
+ of SPARSKIT proper (for example preconditioners, iterative 
+ solvers, plotting and other tools,...) but which are
+ nevertheless provided with the understanding that they may
+ not be the best codes around or that there is further work
+ needed on them.. 
+
+ CONTRIBUTIONS REQUESTED. 
+ ----------------------- 
+		             ----------------- 
+		             Current contents:
+			     -----------------
+SUBDIRECTORY BLAS1
+------------------
+
+* blas1.f : includes subroutines:
+            dcopy : copies a vector, x, to a vector, y.
+            ddot  : dot product of two vectors.
+            csscal: scales a complex vector by a real constant.
+            cswap : interchanges two vectors.
+            csrot : applies a plane rotation.
+            cscal : scales a vector by a constant.
+            ccopy : copies a vector, x, to a vector, y.
+            drotg : construct givens plane rotation.
+            drot  : applies a plane rotation.
+            dswap : interchanges two vectors.
+            dscal : scales a vector by a constant.
+            daxpy : constant times a vector plus a vector.
+            
+SUBDIRECTORY PLOTS
+------------------ 
+
+* psgrd.f contains subroutine "psgrid" which plots a symmetric graph.
+
+* texplt1.f contains subroutine "texplt" allows several matrices
+  in the same picture by calling texplt several times and exploiting job and
+  different shifts.
+
+* texgrid1.f contains subroutine "texgrd" which generates tex commands
+  for plotting a symmetric graph associated with a mesh. Allows
+  several grids in the same picture by calling texgrd several times and
+  exploiting job and different shifts.
+
+
+ SUBDIRECTORY MATEXP   
+ -------------------
+ routines related to matrix exponentials. 
+
+
+* exppro.f    computes w=exp( t A) v   -- + a simple test program rexp.f 
+* phipro.f    computes w = phi(At)v, where phi(x)=(1-exp(x))/x;
+              Also allows to solve the P.D.E. system y'= A y + b  

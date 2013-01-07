@@ -1,0 +1,200 @@
+c-------------------------------------------------------------------------------c
+c                                                                               c
+c                         QUICK REFERENCE                                       c
+c                                                                               c
+c-------------------------------------------------------------------------------c
+c  For convenience we list here the most important subroutines                  c
+c  in the various modules of SPARSKIT. More detailed information can be         c
+c  found either in the body of the paper or in the documentation of the package.c
+c                                                                               c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                         FORMATS Module                                        c
+c===============================================================================c
+c                                                                               c
+c   CSRDNS  : converts a row-stored sparse matrix into the dense format.        c
+c   DNSCSR  : converts a dense matrix to a sparse storage format.               c
+c   COOCSR  : converts coordinate to  to csr format				c
+c   COICSR  : in-place conversion of coordinate to csr format			c
+c   CSRCOO  : converts compressed sparse row to coordinate format.		c
+c   CSRSSR  : converts compressed sparse row to symmetric sparse row format.	c
+c   SSRCSR  : converts symmetric sparse row to compressed sparse row format.	c
+c   CSRELL  : converts compressed sparse row to Ellpack format			c
+c   ELLCSR  : converts Ellpack format to compressed sparse row format.		c
+c   CSRMSR  : converts compressed sparse row format to modified sparse		c
+c             row format.							c
+c   MSRCSR  : converts modified sparse row format to compressed sparse		c
+c             row format.							c
+c   CSRCSC  : converts compressed sparse row format to compressed sparse	c
+c             column format (transposition).					c
+c   CSRDIA  : converts the compressed sparse row format into the diagonal	c
+c             format.								c	
+c   DIACSR  : converts the diagonal format into the compressed sparse row	c
+c             format.								c
+c   BSRCSR  : converts the block-row sparse format into the compressed		c
+c             sparse row format.						c
+c   CSRBSR  : converts the compressed sparse row format into the block-row	c	
+c             sparse format.							c
+c   CSRBND  : converts the compressed sparse row format into the  banded	c
+c             format (Linpack style).						c
+c   BNDCSR  : converts the banded format (Linpack style) into the compressed	c
+c             sparse row storage.						c
+c   CSRSSK  : converts the compressed sparse row format to the symmetric	c
+c             skyline format							c
+c   SSKSSR  : converts symmetric skyline format to symmetric sparse row format.	c
+c   CSRJAD  : converts the csr format into the jagged diagonal format		c
+c   JADCSR  : converts the jagged-diagonal format into the csr format		c
+c   COOELL  : converts the coordinate format into the Ellpack/Itpack format.	c
+c   CSRVBR  : converts the compressed sparse row format into the		c
+c             variable block row format.					c
+c   VBRCSR  : converts the variable block row format into the		        c
+c             compressed sparse row format.					c
+c   CSORTED : Checks if matrix in CSR format is sorted by columns.              c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                        UNARY Module						c
+c===============================================================================c
+c										c
+c   SUBMAT : extracts a submatrix from a sparse matrix.				c
+c   FILTER : filters elements from a matrix according to their magnitude.	c
+c   FILTERM: Same as above, but for the MSR format.				c
+c   TRANSP : in-place transposition routine (see also CSRCSC in formats)	c
+c   GETELM : returns a(i,j) for any (i,j)  from a CSR-stored matrix.		c
+c   COPMAT : copies a matrix into another matrix (both stored csr).		c
+c   MSRCOP : copies a matrix in MSR format into a matrix in MSR format.		c
+c   GETELM : returns a(i,j) for any (i,j) from a CSR-stored matrix.		c
+c   GETDIA : extracts a specified diagonal from a matrix.			c
+c   GETL   : extracts lower triangular part.					c
+c   GETU   : extracts upper triangular part.					c
+c   LEVELS : gets the level scheduling structure for lower triangular matrices.	c
+c   AMASK  : extracts  C = A * M 						c
+c   RPERM  : permutes the rows of a matrix (B = P A)				c
+c   CPERM  : permutes the columns of a matrix (B = A Q)				c
+c   DPERM  : permutes a matrix (B = P A Q) given two permutations P, Q		c
+c   DPERM2 : general submatrix permutation/extraction routine.			c
+c   DMPERM : symmetric permutation of row and column (B=PAP') in MSR fmt.	c
+c   DVPERM : permutes a vector (in-place).					c
+c   IVPERM : permutes an integer vector (in-place).				c
+c   RETMX  : returns the max absolute value in each row of the matrix.		c
+c   DIAPOS : returns the positions of the diagonal elements in A.		c
+c   EXTBDG : extracts the main diagonal blocks of a matrix.			c
+c   GETBWD : returns the bandwidth information on a matrix.			c
+c   BLKFND : finds the block-size of a matrix.					c
+c   BLKCHK : checks whether a given integer is the block size of A.		c
+c   INFDIA : obtains information on the diagonals of A.				c
+c   AMUBDG : computes the number of nonzero elements in each row of A*B.	c
+c   APLBDG : computes the number of nonzero elements in each row of  A+B.	c
+c   RNRMS  : computes the norms of the rows of A.				c
+c   CNRMS  : computes the norms of the columns of A.				c
+c   ROSCAL : scales the rows of a matrix by their norms.			c
+c   COSCAL : scales the columns of a matrix by their norms.			c
+c   ADDBLK : adds a matrix B into a block of A.					c
+c   GET1UP : collects the first elements of each row of the upper		c
+c            triangular portion of the matrix.					c
+c   XTROWS : extracts given rows from a matrix in CSR format.			c
+c   CSRKVSTR : Finds block row partitioning of matrix in CSR format             c
+c   CSRKVSTC : Finds block column partitioning of matrix in CSR format          c
+c   KVSTMERGE: Merges block partitionings, for conformal row/col pattern        c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                     INOUT Module						c
+c===============================================================================c
+c										c
+c   READMT  : reads matrices in the boeing/Harewell format.			c
+c   PRTMT   : prints matrices in the boeing/Harewell format.			c
+c   DUMP    : prints rows of a matrix,  in a readable format.			c
+c   PLTMT   : produces a 'pic' file for plotting a sparse matrix.		c
+c   PSPLTM  : Generates a post-script plot of the non-zero pattern of A.	c
+c   SMMS    : Write the matrx in a format used in SMMS package.			c
+c   READSM  : Reads matrices in coordinate format (as in SMMS package).		c
+c   READSK  : Reads matrices in CSR format (simplified H/B formate).		c
+c   SKIT    : Writes matrices to a file, format same as above.			c
+c   PRTUNF  : Writes matrices (in CSR format) unformatted.			c
+c   READUNF : Reads unformatted data of matrices (in CSR format).		c
+c                                                                               c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                     INFO Module                                               c
+c===============================================================================c
+c										c
+c   DINFO1 :  obtains a number of statistics on a sparse matrix.		c
+c   VBRINFO:  Print info on matrix in variable block row format                 c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                    MATGEN Module 						c
+c===============================================================================c
+c                                                                               c
+c   GEN57PT : generates 5-point and 7-point matrices.				c
+c   GEN57BL : generates block 5-point and 7-point matrices.			c
+c   GENFEA  : generates finite element matrices in assembled form.		c
+c   GENFEU  : generates finite element matrices in unassembled form.		c
+c   ASSMB1  : assembles an unassembled matrix (as produced by genfeu).		c
+c   MATRF2  : Routines for generating sparse matrices by Zlatev et al.		c
+c   DCN     : Routines for generating sparse matrices by Zlatev et al.		c
+c   ECN     : Routines for generating sparse matrices by Zlatev et al.		c
+c   MARKGEN : subroutine to produce a Markov chain matrix for a random walk.	c
+c                                                                               c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                    BLASSM Module						c
+c===============================================================================c
+c										c
+c   AMUB   :   computes      C = A*B						c
+c   APLB   :   computes      C = A+B 						c
+c   APLSB  :   computes      C = A + s B 					c
+c   APMBT  :   Computes      C = A +(-) B^T 					c
+c   APLSBT :   Computes      C = A + s * B^T 					c
+c   DIAMUA :   Computes      C = Diag * A   					c
+c   AMUDIA :   Computes      C = A* Diag  					c
+c   APLDIA :   Computes      C = A + Diag   					c
+c   APLSCA :   Computes      A:= A + s I   (s = scalar)				c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                    MATVEC Module                                              c
+c===============================================================================c
+c										c
+c   AMUX  : A times a vector. Compressed Sparse Row (CSR) format.		c
+c   ATMUX : A^T  times a vector. CSR format.					c
+c   AMUXE : A times a vector. Ellpack/Itpack (ELL) format.			c
+c   AMUXD : A times a vector. Diagonal (DIA) format.				c
+c   AMUXJ : A times a vector. Jagged Diagonal (JAD) format.			c
+c   VBRMV : Sparse matrix-full vector product, in VBR format                    c
+c										c
+c   LSOL  : Unit lower triangular system solution. Compressed Sparse Row 	c
+c           (CSR) format.							c
+c   LDSOL : Lower triangular system solution. Modified Sparse Row (MSR) format.	c
+c   LSOL  : Unit lower triangular system solution. Compressed Sparse Column	c
+c           (CSC) format.							c
+c   LDSOLC: Lower triangular system solution. Modif. Sparse Column (MSC) format c
+c   LDSOLL: Lower triangular system solution with level scheduling. MSR format.	c
+c   USOL  : Unit upper triangular system solution. Compressed Sparse Row 	c
+c           (CSR) format.							c
+c   UDSOL : Upper triangular system solution. Modified Sparse Row (MSR) format.	c
+c   USOLC : Unit upper triangular system solution. Compressed Sparse 		c
+c           Column (CSC) format.						c
+c   UDSOLC: Upper triangular system solution. Modif. Sparse Column (MSC) format c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                   ORDERINGS Module						c
+c===============================================================================c
+c										c
+c   LEVSET : The standard Cuthill-McKee ordering algorithm.			c
+c   COLOR  : A greedy algorithm for multicoloring ordering.			c
+c   CCN    : Strongly connected components.                                     c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+c                    ITSOL Module						c
+c===============================================================================c
+c										c 
+c   ILUT    : ILUT(k) preconditioned GMRES mini package.			c
+c   ITERS   : Nine Krylov iterative solvers with reverse communication.         c
+c										c
+c-------------------------------------------------------------------------------c
+c===============================================================================c
+                   

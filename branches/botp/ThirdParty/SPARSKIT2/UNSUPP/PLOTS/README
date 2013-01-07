@@ -1,0 +1,19 @@
+
+		             ----------------- 
+		             Current contents:
+			     -----------------
+
+Some of the files that were originally in this directory 
+have been moved to the INOUT module, or were obsolte and removed.
+
+* psgrd.f contains subroutine "psgrid" which plots a symmetric graph.
+
+* texplt1.f contains subroutine "texplt" allows several matrices
+  in the same picture by calling texplt several times and exploiting job and
+  different shifts.
+
+* texgrid1.f contains subroutine "texgrd" which generates tex commands
+  for plotting a symmetric graph associated with a mesh. Allows  
+  several grids in the same picture by calling texgrd several times and 
+  exploiting job and different shifts. 
+

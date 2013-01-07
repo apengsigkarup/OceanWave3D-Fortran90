@@ -1,0 +1,157 @@
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver CGGEV
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         2     6     8    10    12    20
+    N:         2     6     8    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ CGV routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for CGV drivers  passed the threshold (  1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver CGGES
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ CGS routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for CGS drivers  passed the threshold (  1560 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver CGGESX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ CGX routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for CGX drivers  passed the threshold (   150 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver CGGEVX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         6
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ CXV routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for CXV drivers  passed the threshold (  5000 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver CGGESX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ CGX routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for CGX drivers  passed the threshold (    20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver CGGEVX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ CXV routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for CXV drivers  passed the threshold (     8 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =         0.17 seconds
+

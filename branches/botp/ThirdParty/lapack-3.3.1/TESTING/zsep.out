@@ -1,0 +1,151 @@
+ Tests of the Hermitian Eigenvalue Problem routines
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    20
+    N:         0     1     2     3     5    20
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   50.00
+
+
+ ZST routines passed the tests of the error exits (114 tests done)
+
+
+ SEP:  NB =   1, NBMIN =   2, NX =   1
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see ZCHKST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+ 16=Positive definite, evenly spaced eigenvalues
+ 17=Positive definite, geometrically spaced eigenvlaues
+ 18=Positive definite, clustered eigenvalues
+ 19=Positive definite, small evenly spaced eigenvalues
+ 20=Positive definite, large evenly spaced eigenvalues
+ 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+
+Test performed:  see ZCHKST for details.
+
+ Matrix order=   20, type= 9, seed=3514, 529,1470,3001, result  36 is   63.74
+ ZST:    1 out of  4662 tests failed to pass the threshold
+
+ All tests for ZST drivers  passed the threshold ( 11664 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   0
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see ZCHKST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+ 16=Positive definite, evenly spaced eigenvalues
+ 17=Positive definite, geometrically spaced eigenvlaues
+ 18=Positive definite, clustered eigenvalues
+ 19=Positive definite, small evenly spaced eigenvalues
+ 20=Positive definite, large evenly spaced eigenvalues
+ 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+
+Test performed:  see ZCHKST for details.
+
+ Matrix order=   20, type= 9, seed=1509, 822,1315,3593, result  36 is  131.97
+ ZST:    1 out of  4662 tests failed to pass the threshold
+
+ All tests for ZST drivers  passed the threshold ( 11664 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   5
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see ZCHKST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+ 16=Positive definite, evenly spaced eigenvalues
+ 17=Positive definite, geometrically spaced eigenvlaues
+ 18=Positive definite, clustered eigenvalues
+ 19=Positive definite, small evenly spaced eigenvalues
+ 20=Positive definite, large evenly spaced eigenvalues
+ 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+
+Test performed:  see ZCHKST for details.
+
+ Matrix order=   20, type= 9, seed= 742,3683,2138,3173, result  36 is   54.89
+ ZST:    1 out of  4662 tests failed to pass the threshold
+
+ All tests for ZST drivers  passed the threshold ( 11664 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   9
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see ZCHKST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+ 16=Positive definite, evenly spaced eigenvalues
+ 17=Positive definite, geometrically spaced eigenvlaues
+ 18=Positive definite, clustered eigenvalues
+ 19=Positive definite, small evenly spaced eigenvalues
+ 20=Positive definite, large evenly spaced eigenvalues
+ 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+
+Test performed:  see ZCHKST for details.
+
+ Matrix order=   20, type= 9, seed=1052,3651,3662,3633, result  36 is  133.96
+ ZST:    1 out of  4662 tests failed to pass the threshold
+
+ All tests for ZST drivers  passed the threshold ( 11664 tests run)
+
+
+ SEP:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold ( 4662 tests run)
+
+ All tests for ZST drivers  passed the threshold ( 11664 tests run)
+
+
+ End of tests
+ Total time used =         1.17 seconds
+

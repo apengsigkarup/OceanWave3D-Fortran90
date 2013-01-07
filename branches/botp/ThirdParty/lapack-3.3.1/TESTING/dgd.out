@@ -1,0 +1,377 @@
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver DGGES
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ DGS routines passed the tests of the error exits ( 87 tests done)
+
+ All tests for DGS drivers  passed the threshold (  1560 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver DGGEV
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         2     6     8    10    15    20
+    N:         2     6     8    10    15    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ DGV routines passed the tests of the error exits ( 87 tests done)
+
+ All tests for DGV drivers  passed the threshold (  1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver DGGESX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ DGX routines passed the tests of the error exits ( 87 tests done)
+
+ All tests for DGX drivers  passed the threshold (   150 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver DGGESX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ DGX routines passed the tests of the error exits ( 87 tests done)
+
+ All tests for DGX drivers  passed the threshold (    20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver DGGEVX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         5
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ DXV routines passed the tests of the error exits ( 87 tests done)
+
+ DXV -- Real Expert Eigenvalue/vector problem driver
+ Matrix types: 
+
+ TYPE 1: Da is diagonal, Db is identity, 
+     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) 
+     YH and X are left and right eigenvectors. 
+
+ TYPE 2: Da is quasi-diagonal, Db is identity, 
+     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) 
+     YH and X are left and right eigenvectors. 
+
+
+ Tests performed:  
+     a is alpha, b is beta, l is a left eigenvector, 
+     r is a right eigenvector and ' means transpose.
+ 1 = max | ( b A - a B )' l | / const.
+ 2 = max | ( b A - a B ) r | / const.
+ 3 = max ( Sest/Stru, Stru/Sest )  over all eigenvalues
+ 4 = max( DIFest/DIFtru, DIFtru/DIFest )  over the 1st and 5th eigenvectors
+
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 1, result  4 is 3766.18
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 2, result  4 is 3930.80
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 3, result  4 is 4742.40
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 4, result  4 is 5051.73
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 5, result  4 is 1648.31
+ Type= 2, IWA= 1, IWB= 2, IWX= 5, IWY= 5, result  4 is 2269.35
+ Type= 2, IWA= 1, IWB= 3, IWX= 5, IWY= 5, result  4 is 1324.91
+ Type= 2, IWA= 1, IWB= 4, IWX= 5, IWY= 5, result  4 is  476.00
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 1, result  4 is 4096.29
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 2, result  4 is 3817.53
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 3, result  4 is 2120.76
+ Type= 2, IWA= 1, IWB= 5, IWX= 1, IWY= 4, result  4 is  288.27
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 1, result  4 is 3817.53
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 2, result  4 is 3707.73
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 3, result  4 is 2114.67
+ Type= 2, IWA= 1, IWB= 5, IWX= 2, IWY= 4, result  4 is  288.25
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 1, result  4 is 2120.76
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 2, result  4 is 2114.67
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 3, result  4 is 1697.03
+ Type= 2, IWA= 1, IWB= 5, IWX= 3, IWY= 4, result  4 is  286.85
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 1, result  4 is  288.27
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 2, result  4 is  288.25
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 3, result  4 is  286.85
+ Type= 2, IWA= 1, IWB= 5, IWX= 4, IWY= 4, result  4 is  204.34
+ Type= 2, IWA= 2, IWB= 1, IWX= 5, IWY= 5, result  4 is 4540.09
+ Type= 2, IWA= 2, IWB= 2, IWX= 5, IWY= 5, result  4 is 3644.86
+ Type= 2, IWA= 2, IWB= 3, IWX= 5, IWY= 5, result  4 is 1633.36
+ Type= 2, IWA= 2, IWB= 4, IWX= 5, IWY= 5, result  4 is  481.28
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 1, result  4 is 4096.34
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 2, result  4 is 3817.57
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 3, result  4 is 2120.79
+ Type= 2, IWA= 2, IWB= 5, IWX= 1, IWY= 4, result  4 is  288.27
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 1, result  4 is 3817.57
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 2, result  4 is 3707.78
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 3, result  4 is 2114.70
+ Type= 2, IWA= 2, IWB= 5, IWX= 2, IWY= 4, result  4 is  288.26
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 1, result  4 is 2120.79
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 2, result  4 is 2114.70
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 3, result  4 is 1697.05
+ Type= 2, IWA= 2, IWB= 5, IWX= 3, IWY= 4, result  4 is  286.85
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 1, result  4 is  288.27
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 2, result  4 is  288.26
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 3, result  4 is  286.85
+ Type= 2, IWA= 2, IWB= 5, IWX= 4, IWY= 4, result  4 is  204.34
+ Type= 2, IWA= 3, IWB= 1, IWX= 5, IWY= 5, result  4 is 4780.06
+ Type= 2, IWA= 3, IWB= 2, IWX= 5, IWY= 5, result  4 is 4729.81
+ Type= 2, IWA= 3, IWB= 3, IWX= 5, IWY= 5, result  4 is 3176.19
+ Type= 2, IWA= 3, IWB= 4, IWX= 5, IWY= 5, result  4 is  524.80
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 1, result  4 is 4096.79
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 2, result  4 is 3817.99
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 3, result  4 is 2121.02
+ Type= 2, IWA= 3, IWB= 5, IWX= 1, IWY= 4, result  4 is  288.30
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 1, result  4 is 3817.99
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 2, result  4 is 3708.19
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 3, result  4 is 2114.93
+ Type= 2, IWA= 3, IWB= 5, IWX= 2, IWY= 4, result  4 is  288.29
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 1, result  4 is 2121.02
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 2, result  4 is 2114.93
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 3, result  4 is 1697.24
+ Type= 2, IWA= 3, IWB= 5, IWX= 3, IWY= 4, result  4 is  286.89
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 1, result  4 is  288.30
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 2, result  4 is  288.29
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 3, result  4 is  286.89
+ Type= 2, IWA= 3, IWB= 5, IWX= 4, IWY= 4, result  4 is  204.37
+ Type= 2, IWA= 4, IWB= 1, IWX= 5, IWY= 5, result  4 is  638.62
+ Type= 2, IWA= 4, IWB= 2, IWX= 5, IWY= 5, result  4 is  643.33
+ Type= 2, IWA= 4, IWB= 3, IWX= 5, IWY= 5, result  4 is  678.13
+ Type= 2, IWA= 4, IWB= 4, IWX= 5, IWY= 5, result  4 is  547.38
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 1, result  4 is 4101.29
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 2, result  4 is 3822.19
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 3, result  4 is 2123.35
+ Type= 2, IWA= 4, IWB= 5, IWX= 1, IWY= 4, result  4 is  288.62
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 1, result  4 is 3822.19
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 2, result  4 is 3712.26
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 3, result  4 is 2117.25
+ Type= 2, IWA= 4, IWB= 5, IWX= 2, IWY= 4, result  4 is  288.61
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 1, result  4 is 2123.35
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 2, result  4 is 2117.25
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 3, result  4 is 1699.11
+ Type= 2, IWA= 4, IWB= 5, IWX= 3, IWY= 4, result  4 is  287.20
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 1, result  4 is  288.62
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 2, result  4 is  288.61
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 3, result  4 is  287.20
+ Type= 2, IWA= 4, IWB= 5, IWX= 4, IWY= 4, result  4 is  204.59
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 1, result  4 is 3.355D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 2, result  4 is 3.127D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 3, result  4 is 1.737D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 4, result  4 is 2.361D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 5, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 1, result  4 is 3.127D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 2, result  4 is 3.037D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 3, result  4 is 1.732D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 4, result  4 is 2.361D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 5, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 1, result  4 is 1.737D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 2, result  4 is 1.732D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 3, result  4 is 1.390D+07
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 4, result  4 is 2.350D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 5, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 1, result  4 is 2.361D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 2, result  4 is 2.361D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 3, result  4 is 2.350D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 4, result  4 is 1.674D+06
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 5, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 1, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 2, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 3, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 4, result  4 is 2896.66
+ Type= 2, IWA= 5, IWB= 1, IWX= 5, IWY= 5, result  4 is 2048.38
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 1, result  4 is 3.051D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 2, result  4 is 2.843D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 3, result  4 is 1.579D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 4, result  4 is 2.147D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 5, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 1, result  4 is 2.843D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 2, result  4 is 2.761D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 3, result  4 is 1.575D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 4, result  4 is 2.147D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 5, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 1, result  4 is 1.579D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 2, result  4 is 1.575D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 3, result  4 is 1.264D+07
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 4, result  4 is 2.136D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 5, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 1, result  4 is 2.147D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 2, result  4 is 2.147D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 3, result  4 is 2.136D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 4, result  4 is 1.522D+06
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 5, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 1, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 2, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 3, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 4, result  4 is 2633.68
+ Type= 2, IWA= 5, IWB= 2, IWX= 5, IWY= 5, result  4 is 1862.41
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 1, result  4 is 1.678D+07
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 2, result  4 is 1.564D+07
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 3, result  4 is 8.688D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 4, result  4 is 1.181D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 5, result  4 is 1448.69
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 1, result  4 is 1.564D+07
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 2, result  4 is 1.519D+07
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 3, result  4 is 8.663D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 4, result  4 is 1.181D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 5, result  4 is 1448.69
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 1, result  4 is 8.688D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 2, result  4 is 8.663D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 3, result  4 is 6.952D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 4, result  4 is 1.175D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 5, result  4 is 1448.69
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 1, result  4 is 1.181D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 2, result  4 is 1.181D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 3, result  4 is 1.175D+06
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 4, result  4 is 8.371D+05
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 5, result  4 is 1448.68
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 1, result  4 is 1448.69
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 2, result  4 is 1448.69
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 3, result  4 is 1448.69
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 4, result  4 is 1448.68
+ Type= 2, IWA= 5, IWB= 3, IWX= 5, IWY= 5, result  4 is 1024.44
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 1, result  4 is 3.055D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 2, result  4 is 2.846D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 3, result  4 is 1.581D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 4, result  4 is 2.149D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 5, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 1, result  4 is 2.846D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 2, result  4 is 2.765D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 3, result  4 is 1.577D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 4, result  4 is 2.149D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 5, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 1, result  4 is 1.581D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 2, result  4 is 1.577D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 3, result  4 is 1.265D+06
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 4, result  4 is 2.139D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 5, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 1, result  4 is 2.149D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 2, result  4 is 2.149D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 3, result  4 is 2.139D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 4, result  4 is 1.524D+05
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 5, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 1, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 2, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 3, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 4, result  4 is  263.69
+ Type= 2, IWA= 5, IWB= 4, IWX= 5, IWY= 5, result  4 is  186.47
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 1, result  4 is 1.158D+04
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 2, result  4 is 1.080D+04
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 3, result  4 is 5997.33
+ Type= 2, IWA= 5, IWB= 5, IWX= 1, IWY= 4, result  4 is  815.19
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 1, result  4 is 1.080D+04
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 2, result  4 is 1.049D+04
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 3, result  4 is 5980.12
+ Type= 2, IWA= 5, IWB= 5, IWX= 2, IWY= 4, result  4 is  815.15
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 1, result  4 is 5997.33
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 2, result  4 is 5980.12
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 3, result  4 is 4799.16
+ Type= 2, IWA= 5, IWB= 5, IWX= 3, IWY= 4, result  4 is  811.19
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 1, result  4 is  815.19
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 2, result  4 is  815.15
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 3, result  4 is  811.19
+ Type= 2, IWA= 5, IWB= 5, IWX= 4, IWY= 4, result  4 is  577.87
+ DXV drivers:    200 out of   5000 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver DGGEVX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ DXV routines passed the tests of the error exits ( 87 tests done)
+
+ All tests for DXV drivers  passed the threshold (     8 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =         0.20 seconds
+

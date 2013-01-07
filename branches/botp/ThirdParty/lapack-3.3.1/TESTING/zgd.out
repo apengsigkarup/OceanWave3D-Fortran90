@@ -1,0 +1,201 @@
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver ZGGEV
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         2     6     8    10    12    20
+    N:         2     6     8    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ ZGV routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for ZGV drivers  passed the threshold (  1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver ZGGES
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ ZGS routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for ZGS drivers  passed the threshold (  1560 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver ZGGESX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ ZGX routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for ZGX drivers  passed the threshold (   150 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver ZGGEVX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         6
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ ZXV routines passed the tests of the error exits ( 85 tests done)
+
+ ZXV -- Complex Expert Eigenvalue/vector problem driver
+ Matrix types: 
+
+ TYPE 1: Da is diagonal, Db is identity, 
+     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) 
+     YH and X are left and right eigenvectors. 
+
+ TYPE 2: Da is quasi-diagonal, Db is identity, 
+     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) 
+     YH and X are left and right eigenvectors. 
+
+
+ Tests performed:  
+     a is alpha, b is beta, l is a left eigenvector, 
+     r is a right eigenvector and ' means transpose.
+ 1 = max | ( b A - a B )' l | / const.
+ 2 = max | ( b A - a B ) r | / const.
+ 3 = max ( Sest/Stru, Stru/Sest )  over all eigenvalues
+ 4 = max( DIFest/DIFtru, DIFtru/DIFest )  over the 1st and 5th eigenvectors
+
+ Type= 2, IWA= 1, IWB= 1, IWX= 1, IWY= 5, result  4 is 2364.97
+ Type= 2, IWA= 1, IWB= 1, IWX= 2, IWY= 5, result  4 is 2279.60
+ Type= 2, IWA= 1, IWB= 1, IWX= 3, IWY= 5, result  4 is 1515.40
+ Type= 2, IWA= 1, IWB= 1, IWX= 4, IWY= 5, result  4 is  255.93
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 1, result  4 is 2423.59
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 2, result  4 is 2495.73
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 3, result  4 is 2161.03
+ Type= 2, IWA= 1, IWB= 1, IWX= 5, IWY= 4, result  4 is  249.60
+ Type= 2, IWA= 5, IWB= 1, IWX= 1, IWY= 5, result  4 is 5116.24
+ Type= 2, IWA= 5, IWB= 1, IWX= 2, IWY= 5, result  4 is 5165.55
+ Type= 2, IWA= 5, IWB= 1, IWX= 3, IWY= 5, result  4 is 5537.38
+ Type= 2, IWA= 5, IWB= 1, IWX= 4, IWY= 5, result  4 is 2582.12
+ Type= 2, IWA= 5, IWB= 2, IWX= 1, IWY= 5, result  4 is 4661.56
+ Type= 2, IWA= 5, IWB= 2, IWX= 2, IWY= 5, result  4 is 4702.62
+ Type= 2, IWA= 5, IWB= 2, IWX= 3, IWY= 5, result  4 is 5019.81
+ Type= 2, IWA= 5, IWB= 2, IWX= 4, IWY= 5, result  4 is 2578.92
+ Type= 2, IWA= 5, IWB= 3, IWX= 1, IWY= 5, result  4 is 2582.14
+ Type= 2, IWA= 5, IWB= 3, IWX= 2, IWY= 5, result  4 is 2594.89
+ Type= 2, IWA= 5, IWB= 3, IWX= 3, IWY= 5, result  4 is 2702.29
+ Type= 2, IWA= 5, IWB= 3, IWX= 4, IWY= 5, result  4 is 2310.95
+ Type= 2, IWA= 5, IWB= 4, IWX= 1, IWY= 5, result  4 is  470.90
+ Type= 2, IWA= 5, IWB= 4, IWX= 2, IWY= 5, result  4 is  471.32
+ Type= 2, IWA= 5, IWB= 4, IWX= 3, IWY= 5, result  4 is  475.13
+ Type= 2, IWA= 5, IWB= 4, IWX= 4, IWY= 5, result  4 is  507.92
+ ZXV drivers:     24 out of   5000 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver ZGGESX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ ZGX routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for ZGX drivers  passed the threshold (    20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver ZGGEVX
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+
+ ZXV routines passed the tests of the error exits ( 85 tests done)
+
+ All tests for ZXV drivers  passed the threshold (     8 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =         0.24 seconds
+

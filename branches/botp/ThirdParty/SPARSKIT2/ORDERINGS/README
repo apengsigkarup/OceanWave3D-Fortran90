@@ -1,0 +1,55 @@
+------------------------------------------------------------
+                     SPARSKIT MODULE ORDERINGS
+-------------------------------------------------------------
+
+ The current directory ORDERINGS contains a few subroutines for
+ finding some of the standard reorderings for a given matrix.
+
+levset.f -- level set based algorithms
+
+   dblstr   : doubled stripe partitioner 
+   rdis     : recursive dissection partitioner
+   dse2way  : distributed site expansion usuing sites from dblstr 
+   dse      : distributed site expansion usuing sites from rdis
+   BFS      : Breadth-First search traversal algorithm 
+   add_lvst : routine to add a level -- used by BFS 
+   stripes  : finds the level set structure
+   stripes0 : finds a trivial one-way partitioning from level-sets 
+   perphn   : finds a pseudo-peripheral node and performs a BFS from it.
+   mapper4  : routine used by dse and dse2way to do center expansion
+   get_domns: routine to find subdomaine from linked lists found by 
+              mapper4. 
+   add_lk   : routine to add entry to linked list -- used by mapper4. 
+   find_ctr : routine to locate an approximate center of a subgraph. 
+   rversp   : routine to reverse a given permutation (e.g., for RCMK)
+   maskdeg  : integer function to compute the `masked' of a node
+
+color.f  --  algorithms for independent set ordering and multicolor
+            orderings
+
+   multic  : greedy algorithm for multicoloring 
+   indset0 : greedy algorithm for independent set ordering
+   indset1 : independent set ordering using minimal degree traversal
+   indset2 : independent set ordering with local minimization 
+   indset3 : independent set ordering by vertex cover algorithm
+
+ccn.f -- code for strongly connected components
+
+    blccnx : Driver routine to reduce the structure of a  matrix 
+             to its strongly connected components.
+    cconex : Main routine to compute the strongly connected components
+             of a (block diagonal) matrix.
+    anccnx : We put in ICCNEX the vertices marked in the component MCCNEX.
+    newcnx : We put in ICCNEX the vertices marked in the component
+             MCCNEX. We modify also the vector KPW.
+    blccn1 : Parallel computation of the connected components of a
+             matrix. The parallel loop is performed only if the matrix
+             has a block diagonal structure.
+    icopy  : We copy an integer vector into anothoer.
+    compos : We calculate the composition between two permutation
+             vectors.
+    invlpw : We calculate the inverse of a permutation vector.
+    numini : We initialize a vector to the identity.
+    tbzero : We initialize to ZERO an integer vector.
+    iplusa : Given two integers IALPHA and IBETA, for an integer vector 
+             IA we calculate IA(i) = ialpha + ibeta * ia(i)

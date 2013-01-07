@@ -1,0 +1,41 @@
+ Real BLAS Test Program Results
+
+
+ Test of subprogram number  1             SDOT 
+                                    ----- PASS -----
+
+ Test of subprogram number  2            SAXPY 
+                                    ----- PASS -----
+
+ Test of subprogram number  3            SROTG 
+                                    ----- PASS -----
+
+ Test of subprogram number  4             SROT 
+                                    ----- PASS -----
+
+ Test of subprogram number  5            SCOPY 
+                                    ----- PASS -----
+
+ Test of subprogram number  6            SSWAP 
+                                    ----- PASS -----
+
+ Test of subprogram number  7            SNRM2 
+                                    ----- PASS -----
+
+ Test of subprogram number  8            SASUM 
+                                    ----- PASS -----
+
+ Test of subprogram number  9            SSCAL 
+                                    ----- PASS -----
+
+ Test of subprogram number 10            ISAMAX
+                                    ----- PASS -----
+
+ Test of subprogram number 11            SROTMG
+                                    ----- PASS -----
+
+ Test of subprogram number 12            SROTM 
+                                    ----- PASS -----
+
+ Test of subprogram number 13            SDSDOT
+                                    ----- PASS -----

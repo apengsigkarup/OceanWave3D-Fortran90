@@ -1,0 +1,141 @@
+ Tests of the REAL LAPACK routines 
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M   :       0     1     2     3     5    10    50
+    N   :       0     1     2     3     5    10    50
+    NRHS:       1     2    15
+    NB  :       1     3     3     3    20
+    NX  :       1     0     5     9     1
+    RANK:      30    50    90
+
+ Routines pass computational tests if test ratio is less than   30.00
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+
+ SGE routines passed the tests of the error exits
+
+ All tests for SGE routines passed the threshold (  3653 tests run)
+
+ SGE drivers passed the tests of the error exits
+
+ All tests for SGE drivers  passed the threshold (  4866 tests run)
+
+ SGB routines passed the tests of the error exits
+
+ All tests for SGB routines passed the threshold ( 28938 tests run)
+
+ SGB drivers passed the tests of the error exits
+
+ All tests for SGB drivers  passed the threshold ( 30969 tests run)
+
+ SGT routines passed the tests of the error exits
+
+ All tests for SGT routines passed the threshold (  2694 tests run)
+
+ SGT drivers passed the tests of the error exits
+
+ All tests for SGT drivers  passed the threshold (  2033 tests run)
+
+ SPO routines passed the tests of the error exits
+
+ All tests for SPO routines passed the threshold (  1628 tests run)
+
+ SPO drivers passed the tests of the error exits
+
+ All tests for SPO drivers  passed the threshold (  1910 tests run)
+
+ SPS routines passed the tests of the error exits
+
+ All tests for SPS routines passed the threshold (   150 tests run)
+
+ SPP routines passed the tests of the error exits
+
+ All tests for SPP routines passed the threshold (  1332 tests run)
+
+ SPP drivers passed the tests of the error exits
+
+ All tests for SPP drivers  passed the threshold (  1910 tests run)
+
+ SPB routines passed the tests of the error exits
+
+ All tests for SPB routines passed the threshold (  3458 tests run)
+
+ SPB drivers passed the tests of the error exits
+
+ All tests for SPB drivers  passed the threshold (  4750 tests run)
+
+ SPT routines passed the tests of the error exits
+
+ All tests for SPT routines passed the threshold (   953 tests run)
+
+ SPT drivers passed the tests of the error exits
+
+ All tests for SPT drivers  passed the threshold (   788 tests run)
+
+ SSY routines passed the tests of the error exits
+
+ All tests for SSY routines passed the threshold (  1624 tests run)
+
+ SSY drivers passed the tests of the error exits
+
+ All tests for SSY drivers  passed the threshold (  1072 tests run)
+
+ SSP routines passed the tests of the error exits
+
+ All tests for SSP routines passed the threshold (  1404 tests run)
+
+ SSP drivers passed the tests of the error exits
+
+ All tests for SSP drivers  passed the threshold (  1072 tests run)
+
+ STR routines passed the tests of the error exits
+
+ All tests for STR routines passed the threshold (  7672 tests run)
+
+ STP routines passed the tests of the error exits
+
+ All tests for STP routines passed the threshold (  7392 tests run)
+
+ STB routines passed the tests of the error exits
+
+ All tests for STB routines passed the threshold ( 19888 tests run)
+
+ SQR routines passed the tests of the error exits
+
+ All tests for SQR routines passed the threshold ( 30744 tests run)
+
+ SRQ routines passed the tests of the error exits
+
+ All tests for SRQ routines passed the threshold ( 28784 tests run)
+
+ SLQ routines passed the tests of the error exits
+
+ All tests for SLQ routines passed the threshold ( 28784 tests run)
+
+ SQL routines passed the tests of the error exits
+
+ All tests for SQL routines passed the threshold ( 28784 tests run)
+
+ SQP routines passed the tests of the error exits
+
+ All tests for SQP routines passed the threshold (   882 tests run)
+
+ All tests for SQ3 routines passed the threshold (  4410 tests run)
+
+ STZ routines passed the tests of the error exits
+
+ All tests for STZ routines passed the threshold (   504 tests run)
+
+ SLS routines passed the tests of the error exits
+
+ All tests for SLS drivers  passed the threshold ( 65268 tests run)
+
+ All tests for SEQ routines passed the threshold
+
+ End of tests
+ Total time used =         3.26 seconds
+

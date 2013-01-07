@@ -1,0 +1,15 @@
+;; Object INOUT/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "INOUT/"
+  :tables (list 
+   (semanticdb-table "makefile"
+    :major-mode 'makefile-mode
+    :tags '(("FFLAGS" variable nil nil [1 11]) ("F77" variable (:default-value ("f77")) nil [11 21]) ("FILES1" variable (:default-value ("chkio.o")) nil [54 71]) ("FILES2" variable (:default-value ("hb2ps.o")) nil [71 89]) ("FILES3" variable (:default-value ("hb2pic.o")) nil [89 108]) ("chk.ex" function (:arguments ("$(FILES1)" "../MATGEN/FDIF/functns.o" "../libskit.a")) nil [109 242]) ("hb2ps.ex" function (:arguments ("$(FILES2)" "../libskit32.a")) nil [242 333]) ("hb2pic.ex" function (:arguments ("$(FILES3)" "../libskit.a")) nil [333 422]) ("clean" function nil nil [422 476]) ("../MATGEN/FDIF/functns.o" function nil nil [476 555]) ("../libskit.a" function nil nil [555 611]))
+    :file "makefile"
+    :pointmax 611
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre3"
+  :semanticdb-version "2.0pre3"
+  )

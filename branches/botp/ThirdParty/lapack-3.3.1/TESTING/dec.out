@@ -1,0 +1,17 @@
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ DLALN2, DLASY2, DLANV2, DLAEXC, DTRSYL, DTREXC, DTRSNA, DTRSEN, DLAQTR
+
+ Relative machine precision (EPS) =     0.222045D-15
+ Safe minimum (SFMIN)             =     0.222507-307
+
+ Routines pass computational tests if test ratio is less than   20.00
+
+
+ DEC routines passed the tests of the error exits ( 35 tests done)
+
+ All tests for DEC routines passed the threshold (501251 tests run)
+
+
+ End of tests
+ Total time used =         0.41 seconds
+
