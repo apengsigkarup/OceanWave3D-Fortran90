@@ -34,13 +34,10 @@
       REAL(KIND=long), DIMENSION(:), ALLOCATABLE :: wTemp1D,wTemp
       REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y 
       
-      ! Calculate local interpolation stencils 
-      !
-       CALL makeStecils(x0) 
 
       ! Assign local pointers
       !
-      x => FineGrid%x; y => FineGrid%y; Nz = FineGrid%Nz
+      x => FineGrid%x; y => FineGrid%y; Nz = FineGrid%Nz; 
 
       xStencil => interpolation%stencilX 
       yStencil => interpolation%stencilY 
@@ -48,21 +45,24 @@
       NN       => interpolation%NN
       inOrOut  => interpolation%inOrOut
 
+      ! Calculate local interpolation stencils 
+      !
+      CALL makeStecils(x0) 
 
-      ! Temporary fields for debuging
+      ! Temporary fields for debugging
       !
 
-      !      DO i =1,SIZE(VOF,1)
-      !          VOF(i,:,:) = FineGrid%y(:,:)
-      !          UOF(i,:,:) = FineGrid%x(:,:)
-      !      END DO
-      !      
-      !      DO j = 1,SIZE(VOF,2)
-      !          DO k = 1,SIZE(VOF,3)
-      !              WOF(:,j,k) = FineGrid%z(:)
-      !          END DO 
-      !      END DO
-      !
+            !DO i =1,SIZE(VOF,1)
+                !VOF(i,:,:) = FineGrid%y(:,:)
+                !UOF(i,:,:) = FineGrid%x(:,:)
+            !END DO
+            
+            !DO j = 1,SIZE(VOF,2)
+                !DO k = 1,SIZE(VOF,3)
+                    !WOF(:,j,k) = FineGrid%z(:)
+                !END DO 
+            !END DO
+      
       IF (inOrOut == 0) THEN
               ! Limits in z-direction
               !
@@ -81,7 +81,6 @@
               END IF
 
           IF (FineGrid%Ny==1) THEN ! The velocity field is defined in 2D (x/z)
-                      
               ALLOCATE(uTemp1D(2*gamma+1))
               ALLOCATE(wTemp1D(2*gamma+1))
 

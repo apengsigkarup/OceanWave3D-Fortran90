@@ -1,4 +1,4 @@
-SUBROUTINE OceanWave3DTakeATimeStep
+SUBROUTINE OceanWave3DTakeATimeStep()
 
   USE GlobalVariables
   USE MGLevels
@@ -12,9 +12,9 @@ SUBROUTINE OceanWave3DTakeATimeStep
   CALL SYSTEM_CLOCK(count_0, count_rate, count_max)
 
   ! Print the simulation time to the screen every 10 time steps.
-  IF(MOD(tstep,10)==0)THEN
-     WRITE(6,2000) tstep, time
-  END IF
+  !IF(MOD(tstep,10)==0)THEN
+     !WRITE(6,2000) tstep, time
+  !END IF
   !
   ! Use the free-surface conditions to step forward in time and get new
   ! values for eta and phi.
@@ -46,37 +46,37 @@ SUBROUTINE OceanWave3DTakeATimeStep
   !
   ! Print the simulation time to the screen every 10 time steps.
   !
-  If (tstep > 1 .and. tstep < 10) then
-     IF (solver==0) THEN
-       WRITE (6,2007) TOTALITER
-       WRITE (6,2008) TOTALITERFS
-       WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
-     ELSE
-       WRITE (6,2001) TOTALITER
-       WRITE (6,2002) TOTALITERFS
-       WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
-     ENDIF
-     WRITE (6,2005) MINITER, MAXITER
-     IF (tstep>2) THEN
-        IF (solver==0) THEN
-          WRITE (6,2010) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
-        ELSE
-          WRITE (6,2004) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
-        ENDIF
-        WRITE (6,2006) MINITERNOFS, MAXITERNOFS
-     ENDIF
-  else
-     ! Print the simulation time to the screen every 10 time steps.
-     IF(MOD(tstep,10)==0)THEN
-        print *, 'time step number ',tstep,' t=',time
-        IF (solver==0) THEN
-          WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
-        ELSE
-          WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
-        END IF
-        WRITE (6,2005) MINITER, MAXITER
-     endif
-  endif
+  !If (tstep > 1 .and. tstep < 10) then
+     !IF (solver==0) THEN
+       !WRITE (6,2007) TOTALITER
+       !WRITE (6,2008) TOTALITERFS
+       !WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+     !ELSE
+       !WRITE (6,2001) TOTALITER
+       !WRITE (6,2002) TOTALITERFS
+       !WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+     !ENDIF
+     !WRITE (6,2005) MINITER, MAXITER
+     !IF (tstep>2) THEN
+        !IF (solver==0) THEN
+          !WRITE (6,2010) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+        !ELSE
+          !WRITE (6,2004) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+        !ENDIF
+        !WRITE (6,2006) MINITERNOFS, MAXITERNOFS
+     !ENDIF
+  !else
+     !! Print the simulation time to the screen every 10 time steps.
+     !IF(MOD(tstep,10)==0)THEN
+        !print *, 'time step number ',tstep,' t=',time
+        !IF (solver==0) THEN
+          !WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+        !ELSE
+          !WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+        !END IF
+        !WRITE (6,2005) MINITER, MAXITER
+     !endif
+  !endif
  ! IF(MOD(tstep,10)==0)THEN
  !    WRITE (6,2020) ((count_1-count_0)*one)/count_rate
  !    WRITE (6,333) '    MINITER = ',MINITER,', MAXITER = ',MAXITER,', AVG. ITER=', &
@@ -136,5 +136,4 @@ SUBROUTINE OceanWave3DTakeATimeStep
 2009 FORMAT(' An average of ',F8.2,' DC iterations done per solve.')
 2010 FORMAT(' An average of ',F8.2,' DC iterations done per solve excluding first time step iteration counts.')
 2020 FORMAT('   Loop time = ',F12.3,' sec.')
-
 END SUBROUTINE OceanWave3DTakeATimeStep

@@ -51,7 +51,8 @@
         
               ! Calculate surface elevation at x0
               !
-              etaOF = FineGrid%h(NN(1),NN(2))
+              !etaOF = FineGrid%h(NN(1),NN(2))
+              etaOF = 0
               Do i=1,2*alpha + 1 
                     etaOF = etaOF + xStencil(i) * WaveField%E(NN(1)-alpha-1+i,1)
               END DO
@@ -78,7 +79,8 @@
 
               ! Calculate surface elevation at x0 (y-interpolation)
               !
-              etaOF = FineGrid%h(NN(1),NN(2))
+              !etaOF = FineGrid%h(NN(1),NN(2))
+              etaOF = 0
               DO i=1,2*beta + 1 
                     etaOF = etaOF + yStencil(i) * etaTemp(i)
               END DO

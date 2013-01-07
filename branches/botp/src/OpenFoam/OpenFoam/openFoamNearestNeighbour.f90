@@ -38,8 +38,9 @@
       
       ! Searches the y-direction (positive direction)
       !
-      IF (GridY==0 .AND. FineGrid%Ny>1) THEN
-          print *, dy
+      IF(FineGrid%Ny==1) THEN
+      NN(2) = 1
+      ELSE IF (GridY==0 .AND. FineGrid%Ny>1) THEN
           NN(2) = nint(x0(2)/dy) + GhostGridY + 1
       ELSE
           dist = 1*10**5
@@ -50,12 +51,11 @@
                      NN(2) = i
                    ELSE
                            exit
-                   END IF
+                  END IF
             
           END DO
       END IF
 
-      
       END SUBROUTINE OpenFoamNearestNeighbourXY
 
 
@@ -87,7 +87,7 @@
       ! 
       sigma = (x0(3) ) / &
               (FineGrid%h(NN(1),NN(2)) + Wavefield%E(NN(1),NN(2)))
-    
+
       ! Identify however the cell is located in or outside the water
       ! column.
       IF(sigma>1.05) THEN 
@@ -162,5 +162,4 @@
 
       
       END SUBROUTINE NearestNeighbourXY
-
 

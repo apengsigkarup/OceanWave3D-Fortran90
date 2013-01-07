@@ -110,5 +110,4 @@
          END IF
 
 
-
 END SUBROUTINE CalculateKinematics

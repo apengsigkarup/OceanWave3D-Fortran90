@@ -20,6 +20,7 @@
         !
         INTEGER, POINTER :: inOrOut
         INTEGER, DIMENSION(:), POINTER :: NN
+        REAL(KIND=long), DIMENSION(:) :: x0Local(3)
         REAL(KIND=long), DIMENSION(:), POINTER :: xStencil, yStencil, zStencil
 
         ! Assign local pointers
@@ -32,15 +33,23 @@
         
         ! Find Nearest Neighbour 
         !
-        CALL OpenFoamNearestNeighbourXY(x0,NN)
-        CALL OpenFoamNearestNeighbourZ(x0,NN,inOrOut)
-
+        CALL OpenFoamNearestNeighbourXY(x0)
+        ! We make a coordinate transformation from physical domain to
+        ! OCW3D domain such that $x0(3) \in [0;eta]
+        x0Local(1) = x0(1)
+        x0Local(2) = x0(2)
+        x0Local(3) = x0(3) + FineGrid%h(NN(1),NN(2))
+        CALL OpenFoamNearestNeighbourZ(x0Local,NN,inOrOut)
 
         ! Evaluation of local interpolation stencils
         !
-        CALL TaylorInterpolation(1,x0,xStencil,NN,SIZE(xStencil))
-        CALL TaylorInterpolation(2,x0,yStencil,NN,SIZE(yStencil))
-        CALL TaylorInterpolation(3,x0,zStencil,NN,SIZE(zStencil))
+        CALL TaylorInterpolation(1,x0Local,xStencil,NN,SIZE(xStencil))
+        CALL TaylorInterpolation(2,x0Local,yStencil,NN,SIZE(yStencil))
+        IF(inOrOut .EQ. 0) THEN
+        CALL TaylorInterpolation(3,x0Local,zStencil,NN,SIZE(zStencil))
+        ELSE
+        NN(3) = -1000
+        END IF
         END SUBROUTINE makeStecils
 
 
