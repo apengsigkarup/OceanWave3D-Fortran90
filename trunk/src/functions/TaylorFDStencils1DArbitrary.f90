@@ -1,4 +1,5 @@
 SUBROUTINE TaylorFDStencils1DArbitrary(alp,bet,order,Stencils,x)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

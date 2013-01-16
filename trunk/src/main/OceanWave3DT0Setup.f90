@@ -3,6 +3,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! This subroutine performs all of the initial set-up work before the time-stepping 
   ! begins.  
   !
+  ! By Allan P. Engsig-Karup.
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE

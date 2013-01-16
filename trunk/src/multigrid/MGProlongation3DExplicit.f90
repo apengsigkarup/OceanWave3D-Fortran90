@@ -1,4 +1,5 @@
 SUBROUTINE MGProlongation3DExplicit(PHIfine,PHIcoarse,FineGrid,CoarseGrid,GhostGridX,GhostGridY,GhostGridZ,Nzf,Nxf,Nyf,Nzc,Nxc,Nyc)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

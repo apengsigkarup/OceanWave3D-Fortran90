@@ -1,4 +1,5 @@
 SUBROUTINE GaussSeidelSpecialPoints(x,b,SMCSR,iMap,Np)
+! By Allan P. Engsig-Karup.
 ! Update the global points specified in iMap
 USE Precision
 USE Constants

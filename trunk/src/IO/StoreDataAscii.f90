@@ -6,6 +6,7 @@ SUBROUTINE StoreDataAscii(nx,ny,E,P,FineGrid,nr)
 !! Store data in an ascii file.
 !!
 !!
+!! By Allan P. Engsig-Karup.
 !<
 USE Precision
 USE Constants

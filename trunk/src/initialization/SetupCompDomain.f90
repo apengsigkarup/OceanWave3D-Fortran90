@@ -1,7 +1,7 @@
 SUBROUTINE SetupCompDomain
 USE GlobalVariables
 IMPLICIT NONE
-
+! By Allan P. Engsig-Karup.
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y
 REAL(KIND=long), DIMENSION(:), POINTER   :: z
 INTEGER :: i, j, k, Nx, Ny, Nz

@@ -7,6 +7,7 @@ SUBROUTINE BuildStencil_1D_Uneven(Nx,rank,x,fx)
 ! at the left end, alpha+1,...,N-alpha are centered schemes, and 
 ! N-alpha+1,...,N  are one-sided schemes at the right end.  
 ! 
+! By Allan P. Engsig-Karup.
   USE Precision
   IMPLICIT NONE
 

@@ -1,4 +1,5 @@
 SUBROUTINE BeachGen3Dver2(h,h0,h1,lx,ly,x,y,Nx,Ny)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

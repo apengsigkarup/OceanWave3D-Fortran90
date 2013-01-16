@@ -1,4 +1,5 @@
 SUBROUTINE CSRdiaREORDER(nrow,nnz,a,ja,ia)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

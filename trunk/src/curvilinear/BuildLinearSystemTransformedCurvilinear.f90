@@ -4,6 +4,7 @@ SUBROUTINE BuildLinearSystemTransformedCurvilinear(Nxg,Nyg,Nzg,PHI,out,CompGrid,
 ! Find solution in computational domain and if GhostGrid
 ! then define kinematic bottom constraint on those.
 !
+! By Allan P. Engsig-Karup.
 ! Note: it is assumed that Nxg, Nyg, Nzg includes ghost points and that alpha=beta=gamma.
 ! GD: SWENS inhomogeneous Neumann boundary conditions come here...
 !

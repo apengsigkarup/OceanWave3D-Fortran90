@@ -4,6 +4,7 @@ SUBROUTINE DiffZArbitrary(var,varZ,order,Nx,Ny,Nz,DiffStencils,gamma)
 !
 ! Full rank stencils always applied.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

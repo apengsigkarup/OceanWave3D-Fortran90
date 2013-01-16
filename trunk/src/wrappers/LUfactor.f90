@@ -2,6 +2,7 @@ SUBROUTINE LUfactor(SparseMatrix, Nr)
 !
 ! LU factor matrix given in sparse format.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

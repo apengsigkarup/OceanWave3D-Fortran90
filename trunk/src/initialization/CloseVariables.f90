@@ -1,4 +1,5 @@
 SUBROUTINE CloseVariables
+! By Allan P. Engsig-Karup.
 USE GlobalVariables
 USE MGlevels
 IMPLICIT NONE

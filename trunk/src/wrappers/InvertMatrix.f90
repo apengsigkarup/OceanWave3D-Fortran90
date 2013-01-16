@@ -1,4 +1,5 @@
 SUBROUTINE InvertMatrix(M,rank)
+! By Allan P. Engsig-Karup.
 USE GlobalVariables
 IMPLICIT NONE
 INTEGER :: rank, lwork, info

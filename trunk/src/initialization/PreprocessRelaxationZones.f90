@@ -5,6 +5,7 @@ SUBROUTINE PreprocessRelaxationZones
 ! FIXME: Take into account ghost layers
 ! GD: FIXME for curvilinear...
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE GlobalVariables
 IMPLICIT NONE

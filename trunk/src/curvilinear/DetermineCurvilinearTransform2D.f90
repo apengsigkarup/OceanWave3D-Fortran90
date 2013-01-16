@@ -1,4 +1,5 @@
 SUBROUTINE DetermineCurvilinearTransform2D(CompGrid,alpha,beta,gamma,GhostGridX,GhostGridY,GhostGridZ)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

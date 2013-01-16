@@ -1,5 +1,6 @@
 SUBROUTINE BuildStencilsGridY(beta,order,y,DiffStencils,Nx,Ny)
-  USE Precision
+! By Allan P. Engsig-Karup.
+USE Precision
   USE Constants
   IMPLICIT NONE
   INTEGER :: rank, beta, Nx, Ny, order, Diff, i

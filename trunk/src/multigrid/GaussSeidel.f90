@@ -1,4 +1,5 @@
 SUBROUTINE GaussSeidel(x,b,SMCSR)
+! By Allan P. Engsig-Karup.
 ! FIXME: always do free surface first??
 USE Precision
 USE Constants

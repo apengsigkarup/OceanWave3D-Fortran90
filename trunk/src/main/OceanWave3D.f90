@@ -3,7 +3,8 @@ PROGRAM OceanWave3D
   USE MGLevels
   IMPLICIT NONE
   INTEGER i,j
-  !
+  ! By Allan P. Engsig-Karup.
+  ! 
   ! This is the main code for OceanWave3D which is split into preliminary set up work and 
   ! the work involved in moving from one time step to the next.  The idea is that these 
   ! two routines can be called from other similar drivers in order to couple the solver 

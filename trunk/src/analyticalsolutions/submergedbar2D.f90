@@ -2,6 +2,7 @@ SUBROUTINE SubmergedBar_2D(FineGrid,x0,GhostGridX)
 !
 ! Define bottom and bottom gradients for submerged bar test (2D)
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

@@ -2,6 +2,7 @@ SUBROUTINE DiscardGhostLayer(Nx,Ny,Nz,PHI)
 !
 ! Zero bottom layer (e.g. ghost layer).
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

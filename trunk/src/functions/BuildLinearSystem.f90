@@ -1,4 +1,5 @@
 SUBROUTINE BuildLinearSystem(Nx,Ny,Nz,PHI,output,GridStruct,alpha,beta,gamma)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

@@ -1,4 +1,5 @@
 SUBROUTINE GetSparseLinearLaplaceMatrix(Gridlevel,nnz,icoo,jcoo,acoo)
+! By Allan P. Engsig-Karup.
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
