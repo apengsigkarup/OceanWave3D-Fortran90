@@ -30,7 +30,8 @@ SELECT CASE (Precond)
  			CALL ComputeNormalVectors(FineGrid,GhostGridX,GhostGridY,GhostGridZ)
 
 			! Determine linear sigma-coefficients
-			ALLOCATE(FineGrid%dsigmanew(Nzg,Nxg,Nyg,5))
+			ALLOCATE(FineGrid%dsigmanew(Nzg,Nxg,Nyg,5),STAT=iERR)
+            CALL CheckError(iERR,11)
 			FineGrid%dsigmanew = zero
 
 	        CALL ALLOCATE_Wavefield_Type(tmp_wavefield, Nx, Ny, Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
