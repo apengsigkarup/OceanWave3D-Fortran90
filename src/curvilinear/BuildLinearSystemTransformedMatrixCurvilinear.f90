@@ -1,4 +1,5 @@
 SUBROUTINE BuildLinearSystemTransformedMatrixCurvilinear(CompGrid,kappa, GhostGridX, GhostGridY, GhostGridZ)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

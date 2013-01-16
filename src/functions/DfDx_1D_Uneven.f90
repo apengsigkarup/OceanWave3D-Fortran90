@@ -5,6 +5,7 @@ SUBROUTINE DfDx_1D_Uneven(f,nx,coeffs,rank,fx)
 ! using the coefficients coeffs(1:rank,2,1:nx).  The coefficients are 
 ! computed in BuildStencil_1D_Uneven.  
 !
+! By Allan P. Engsig-Karup.
   USE Precision
   IMPLICIT NONE
   INTEGER nx, i, rank, alpha

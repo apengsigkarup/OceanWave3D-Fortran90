@@ -1,4 +1,5 @@
 SUBROUTINE DiffStencilsZ_modif(k,z,StencilZ,Nz,GhostGridZ,gamma,idxg_c)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

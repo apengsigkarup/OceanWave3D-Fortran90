@@ -1,4 +1,5 @@
 SUBROUTINE DiffZuniform3D_CD(var,varZ,order,IndexesZ,StencilsZ,Nx,Ny,Nz,alpha)
+! By Allan P. Engsig-Karup.
 !FIXME: this script has not been tested for bugs
 USE Precision
 USE DataTypes

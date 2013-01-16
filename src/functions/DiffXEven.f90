@@ -4,6 +4,7 @@ SUBROUTINE DiffXEven(var,varX,order,Nx,Ny,Nz,DiffStencils,alpha)
 !
 ! No conditional loops.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

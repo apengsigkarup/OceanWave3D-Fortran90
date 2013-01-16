@@ -1,4 +1,5 @@
 SUBROUTINE StoreRealArray3D(Array,r1,r2,r3,filename,formattype)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

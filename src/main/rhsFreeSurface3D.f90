@@ -1,4 +1,5 @@
 SUBROUTINE rhsFreeSurface3D(t,Wavefield,g,rhsE,rhsP,Nx,Ny)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

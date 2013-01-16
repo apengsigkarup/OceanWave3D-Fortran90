@@ -3,6 +3,7 @@
 SUBROUTINE BottomWhalin(FineGrid,y0,GhostGridX,GhostGridY)
 !
 ! Define bottom and bottom gradients for whalin's test (3D)
+! By Allan P. Engsig-Karup.
 !
 USE Precision
 USE Constants

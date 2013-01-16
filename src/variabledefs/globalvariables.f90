@@ -1,5 +1,6 @@
 !>
 !! This module contains definitions for all global variables.
+!! By Allan P. Engsig-Karup.
 !<
 MODULE GlobalVariables
 USE Precision

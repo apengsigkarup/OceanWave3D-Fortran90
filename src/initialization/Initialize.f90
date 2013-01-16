@@ -2,7 +2,7 @@ SUBROUTINE Initialize
 USE GlobalVariables
 IMPLICIT NONE
 INTEGER i
-
+! By Allan P. Engsig-Karup.
 ! Computed constants
 pi = ACOS(-one)
 deg2rad=pi/180._long

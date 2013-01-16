@@ -1,4 +1,5 @@
 SUBROUTINE SetupInitialConditions
+  ! By Allan P. Engsig-Karup.
   USE GlobalVariables
   IMPLICIT NONE
   INTEGER :: i, j, k, Nx, Ny, Nz

@@ -1,4 +1,5 @@
 SUBROUTINE CheckError(STAT, err)
+! By Allan P. Engsig-Karup.
 IMPLICIT NONE
 INTEGER :: STAT, err
 IF (STAT/=0) THEN

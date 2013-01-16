@@ -4,6 +4,7 @@ SUBROUTINE DiffXEven_CD(var,varX,IndexesX,StencilsX,Nx,Ny,Nz,alpha)
 !
 ! No conditional loops.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

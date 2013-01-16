@@ -1,4 +1,5 @@
 FUNCTION disper(g,T,h,n) RESULT(kh)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE
@@ -13,6 +14,7 @@ kh = khsolve(g,w,kh,h,n)
 CONTAINS
 
 FUNCTION khsolve(g,w,kh,h,n) RESULT(khout)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

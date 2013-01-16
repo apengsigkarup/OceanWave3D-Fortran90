@@ -1,4 +1,5 @@
 SUBROUTINE DiffYuniform2D(var,varY,order,DiffStencilArray,Nx,Ny,beta)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

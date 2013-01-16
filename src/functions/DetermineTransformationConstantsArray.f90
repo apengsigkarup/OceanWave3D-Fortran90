@@ -13,6 +13,7 @@ SUBROUTINE DetermineTransformationConstantsArray(Nx,Ny,Nz,FineGrid,dsigma,Wavefi
 !
 ! OUTPUT: dsigma
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

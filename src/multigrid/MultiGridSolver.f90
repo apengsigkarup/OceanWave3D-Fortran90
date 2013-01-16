@@ -1,5 +1,6 @@
 !>
 !! Solve linear system Ax=b using multigrid method
+!! By Allan P. Engsig-Karup.
 !<
 RECURSIVE SUBROUTINE MultiGridSolver(x,b,k,gam,cyclet,Nxf,Nyf,Nzf,Nxc,Nyc,Nzc,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
 USE Constants

@@ -7,6 +7,8 @@
 !!    T = 1.13409 s
 !!    deep water wave -> we set kh = 2*pi -> h = 2 m
 !!    H  = 0.08934064760240;       % wave height
+!!
+!! By Allan P. Engsig-Karup.
 !<
 SUBROUTINE nonlinearstandingwave1D(k,h,X,uu, ww, eta, etax, etaxx, Nfs)
 USE Precision

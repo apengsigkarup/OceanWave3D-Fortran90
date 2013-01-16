@@ -1,4 +1,5 @@
 SUBROUTINE ConstructTableCrossDerivatives_Curvilinear(CompGrid, DiffStencils, kappa, GhostGridX, GhostGridY, GhostGridZ)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

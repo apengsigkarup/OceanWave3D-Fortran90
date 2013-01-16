@@ -1,4 +1,5 @@
 SUBROUTINE MultiGridSolveLinearSystem(r,u,Nx,Ny,Nz,GhostGridX,GhostGridY,GhostGridZ,cyclet,maxit,reltol,alpha,beta,gamma)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE GlobalVariables, ONLY: FineGrid

@@ -2,6 +2,7 @@ SUBROUTINE DiffYEven_CD(var,varY,IndexesY,StencilsY,Nx,Ny,Nz,beta)
 !
 ! Explicit order differentiation in Y-direction.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

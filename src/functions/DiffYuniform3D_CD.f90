@@ -1,4 +1,5 @@
 SUBROUTINE DiffYuniform3D_CD(var,varY,IndexesY,StencilsY,Nx,Ny,Nz,beta)
+! By Allan P. Engsig-Karup.
 !FIXME: this script has not been tested for bugs
 USE Precision
 USE DataTypes

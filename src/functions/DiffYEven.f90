@@ -2,6 +2,7 @@ SUBROUTINE DiffYEven(var,varY,order,Nx,Ny,Nz,DiffStencils,beta)
 !
 ! Explicit order differentiation in Y-direction.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

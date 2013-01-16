@@ -1,4 +1,5 @@
 SUBROUTINE linearstandingwave2D(g,z,time,sol,Lx,Ly,h,X,Y,pp,uu,vv,ww,eta,etax,etaxx,etay,etayy,Nfs)
+! By Allan P. Engsig-Karup.
 ! FIXME: This implementation has in fact not been validated for all output
 USE Precision
 USE Constants

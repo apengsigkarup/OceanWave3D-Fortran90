@@ -4,6 +4,7 @@ Subroutine PreprocessPDampingZones
 ! 
 ! Only implemented for a +x-directed zone at this point.  
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE GlobalVariables
 Implicit none

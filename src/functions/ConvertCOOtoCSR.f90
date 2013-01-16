@@ -1,4 +1,5 @@
 SUBROUTINE ConvertCOOtoCSR(SM,tmpSM)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

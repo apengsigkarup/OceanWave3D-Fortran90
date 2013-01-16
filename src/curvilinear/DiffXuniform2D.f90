@@ -1,4 +1,5 @@
 SUBROUTINE DiffXuniform2D(var,varX,order,DiffStencilArray,Nx,Ny,alpha)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

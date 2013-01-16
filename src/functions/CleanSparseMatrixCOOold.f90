@@ -1,4 +1,5 @@
 SUBROUTINE CleanSparseMatrixCOOold(SM)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes
