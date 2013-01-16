@@ -1,5 +1,6 @@
 SUBROUTINE PreparePreconditioner(PreconditioningMatrix,FineGrid,GhostGridX, GhostGridY, GhostGridZ, &
 		alpha, beta, gamma, Precond, CurvilinearONOFF)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

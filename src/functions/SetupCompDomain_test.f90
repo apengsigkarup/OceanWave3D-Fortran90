@@ -1,4 +1,5 @@
 SUBROUTINE SetupCompDomain_test
+! By Allan P. Engsig-Karup.
 USE GlobalVariables
 IMPLICIT NONE
 

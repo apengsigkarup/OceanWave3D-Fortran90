@@ -1,4 +1,5 @@
 SUBROUTINE VerticalFreeSurfaceVelocity(W,Nx,Ny,Nz,sol,DiffStencils,dsdz,gamma)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

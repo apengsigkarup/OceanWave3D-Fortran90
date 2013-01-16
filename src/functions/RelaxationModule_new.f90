@@ -2,6 +2,7 @@ SUBROUTINE RelaxationModule_new(E,P,time,time0)
 !
 ! Apply relaxation zones
 !
+! By Allan P. Engsig-Karup
 USE GlobalVariables, ONLY: RelaxZones, FineGrid, SFsol, g, relaxTransientTime, relaxNo, &
 	GhostGridX, GhostGridY, curvilinearONOFF
 USE Precision
