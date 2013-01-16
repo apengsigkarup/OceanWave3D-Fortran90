@@ -1,5 +1,4 @@
 SUBROUTINE OceanWave3DTakeATimeStep
-  ! By Allan P. Engsig-Karup.
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
