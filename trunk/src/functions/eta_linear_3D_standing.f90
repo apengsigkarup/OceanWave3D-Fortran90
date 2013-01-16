@@ -1,5 +1,6 @@
 SUBROUTINE eta_linear_3D_standing(H,angle,Lx,Ly,xc,yc,omega,time,eta,etax,etay,etaxx,etayy,etat)
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

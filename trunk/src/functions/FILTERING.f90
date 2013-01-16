@@ -1,4 +1,5 @@
 SUBROUTINE FILTERING(Nx,Ny,U,filterNP,filterALPHA,filtercoefficients,oddeven)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

@@ -1,4 +1,5 @@
 SUBROUTINE UpdateGhostLayerYCurvilinear(var,S,NNx,NNy,CompGrid,alpha,beta,GhostGridX,GhostGridY)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

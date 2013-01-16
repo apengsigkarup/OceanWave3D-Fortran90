@@ -1,4 +1,5 @@
 SUBROUTINE McCamyFuchs54LocalXY(x,y,z,a,Ainc,k,d,g,time,Etol,MaxIter,eta,phi,w)
+! By Allan P. Engsig-Karup.
 !
 USE Precision
 USE DataTypes

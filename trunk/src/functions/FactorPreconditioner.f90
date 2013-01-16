@@ -1,4 +1,5 @@
 SUBROUTINE FactorPreconditioner(PreconditioningMatrix, Nfs)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE
