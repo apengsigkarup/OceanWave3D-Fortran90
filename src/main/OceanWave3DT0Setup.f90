@@ -411,8 +411,7 @@ SUBROUTINE OceanWave3DT0Setup
        '*** Copyright (C) 2009 Allan P. Engsig-Karup.         ***',/,&
        '***                                                   ***',/,&
        '*** This OceanWave3D program comes with ABSOLUTELY NO ***',/,&
-       '*** WARRANTY. This is free software, and you are      ***',/,&
-       '*** welcome to redistribute it under the conditions   ***',/,&
+       '*** WARRANTY. It is distributed under the conditions  ***',/,&
        '*** of the GNU General Public License version 3.      ***',/,&
        '***                                                   ***',/,&
        '***     Software library developed in 2009 by         ***',/,&
