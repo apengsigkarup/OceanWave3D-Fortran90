@@ -90,7 +90,7 @@
 
       ! Identify however the cell is located in or outside the water
       ! column.
-      IF(sigma>1.05) THEN 
+      IF(sigma>1.00) THEN 
        
         !Flag indicating the cell is outside the water column 
         inOrOut = 1 
@@ -115,51 +115,51 @@
       END IF
       END SUBROUTINE OpenFoamNearestNeighbourZ
 
-      SUBROUTINE NearestNeighbourXY(x0,NN)
-      ! Nearest Neighbour algorithm: Runs through a structured Cartesian grid in the $x$, $y$ and $z$ direction respectively. 
-      ! 
-      ! Input: x0:= vector which contains the coordinate $\{x,y,z\}$ of
-      ! which the nearest neighbour is wanted.
-      !
-      ! Output: 
-      !
+      !SUBROUTINE NearestNeighbourXY(x0,NN)
+      !! Nearest Neighbour algorithm: Runs through a structured Cartesian grid in the $x$, $y$ and $z$ direction respectively. 
+      !! 
+      !! Input: x0:= vector which contains the coordinate $\{x,y,z\}$ of
+      !! which the nearest neighbour is wanted.
+      !!
+      !! Output: 
+      !!
 
-      USE GlobalVariables
-      IMPLICIT NONE
-      REAL(KIND=long) :: dist, temp
-      REAL(KIND=long), DIMENSION(:) :: x0(3) 
-      INTEGER i
-      INTEGER, DIMENSION(:) :: NN(2)
+      !USE GlobalVariables
+      !IMPLICIT NONE
+      !REAL(KIND=long) :: dist, temp
+      !REAL(KIND=long), DIMENSION(:) :: x0(3) 
+      !INTEGER i
+      !INTEGER, DIMENSION(:) :: NN(2)
       
       
-      ! Searches the $x$-direction (positive direction)
-      !
-      dist = 1*10**5 ! Large number infinite distance
-      DO i=1,SIZE(FineGrid%x,1) 
-        temp = ABS(x0(1) - FineGrid%x(i,1))
-               IF (temp < dist) THEN
-                 dist = temp
-                 NN(1) = i
-               ELSE 
-                 exit
-               END IF
+      !! Searches the $x$-direction (positive direction)
+      !!
+      !dist = 1*10**5 ! Large number infinite distance
+      !DO i=1,SIZE(FineGrid%x,1) 
+        !temp = ABS(x0(1) - FineGrid%x(i,1))
+               !IF (temp < dist) THEN
+                 !dist = temp
+                 !NN(1) = i
+               !ELSE 
+                 !exit
+               !END IF
         
-      END DO
+      !END DO
       
-      ! Searches the $y$-direction (positive direction)
-      !
-      dist = 1*10**5
-      DO i=1,SIZE(FineGrid%y,2) 
-        temp = ABS(x0(2) - FineGrid%y(1,i))
-               IF (temp < dist) THEN
-                 dist = temp
-                 NN(2) = i
-               ELSE
-                       exit
-               END IF
+      !! Searches the $y$-direction (positive direction)
+      !!
+      !dist = 1*10**5
+      !DO i=1,SIZE(FineGrid%y,2) 
+        !temp = ABS(x0(2) - FineGrid%y(1,i))
+               !IF (temp < dist) THEN
+                 !dist = temp
+                 !NN(2) = i
+               !ELSE
+                       !exit
+               !END IF
         
-      END DO
+      !END DO
 
       
-      END SUBROUTINE NearestNeighbourXY
+      !END SUBROUTINE NearestNeighbourXY
 

@@ -39,7 +39,6 @@ SUBROUTINE OceanWave3DTakeATimeStep()
      ! This is only implemented in 2D.  
      CALL detect_breaking(fileop(14),FineGrid%Nx+2*GhostGridX,Wavefield,1)
   end IF
-
   time = time + dt
 
   CALL SYSTEM_CLOCK(count_1, count_rate, count_max)

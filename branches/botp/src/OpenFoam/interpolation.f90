@@ -232,7 +232,7 @@
       END SUBROUTINE interpolation1D
 
       SUBROUTINE TaylorInterpolation&
-      (dir,x0,TaylorStencil,NN,stencilSize)
+      (dir,x0,stencilSize)
       ! Evaluating a Taylor polynomial at point x0, with expansion point
       !at nearest neighbour.
       !
@@ -261,17 +261,20 @@
       ! Local variables
       !
       INTEGER :: stencilSize, i
+      INTEGER, DIMENSION(:), POINTER :: NN
       REAL(KIND=long) :: sigma, dl
       REAL(KIND=long), DIMENSION(:), ALLOCATABLE :: dlVector
       REAL(KIND=long), DIMENSION(:,:) :: &
       transMAT(stencilSize,stencilSize)
+      REAL(KIND=long), DIMENSION(:), POINTER :: xStencil, yStencil, zStencil
 
-
-      ! Output variables
+      ! Assign local pointers
       !
-      REAL(KIND=long), DIMENSION(:) :: TaylorStencil(stencilSize)
+      xStencil => interpolation%stencilX 
+      yStencil => interpolation%stencilY 
+      zStencil => interpolation%stencilZ
+      NN       => interpolation%NN
 
-      INTEGER, DIMENSION(:) :: NN(3)
 
      
         IF(dir == 1) THEN
@@ -283,7 +286,7 @@
 
                transMAT = TRANSPOSE(Interpolation%dx(:,:)) 
 
-               TaylorStencil = &
+               xStencil = &
                MATMUL(transMAT,dlVector)
 
        ENDIF
@@ -295,7 +298,7 @@
                         dlVector(i+1) = dl**i / fact(i)
                END DO
 
-               TaylorStencil = &
+               yStencil = &
                MATMUL(TRANSPOSE(Interpolation%dy(:,:)),dlVector)
 
        ENDIF
@@ -306,7 +309,6 @@
       sigma = (x0(3) ) / &
               (FineGrid%h(NN(1),NN(2)) + Wavefield%E(NN(1),NN(2)))
 
-
         
                ALLOCATE(dlVector(2*gamma + 1))
                dl = (sigma - FineGrid%z(NN(3))) 
@@ -314,7 +316,7 @@
                         dlVector(i+1) = dl**i / fact(i)
                END DO
 
-               TaylorStencil = &
+               zStencil = &
                MATMUL(TRANSPOSE(Interpolation%dz(:,:,NN(3))),dlVector)
 
        ENDIF

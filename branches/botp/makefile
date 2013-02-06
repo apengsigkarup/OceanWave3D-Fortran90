@@ -94,6 +94,17 @@ Debug: $(OBJECTSBUILDDIR)
 
 all: Release
 
+shared: FFLAGS = $(SHlibFLAGS)
+shared: $(OBJECTSBUILDDIR)
+	@if ls *.mod &> /dev/null; then \
+	mv -v ./*.mod $(BUILDDIR); \
+	cp -v ./thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
+	fi
+	@echo "*** Starting linking of files for OceanWave3D (Release)... ***"
+	@$(FC) $(FFLAGS) -o $(FOAM_USER_LIBBIN)/$(LIBNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
+	@echo "Shared library for OceanWave3D has been built successfully."
+
+
 # Compile only - compile all source file to build directory
 compile: $(OBJECTSBUILDDIR)
 

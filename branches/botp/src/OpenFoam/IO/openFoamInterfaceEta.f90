@@ -29,12 +29,10 @@
       INTEGER, POINTER :: inOrOut
       INTEGER, DIMENSION(:), POINTER :: NN
       REAL(KIND=long), DIMENSION(:), ALLOCATABLE :: etaTemp
-      REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y 
       REAL(KIND=long), DIMENSION(:), POINTER :: xStencil, yStencil, zStencil
       
       ! Assign local pointers
       !
-      x => FineGrid%x; y => FineGrid%y
 
       xStencil => interpolation%stencilX 
       yStencil => interpolation%stencilY 
@@ -44,8 +42,9 @@
 
       ! Calculate local interpolation stencils
       !
-       CALL makeStecils(x0) 
 
+      CALL makeStecils(x0) 
+      
       IF (FineGrid%Ny == 1) THEN ! Surface elevation defined in 1D
                       
         

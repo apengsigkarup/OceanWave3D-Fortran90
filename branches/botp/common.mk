@@ -5,9 +5,12 @@
 
 # Program name
 PROGNAME = OceanWave3D
+LIBNAME  = libOceanWave3D.so
 
 # Installation directory
 INSTALLDIR = $(HOME)/bin
+LIBINSTALLDIR = $(HOME)/lib
+
 
 # Build directory where object files are stored 
 BUILDDIR = $(PWD)/../build
@@ -86,8 +89,9 @@ ifeq ($(USER),botp)
   FC       = gfortran-4.6
   LIBDIRS  = -L$(HOME)/OceanWave3D/branches/botp/ThirdParty/lib/ 
   LINLIB   = -lharwell_gfortran-4.6 -lskit_gfortran-4.6 -llapack_gfortran-4.6 -lblas 
-  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -pedantic -fstack-protector-all
   OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+  SHlibFLAGS  = -shared -O2 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
 endif
 
 

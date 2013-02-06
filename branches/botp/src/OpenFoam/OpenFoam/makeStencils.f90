@@ -39,14 +39,14 @@
         x0Local(1) = x0(1)
         x0Local(2) = x0(2)
         x0Local(3) = x0(3) + FineGrid%h(NN(1),NN(2))
-        CALL OpenFoamNearestNeighbourZ(x0Local,NN,inOrOut)
+        CALL OpenFoamNearestNeighbourZ(x0Local)
 
         ! Evaluation of local interpolation stencils
         !
-        CALL TaylorInterpolation(1,x0Local,xStencil,NN,SIZE(xStencil))
-        CALL TaylorInterpolation(2,x0Local,yStencil,NN,SIZE(yStencil))
+        CALL TaylorInterpolation(1,x0Local,SIZE(xStencil))
+        CALL TaylorInterpolation(2,x0Local,SIZE(yStencil))
         IF(inOrOut .EQ. 0) THEN
-        CALL TaylorInterpolation(3,x0Local,zStencil,NN,SIZE(zStencil))
+        CALL TaylorInterpolation(3,x0Local,SIZE(zStencil))
         ELSE
         NN(3) = -1000
         END IF

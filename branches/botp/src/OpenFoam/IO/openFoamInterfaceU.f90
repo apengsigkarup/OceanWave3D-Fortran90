@@ -34,10 +34,10 @@
       REAL(KIND=long), DIMENSION(:), ALLOCATABLE :: wTemp1D,wTemp
       REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y 
       
-
+      Nz = FineGrid%Nz; 
       ! Assign local pointers
       !
-      x => FineGrid%x; y => FineGrid%y; Nz = FineGrid%Nz; 
+      x => FineGrid%x; y => FineGrid%y;  
 
       xStencil => interpolation%stencilX 
       yStencil => interpolation%stencilY 
