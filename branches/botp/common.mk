@@ -91,7 +91,7 @@ ifeq ($(USER),botp)
   LINLIB   = -lharwell_gfortran-4.6 -lskit_gfortran-4.6 -llapack_gfortran-4.6 -lblas 
   DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -pedantic -fstack-protector-all
   OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
-  SHlibFLAGS  = -shared -O2 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
+  SHlibFLAGS  = -shared -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
 endif
 
 
