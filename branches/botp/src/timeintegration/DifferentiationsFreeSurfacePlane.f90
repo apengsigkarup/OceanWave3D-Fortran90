@@ -1,4 +1,5 @@
 SUBROUTINE DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

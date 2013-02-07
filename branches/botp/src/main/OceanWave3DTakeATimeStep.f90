@@ -1,5 +1,4 @@
 SUBROUTINE OceanWave3DTakeATimeStep()
-
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE

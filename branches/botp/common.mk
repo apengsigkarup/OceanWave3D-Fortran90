@@ -19,7 +19,7 @@ BUILDDIR = $(PWD)/../build
 # flag, or by creating a block for a specific $USER.  
 # Choose the Fortran compiler on this system
 # E.g. pathf90, f90, gfortran, gf90, ifort
-#FC = gfortran
+FC = gfortran
 #FC = gfortran44
 #FC = gfortran-4.4
 #FC = gf89

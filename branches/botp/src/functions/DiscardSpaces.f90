@@ -1,4 +1,5 @@
 SUBROUTINE DiscardSpaces(str)
+! By Allan P. Engsig-Karup.
 IMPLICIT NONE
 CHARACTER :: str*(*)
 INTEGER :: i

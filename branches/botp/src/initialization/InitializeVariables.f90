@@ -1,4 +1,5 @@
 SUBROUTINE InitializeVariables
+! By Allan P. Engsig-Karup.
 USE GlobalVariables
 IMPLICIT NONE
 INTEGER:: Nx, Ny, Nz

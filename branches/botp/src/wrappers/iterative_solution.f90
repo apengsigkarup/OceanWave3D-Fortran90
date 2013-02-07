@@ -1,4 +1,5 @@
 SUBROUTINE iterative_solution(rhss,n_rows,A_times_x,sol,CurrentGrid)
+! By Allan P. Engsig-Karup.
 USE MGlevels
 USE Precision
 USE Constants

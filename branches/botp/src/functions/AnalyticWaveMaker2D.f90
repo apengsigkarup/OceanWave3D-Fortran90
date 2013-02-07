@@ -2,6 +2,7 @@ SUBROUTINE AnalyticWaveMaker2D(i0,i1,x,time,time0,Ea,Pa)
 !
 ! A subroutine to feed in an exact incident wave solution at the positions x(1:nx) and time t.
 !
+! By Allan P. Engsig-Karup.
 USE GlobalVariables, ONLY: SFsol, g, dt, RandomWave, IncWaveType
 USE Precision
 USE Constants

@@ -1,4 +1,5 @@
 SUBROUTINE ALLOCATE_Wavefield_Type(Wavefield, Nx, Ny, Nz, GhostGridX, GhostGridy, GhostGridZ, swenseONOFF)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

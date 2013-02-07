@@ -1,5 +1,6 @@
 SUBROUTINE BuildLinearSystemMatrix(Nx,Ny,Nz,GlobalMatrix,GhostGridX,GhostGridY,GhostGridZ,dsigma,FineGrid,&
 		   FullRankStencils,alpha,beta,gamma)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

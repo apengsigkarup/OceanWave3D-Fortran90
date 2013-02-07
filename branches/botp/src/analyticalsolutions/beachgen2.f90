@@ -1,4 +1,5 @@
 SUBROUTINE BeachGen2(h0,h1,l,x,h,hx,hxx,Nx)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

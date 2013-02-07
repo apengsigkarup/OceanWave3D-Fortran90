@@ -1,4 +1,5 @@
 SUBROUTINE UpdateGhostLayerY(var,S,Nx,Ny,DiffStencils,beta,GhostGridX,GhostGridY)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE

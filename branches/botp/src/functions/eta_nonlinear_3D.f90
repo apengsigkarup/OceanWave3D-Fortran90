@@ -1,5 +1,6 @@
 SUBROUTINE eta_nonlinear_3D(k,angle,x,y,omega,time,n_four_modes,yy,eta,etax,etay,etaxx,etayy,etat)
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

@@ -1,4 +1,5 @@
 SUBROUTINE GaussSeidelARRAY(x,b,GridLevel,GhostGridX,GhostGridY,GhostGridZ, alpha, beta, gamma)
+! By Allan P. Engsig-Karup.
 !
 ! Tailored routine to apply the Gauss-Seidel method explicitly
 ! for solving A x = b

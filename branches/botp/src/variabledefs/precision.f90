@@ -1,5 +1,6 @@
 !>
 !! This module contains definitions to control precision in code.
+!! By Allan P. Engsig-Karup.
 !<
 MODULE Precision
 IMPLICIT NONE

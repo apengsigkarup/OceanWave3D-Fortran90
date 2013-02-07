@@ -1,5 +1,6 @@
 !>
 !! This module contains definitions for various useful constants.
+!! By Allan P. Engsig-Karup.
 !<
 MODULE Constants
 USE Precision

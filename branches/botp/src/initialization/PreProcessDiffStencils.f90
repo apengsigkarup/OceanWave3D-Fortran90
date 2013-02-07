@@ -1,4 +1,5 @@
 SUBROUTINE PreProcessDiffStencils(FineGrid,DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

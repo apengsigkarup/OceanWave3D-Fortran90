@@ -1,4 +1,5 @@
 SUBROUTINE BuildStencilsGridX(alpha,order,x,DiffStencils,Nx,Ny)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

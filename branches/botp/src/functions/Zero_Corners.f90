@@ -1,4 +1,5 @@
 SUBROUTINE Zero_Corners(A,B,Nx,Ny)
+! By Allan P. Engsig-Karup.
 USE PRECISION
 USE Constants
 IMPLICIT NONE

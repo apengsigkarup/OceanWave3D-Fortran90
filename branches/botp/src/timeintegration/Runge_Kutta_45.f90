@@ -1,4 +1,5 @@
 SUBROUTINE Runge_Kutta_45(rhsFreeSurface)
+! By Allan P. Engsig-Karup.
   USE Precision
   USE Constants
   USE GlobalVariables, ONLY: FineGrid, time, g, dt, GhostGridZ, PHI, &

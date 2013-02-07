@@ -2,6 +2,7 @@ SUBROUTINE GammaFunctions(x,n,dir,ftype,gam,param)
 !
 ! Gamma functions for relaxation
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 IMPLICIT NONE

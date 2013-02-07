@@ -1,4 +1,5 @@
 SUBROUTINE CheckError(STAT, err)
+! By Allan P. Engsig-Karup.
 IMPLICIT NONE
 INTEGER :: STAT, err
 IF (STAT/=0) THEN
@@ -23,6 +24,8 @@ IF (STAT/=0) THEN
          WRITE (*,'(A)') 'Error: Problem allocating an index map for ghost points in SUBROUTINE MGPreProcess.'
       CASE (10)
          WRITE (*,'(A)') 'Error: PRoblem allocating FineGrid%dsigmanew in SUBROUTINE PreparePreconditioner.'      
+      CASE (11)
+         WRITE (*,'(A)') 'Error: PRoblem allocating FineGrid%dsigmanew in SUBROUTINE PreparePreconditioner.'
 	  CASE DEFAULT
 	     WRITE (*,'(A)') 'Error: unspecified error number (ERR) from calling routine.'
    END SELECT

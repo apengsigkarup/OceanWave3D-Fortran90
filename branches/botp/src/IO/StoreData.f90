@@ -1,4 +1,5 @@
 SUBROUTINE StoreData(nx,ny,E,P,FineGrid,nr,formattype)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

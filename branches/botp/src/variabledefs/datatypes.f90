@@ -2,6 +2,7 @@
 !! User-defined data types.
 !!
 !! FIXME: For better compilations, all POINTER's should be changed to ALLOCATABLE.
+!! By Allan P. Engsig-Karup.
 !<
 MODULE DataTypes
 USE Precision

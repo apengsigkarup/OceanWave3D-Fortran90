@@ -9,6 +9,7 @@ SUBROUTINE StoreKinematicData(Nx,Ny,Nz,io,it)
 !! Write 3D kinematics data to an unformatted binary file
 !!
 !!
+!! By Allan P. Engsig-Karup.
 !<
 USE GlobalVariables
 IMPLICIT NONE

@@ -1,4 +1,5 @@
 SUBROUTINE DiffXXEvenCurvilinear(var,varXX,Nxg,Nyg,Nzg,CompGrid,kappa)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

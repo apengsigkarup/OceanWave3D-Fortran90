@@ -3,6 +3,7 @@ SUBROUTINE PrepareFullOperatorStencilsForGaussSeidelARRAY(DiffStencils,FullRankS
 ! Prepare all stencils for differential operators needed
 ! such that they can be added together as full-sized stencils.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

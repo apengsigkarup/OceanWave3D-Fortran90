@@ -1,4 +1,5 @@
 SUBROUTINE GatherData(nx,ny,nz,err,gridtypeZ,r,kh,formattype)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

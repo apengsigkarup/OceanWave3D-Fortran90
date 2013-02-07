@@ -1,4 +1,5 @@
 SUBROUTINE PrepareFullOperatorStencils(DiffStencils,FullRankStencils,alpha,beta,gamma,Nx,Ny,Nz)
+! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes

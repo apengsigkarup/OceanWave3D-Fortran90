@@ -4,6 +4,7 @@ SUBROUTINE DiffZArbitrary_CD(var,varZ,IndexesZ,StencilsZ,Nx,Ny,Nz,gamma)
 !
 ! Full rank stencils always applied.
 !
+! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE
