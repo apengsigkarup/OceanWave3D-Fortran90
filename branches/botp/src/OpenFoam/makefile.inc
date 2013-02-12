@@ -14,6 +14,7 @@ SOURCES += $(LDIR)/interpolation.f90
 #
 SOURCES += $(IODIR)/openFoamInterfaceEta.f90
 SOURCES += $(IODIR)/openFoamInterfaceU.f90
-#
+SOURCES += $(IODIR)/writeOceanwave3D.f90
+
 
 
