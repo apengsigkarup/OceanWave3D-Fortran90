@@ -51,6 +51,8 @@ SUBROUTINE OceanWave3DT0Setup
   print*,'setup ICs...'
   CALL SetupInitialConditions
   time=time0
+  dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
+  
   print*,'done with ICs'
   !
   IF (relaxONOFF>0) THEN

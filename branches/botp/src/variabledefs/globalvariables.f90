@@ -46,7 +46,7 @@ REAL(KIND=long), DIMENSION(:),   ALLOCATABLE :: ee, tm
 
 ! TIME INTEGRATION PARAMETERS
 INTEGER :: Nsteps, tstep, timemethod, RKSTAGES, extrapolationONOFF
-REAL(KIND=long) :: dt, time, time0, CFL, c, dxmin, dymin, dx, dy, dsigmamin
+REAL(KIND=long) :: dt, time, time0, CFL, c, dxmin, dymin, dx, dy, dsigmamin, dt0
 
 INTEGER :: solver, Precond, MGCoarseningStrategy, MGmaxgrids, GMRESmaxiterations
 
