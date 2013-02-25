@@ -210,14 +210,19 @@ DEALLOCATE(tmpfilter)
 !
 ! Turn off the boundary filtering if sigma_filt(1)=0
 !
-print *, 'FilterInit:  Boundary filtering is turned off.'
-print *, ' ' 
 !
 if(abs(sigma_filt(1))<1.e-12)then
+   print *, 'FilterInit:  Boundary filtering is turned off.'
+   print *, ' ' 
    filtercoefficients2=zero
    do i=1,max(filterALPHA,6)
       filtercoefficients2(i,i)=one
    end do
+else
+   print *, 'FilterInit:  Boundary filtering is turned on with values:'
+   print *, sigma_filt
+   print *, ' ' 
+
 end if
 
 
