@@ -29,14 +29,14 @@ IF (swenseONOFF==0) THEN
         ! LEFT
         DO j = 1+GhostGridY, Ny-GhostGridY
             DO i = 1,filterALPHA!-GhostGridX !keep up to filterALPHA to replace eventually first interior points which uses ghost value...
-              Wavefield%E(i+GhostGridX,j) = DOT_PRODUCT(tmp(1+1:filterNP+1,j),&
+              Wavefield%E(i+GhostGridX,j) = DOT_PRODUCT(tmp(1+GhostGridX:filterNP+GhostGridX,j),&
                 filtercoefficients2(1:filterNP,i))
           END DO
         END DO
         ! RIGHT
         DO j = 1+GhostGridY, Ny-GhostGridY
             DO i = 1,filterALPHA !1+GhostGridX,filterALPHA
-              Wavefield%E(i+Nx-filterALPHA-GhostGridX,j) = DOT_PRODUCT(tmp(Nx-(filterNP)+1-1:Nx-1,j),&
+              Wavefield%E(Nx-GhostGridX-filterALPHA+i,j) = DOT_PRODUCT(tmp(Nx-GhostGridX-(filterNP)+1:Nx-GhostGridX,j),&
                    filtercoefficients2(filterNP:1:-1,filterALPHA+1-i))
           END DO
         END DO
@@ -55,7 +55,7 @@ IF (swenseONOFF==0) THEN
           ! LEFT
           DO j = 1,filterALPHA!-GhostGridY !keep up to filterALPHA to replace eventually first interior points which uses ghost value...
               DO i = 1+GhostGridX, Nx-GhostGridX
-                Wavefield%E(i,j+GhostGridY) = DOT_PRODUCT(tmp(i,1+1:filterNP+1),&
+                Wavefield%E(i,j+GhostGridY) = DOT_PRODUCT(tmp(i,1+GhostGridY:filterNP+GhostGridY),&
                     filtercoefficients2(1:filterNP,j))
             END DO
           END DO

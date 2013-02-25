@@ -3,6 +3,19 @@ SUBROUTINE FilterInit(filtercoefficients,filtercoefficients2)
 USE Precision
 USE GlobalVariables, ONLY: tmpfilter,filterNP,filterALPHA,filterORDER,sigma_filt
 USE Constants
+!
+! Set up the filtering coefficients.  The variables tmpfilter, filtercoefficients 
+! and filtercoefficients2 have all been allocated and initialized to zero in 
+! ReadInputFileParameters.f90.  
+!
+! filtercoefficients(1:filterNP):  The centered S-G filter
+! filtercoefficients(1:filterNP,filterAlpha):  The off-centered coefficients towards a boundary 
+!
+! The off-centered coefficients of Berland et al JCP (2007) are applied to the
+! first 3 boundary points with the weights given by sigma_filt, then centered S-G filters 
+! are used up to point 6.  We assume that filterAlpha<=6.  
+!
+!  If sigma_filt(1)=0, then the boundary filtering is turned off.  
 
 IMPLICIT NONE
 
@@ -128,6 +141,7 @@ filtercoefficients((filterALPHA+2):filterNP) = tmpfilter(filterNP:(filterALPHA+2
 ! other choice of filtering not taking into account ghost point...
 !
 ! First point no filter : test
+filtercoefficients2=zero
 i=1
 filtercoefficients2(i,i)=1.d0
 ! First point, filter from Berland et al. (JCP 2007)
@@ -193,6 +207,18 @@ filtercoefficients2(1:i-1,i)=tmpfilter(i:2:-1)
 filtercoefficients2(i+1:11,i)=tmpfilter(11:i+1:-1)
 !
 DEALLOCATE(tmpfilter)
+!
+! Turn off the boundary filtering if sigma_filt(1)=0
+!
+print *, 'FilterInit:  Boundary filtering is turned off.'
+print *, ' ' 
+!
+if(abs(sigma_filt(1))<1.e-12)then
+   filtercoefficients2=zero
+   do i=1,max(filterALPHA,6)
+      filtercoefficients2(i,i)=one
+   end do
+end if
 
 
 END SUBROUTINE FilterInit

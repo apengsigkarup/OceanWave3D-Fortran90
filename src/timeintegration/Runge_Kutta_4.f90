@@ -279,20 +279,15 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   Wavefield%P    = Wavefield%P + dt/six*(k1_P+two*k2_P+two*k3_P+k4_P)
   RKtime = time+dt
 
-  ! Relaxation
-  IF (relaxONOFF==1) THEN
-     !     CALL RelaxationModule(Wavefield%E,Wavefield%P,RKtime)
-     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time0)
-  ENDIF
   ! Filtering
   IF (filteringONOFF>0) THEN
      IF (MOD(tstep,filteringONOFF)==0) THEN
         IF (SWENSEOnOff==0) THEN
            !hbb I've turned off the boundary filtering unless the incident-scattered decomposition is applied.  
-           CALL FILTERING(FineGrid%Nx,FineGrid%Ny,Wavefield%E,filterNP,filterALPHA,filtercoefficients, &
-                tstep)
-           CALL FILTERING(FineGrid%Nx,FineGrid%Ny,Wavefield%P,filterNP,filterALPHA,filtercoefficients, &
-                tstep)
+           CALL FILTERING(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E,filterNP,filterALPHA,filtercoefficients, &
+                tstep,GhostGridX,GhostGridY,filtercoefficients2)
+           CALL FILTERING(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%P,filterNP,filterALPHA,filtercoefficients, &
+                tstep,GhostGridX,GhostGridY,filtercoefficients2)
         ELSE
            ! GD: SWENSE changes, the filtering should be done on scattered+incident...
            ! This subroutine apply filtering on E and P with different specific treatment for SWENSE
@@ -304,6 +299,13 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
         END IF
      ENDIF
   ENDIF
+
+  ! Relaxation
+  IF (relaxONOFF==1) THEN
+     !     CALL RelaxationModule(Wavefield%E,Wavefield%P,RKtime)
+     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time0)
+  ENDIF
+
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
   IF (LinearONOFF==1) THEN

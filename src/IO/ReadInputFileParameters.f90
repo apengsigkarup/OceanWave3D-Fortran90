@@ -308,6 +308,11 @@ SUBROUTINE ReadInputFileParameters
      ! GD: addition filtering on boundaries
      ALLOCATE(filtercoefficients2(max(filterNP,13),max(filterALPHA,6)))
      filtercoefficients2 = zero
+     IF (filterALPHA>6)Then
+        WRITE(*,*)'** WARNING:  Off-centered filtering coefficients are only implemented for filterALPHA<=6.'
+        WRITE(*,*)'**           Some points may be left unfiltered. '
+     end IF
+
   ENDIF
 
   !
