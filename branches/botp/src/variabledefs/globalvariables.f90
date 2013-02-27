@@ -75,6 +75,7 @@ TYPE (SFparam) :: SFsol
 ! VARIABLES FOR Random waves
 INTEGER :: n_fft, n_wavem, j_wavem
 TYPE (RandomWaveParam) :: RandomWave
+TYPE (RandomWave3Dparam) :: RandomWave3D
 
 ! VARIABLES FOR the breaking model
 TYPE (BreakingModelParam) :: BreakMod
@@ -117,6 +118,7 @@ INTEGER :: curvilinearONOFF
 TYPE (Interpolation_def) :: Interpolation
 
 ! 3-dimensional wave generation from paddle signal
+! Deprecated!!
 !REAL(KIND=dp), DIMENSION(:,:), ALLOCATABLE :: Uneumann, waveFlux_inci
 
 END MODULE GlobalVariables

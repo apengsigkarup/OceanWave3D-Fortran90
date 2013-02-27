@@ -1,6 +1,6 @@
       SUBROUTINE waveGenerationFromPaddleSignal()
       ! 3-dimensional wave generation.
-      ! Implementation through inhohenious Neumann boundary conditions
+      ! Implementation through inhomogeneous Neumann boundary conditions
       ! specified in BuildLinearSystem.f90
       !
       ! Inputs:
@@ -30,10 +30,10 @@
       Nz = FineGrid%Nz + GhostGridZ
 
       !ALLOCATE(y(Nx,Ny),z(Nz))
-      dy_local = FineGrid%y(2,1)
-      dz = FineGrid%z(2)
+      !dy_local = FineGrid%y(2,1)
+      !dz = FineGrid%z(2)
 
-      omega = 2*3.1415/1
+      !omega = 2*3.1415/1
       DO j =1,Ny
         DO k = 1,Nz
               Uneumann(k,j) = waveFlux_inci(tstep,1)!0.05*cos(omega*time)

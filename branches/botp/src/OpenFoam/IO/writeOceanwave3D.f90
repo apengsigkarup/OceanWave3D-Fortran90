@@ -8,7 +8,7 @@
  INTEGER :: i, j, counter
  character(80) outputFileName
 
- print *, "Writing OceanWave3D hotstart to folder OCW3Dhotstart/" 
+ print *,"Writing OceanWave3D hotstart to folder OCW3Dhotstart/" 
  ! Create time name
  !
  WRITE (outputFileName, '(a, I0)') 'OCW3Dhotstart/OceanWave3D.',counter

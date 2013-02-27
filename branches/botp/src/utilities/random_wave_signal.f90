@@ -78,7 +78,6 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
            print *, dt,dt_inc
            stop
         END IF
-        print *, n1, ns_inc
         do i=1,n1
            READ(21,*,end=13)eta0(i)
            !do j=2,ns_inc

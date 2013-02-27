@@ -11,7 +11,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! GD: to test the cross derivatives...
   REAL(KIND=long), DIMENSION(:,:,:), ALLOCATABLE :: tmpPHI
   TYPE (Diff_def)        :: FullRankStencils
-  INTEGER i, j, k
+  INTEGER i, j, k,n1 ,n2
 
   ! OUTPUT HEADER TO SCREEN
   WRITE (6,2010)
@@ -121,7 +121,7 @@ SUBROUTINE OceanWave3DT0Setup
            WRITE(6,73)RandomWave%inc_wave_file
 73         FORMAT(' The incident wave will be read from file ',a30,/)
         ELSE
-           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1, or 2.'
+           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1 or 2.'
            STOP
         END IF
         !
@@ -166,6 +166,32 @@ SUBROUTINE OceanWave3DT0Setup
              RandomWave%Tp, RandomWave%Hs, RandomWave%h0, g, RandomWave%inc_wave_file,          &
              RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%eta,              &
              RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf, time0)
+     ELSEIF(IncWaveType==3)THEN
+        
+        ! The grid is also assumed to be uniform in the relaxation/generation zone(s) and 
+        ! we expect to generate in X-directed relaxation zones.  Other areas are 
+        ! not yet supported.  -HBB
+        !
+        RandomWave3D%dx=FineGrid%x(RelaxZones(1)%idx(1)+1,1)-FineGrid%x(RelaxZones(1)%idx(1),1)
+        print *, RandomWave3D%x0, RandomWave3D%dx
+        j_wavem=nint(RandomWave3D%x0/RandomWave3d%dx)+2
+        RandomWave3D%h0=FineGrid%h(j_wavem,1)
+        
+        ! Count the total number of grid points in the x-directed relaxation zones.  
+        !
+        n_wavem=0
+        DO i=1,relaxNo
+           If(RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X' &
+                .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+              n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
+           END If
+        END DO
+        n_wavem=n_wavem+GhostGridX ! Include the ghost point at the left boundary.  
+        print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1), &
+             ' in a depth of',RandomWave3D%h0,', the generation zone contains ',n_wavem, ' points.'
+
+      CALL waveGen3D(Nsteps,n_wavem,j_wavem,RandomWave3D%dx,RandomWave3D%h0,g,RandomWave3D%inc_wave_file,RandomWave3D%kh_max)
+
      ENDIF
   ENDIF
   !
@@ -414,7 +440,6 @@ SUBROUTINE OceanWave3DT0Setup
   VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   WOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
   ALLOCATE(dOF(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
-  !CALL setupwavegenfrompaddle
 
 2010 FORMAT(/, '*********************************************************',/,&
        '***                                                   ***',/,&

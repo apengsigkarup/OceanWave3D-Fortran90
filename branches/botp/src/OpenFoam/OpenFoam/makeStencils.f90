@@ -38,7 +38,7 @@
         ! OCW3D domain such that $x0(3) \in [0;eta]
         x0Local(1) = x0(1)
         x0Local(2) = x0(2)
-        x0Local(3) = x0(3) + FineGrid%h(NN(1),NN(2))
+        x0Local(3) = x0(3) + FineGrid%h(NN(1),NN(2)) 
         CALL OpenFoamNearestNeighbourZ(x0Local)
 
         ! Evaluation of local interpolation stencils

@@ -398,14 +398,21 @@ SUBROUTINE ReadInputFileParameters
      curvilinearONOFF = 0    ! Make sure it is the standard model which is employed (also for curvilinear 2D choices)
   END IF
 
+ IF(IncWaveType==2)THEN
   READ(FILEIP(1),*,ERR=32,END=32)RandomWave%ispec, RandomWave%Tp, RandomWave%Hs, RandomWave%h0,   &
        RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%x0, RandomWave%y0, &
        RandomWave%inc_wave_file
   Go To 33
-32 IF(IncWaveType==2)THEN
-     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
+32     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop
-  END IF
+ ELSEIF (IncWaveType==3) THEN
+   READ(FILEIP(1),*,ERR=34,END=34)RandomWave3D%x0, RandomWave3D%kh_max, &
+   RandomWave3D%inc_wave_file
+  Go To 33
+34     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
+     Stop
+ ENDIF
+
 33 Continue
 
   RETURN

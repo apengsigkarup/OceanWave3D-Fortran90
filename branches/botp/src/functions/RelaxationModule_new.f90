@@ -4,7 +4,7 @@ SUBROUTINE RelaxationModule_new(E,P,time,time0)
 !
 ! By Allan P. Engsig-Karup
 USE GlobalVariables, ONLY: RelaxZones, FineGrid, SFsol, g, relaxTransientTime, relaxNo, &
-	GhostGridX, GhostGridY, curvilinearONOFF
+	GhostGridX, GhostGridY, curvilinearONOFF, dt0, RandomWave3D, IncWaveType
 USE Precision
 USE Constants
 IMPLICIT NONE
@@ -12,7 +12,7 @@ IMPLICIT NONE
 ! GD: change
 REAL(KIND=long), DIMENSION(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY) :: E, P
 REAL(KIND=long) :: time, time0, FAC
-INTEGER :: i, j, k
+INTEGER :: i, j, k, itime
 REAL(KIND=long) :: tmpx(FineGrid%Nx+2*GhostGridX), tmpy(FineGrid%Ny+2*GhostGridY)
 
 IF (time<relaxTransientTime) THEN
@@ -58,20 +58,37 @@ DO i = 1, relaxNo
          END IF
       ELSE
          IF (RelaxZones(i)%degrees==zero) THEN
-            CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
-                 FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),time, &
-                 time0,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
-!      	CALL stream_func_wave_finite(RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1,&
-!!		     FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),time &
-!			 ,SFsol%n_four_modes,SFsol%zz,SFsol%yy,SFsol%k,g,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
-            DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
-               E(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j) = &
-                    E(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j)*(RelaxZones(i)%gam) &
-                    + FAC*RelaxZones(i)%Ea*(one-RelaxZones(i)%gam)
-               P(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j) = &
-                    P(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j)*(RelaxZones(i)%gam) &
-                    + FAC*RelaxZones(i)%Pa*(one-RelaxZones(i)%gam)
-            END DO
+             IF(IncWaveType==3) THEN !botp
+
+                ! Nearest neighbour interpolation !TODO: implement higher order
+                ! scheme.
+                itime = (time-time0)/dt0+1
+
+                DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
+                   E(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j) = &
+                        E(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j)*(RelaxZones(i)%gam) &
+                        + FAC*RandomWave3d%eta(:,j,itime)*(one-RelaxZones(i)%gam)
+                   P(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j) = &
+                        P(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j)*(RelaxZones(i)%gam) &
+                        + FAC*RandomWave3D%Phis(:,j,itime)*(one-RelaxZones(i)%gam)
+                END DO
+
+             ELSE
+                CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
+                     FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),time, &
+                     time0,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
+!      	CALL     stream_func_wave_finite(RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1,&
+!!               FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),time &
+!                ,SFsol%n_four_modes,SFsol%zz,SFsol%yy,SFsol%k,g,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
+                 DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
+                   E(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j) = &
+                        E(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j)*(RelaxZones(i)%gam) &
+                        + FAC*RelaxZones(i)%Ea*(one-RelaxZones(i)%gam)
+                   P(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j) = &
+                        P(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),j)*(RelaxZones(i)%gam) &
+                        + FAC*RelaxZones(i)%Pa*(one-RelaxZones(i)%gam)
+                END DO
+            ENDIF
          ELSE
             DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
                CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
