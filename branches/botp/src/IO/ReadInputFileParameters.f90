@@ -307,6 +307,11 @@ SUBROUTINE ReadInputFileParameters
      ! GD: addition filtering on boundaries
      ALLOCATE(filtercoefficients2(max(filterNP,13),max(filterALPHA,6)))
      filtercoefficients2 = zero
+     IF (filterALPHA>6)Then
+        WRITE(*,*)'** WARNING:  Off-centered filtering coefficients are only implemented for filterALPHA<=6.'
+        WRITE(*,*)'**           Some points may be left unfiltered. '
+     end IF
+
   ENDIF
 
   !
@@ -406,10 +411,13 @@ SUBROUTINE ReadInputFileParameters
 32     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop
  ELSEIF (IncWaveType==3) THEN
-   READ(FILEIP(1),*,ERR=34,END=34)RandomWave3D%x0, RandomWave3D%kh_max, &
+   READ(FILEIP(1),*,ERR=34,END=34)RandomWave3d%n1, RandomWave3D%order, RandomWave3D%x0, RandomWave3D%kh_max, &
+   RandomWave3D%inc_wave_file
+   
+   print *, RandomWave3d%n1, RandomWave3D%order, RandomWave3D%x0, RandomWave3D%kh_max, &
    RandomWave3D%inc_wave_file
   Go To 33
-34     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
+34     Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need irregular wave parameters.'
      Stop
  ENDIF
 
@@ -424,7 +432,7 @@ SUBROUTINE ReadInputFileParameters
 102 WRITE (*,'(A)') 'Error: Stencil for y-direction too large (rank>Ny) or too small (rank=0).'; STOP
 103 WRITE (*,'(A)') 'Error: Stencil for z-direction too large (rank>Nz) or too small (rank=0).'; STOP
 104 WRITE (*,'(A)') 'Error: Multigrid solver can only implemented when ghost layer is invoked.'; STOP
-105 WRITE (*,'(A)') 'Error: Cannot read all required parameters of line with Lx, Ly, Lz, É'; STOP
+105 WRITE (*,'(A)') 'Error: Cannot read all required parameters of line with Lx, Ly, Lz, É'; print *,Lx, Ly, Lz, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, GridX, GridY, GridZ, GhostGridX,  GhostGridY, GhostGridZ, fname_bottom; STOP
 
   ! REUSABLE OUTPUT FORMATS
 900 FORMAT (A,I5,A,I5,A,I5,A)

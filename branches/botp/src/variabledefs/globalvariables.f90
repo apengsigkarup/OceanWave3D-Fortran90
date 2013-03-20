@@ -119,6 +119,6 @@ TYPE (Interpolation_def) :: Interpolation
 
 ! 3-dimensional wave generation from paddle signal
 ! Deprecated!!
-!REAL(KIND=dp), DIMENSION(:,:), ALLOCATABLE :: Uneumann, waveFlux_inci
+REAL(KIND=dp), DIMENSION(:,:), ALLOCATABLE :: Uneumann, waveFlux_inci
 
 END MODULE GlobalVariables

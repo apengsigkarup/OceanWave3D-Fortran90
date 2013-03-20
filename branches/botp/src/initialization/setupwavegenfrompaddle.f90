@@ -36,9 +36,6 @@
 
           DO i=1,Nsteps-1
              READ(21,*,end=13)waveFlux_inci(i,:)
-             !DO j=2,ns_inc
-                !READ(21,*)dum
-             !END do
           END DO
           go to 14
 13    ndat=i-1

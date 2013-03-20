@@ -127,8 +127,11 @@ With contributions from
 Guialluame Ducrozet (guillaume.ducrozet@ec-nantes.fr, developing contributor)
    - Splitting method for potential
 
+Ole Lindberg (developing contributor)
+   - Ship-wave techniques
+
 OceanWave3D is developed in collaboration between 
-   - DTU Informatics, Technical University of Denmark, Denmark.
+   - DTU Compute (merge between former DTU Informatics and DTU Mathematics), Technical University of Denmark, Denmark.
    - DTU Mechanics, Technical University of Denmark, Denmark.
 
 A. Acknowledgment and License
@@ -140,10 +143,20 @@ Please acknowledge OceanWave3D in your work and any of your publications by usin
   AUTHOR    = "Engsig-Karup, A.P. and Bingham, H.B. and Lindberg, O.",
   TITLE     = "An efficient flexible-order model for {3D} nonlinear water waves",
   YEAR      = "2009",
-  JOURNAL   = JCP,
+  JOURNAL   = "Journal of Computational Physics",
   VOLUME    = "228",
   PAGES     = "2100-2118"
   }
 
-OceanWave3D is distributed under the GNU General Public License (See file LICENSE) and a base code was developed at DTU Mechanics 2006-2008 by Allan P. Engsig-Karup and improved at DTU Informatics 2008-2011 (current version) by Allan P. Engsig-Karup with contributions as mentioned below section 4 of this file.
+OceanWave3D is distributed under the GNU General Public License (See file LICENSE) and a base code was developed at DTU Mechanics 2006-2008 by Allan P. Engsig-Karup and entirely rewritten at DTU Informatics 2008-2011 (current version) by Allan P. Engsig-Karup with contributions as mentioned below section 4 of this file.
+
+A GPU-accelerated massively parallel version of OceanWave3D that can execute on heterogenous archictures using the CUDA programming model has been developed in collaboration between Morten Gorm Madsen (first proof-of-concept version), Stefam Lemvig Glimberg (advanced version within library) and Allan P. Engsig-Karup. In this version of the code the multigrid preconditioned defect correction method (PDC) appeared for the first time and it accessbile in this fortran version of the code as well. This work can be cited by the following reference
+
+   @ARTICLE{EngsigKarupEtAl2011,
+   AUTHOR = "Engsig-Karup, A. P. and Madsen, M. G. and Glimberg, S. L.",
+   TITLE = "A massively parallel {GPU}-accelerated model for analysis of fully nonlinear free surface waves",
+   JOURNAL = "International Journal of Numerical Methods in Fluids",
+   YEAR = "2011",
+   DOI = "10.1002/fld.2675"
+   }
 

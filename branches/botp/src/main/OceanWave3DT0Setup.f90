@@ -173,12 +173,12 @@ SUBROUTINE OceanWave3DT0Setup
         ! not yet supported.  -HBB
         !
         RandomWave3D%dx=FineGrid%x(RelaxZones(1)%idx(1)+1,1)-FineGrid%x(RelaxZones(1)%idx(1),1)
-        print *, RandomWave3D%x0, RandomWave3D%dx
         j_wavem=nint(RandomWave3D%x0/RandomWave3d%dx)+2
         RandomWave3D%h0=FineGrid%h(j_wavem,1)
         
         ! Count the total number of grid points in the x-directed relaxation zones.  
         !
+        if(RandomWave3D%n1<=0)THEN
         n_wavem=0
         DO i=1,relaxNo
            If(RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X' &
@@ -186,11 +186,13 @@ SUBROUTINE OceanWave3DT0Setup
               n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
            END If
         END DO
-        n_wavem=n_wavem+GhostGridX ! Include the ghost point at the left boundary.  
+        n_wavem=n_wavem!+GhostGridX ! Include the ghost point at the left boundary.  
+        RandomWave3d%n1 = n_wavem
+        ENDIF
         print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1), &
-             ' in a depth of',RandomWave3D%h0,', the generation zone contains ',n_wavem, ' points.'
+             ' in a depth of',RandomWave3D%h0,', the wave gauge grid contains ',RandomWave3D%n1, ' points.'
 
-      CALL waveGen3D(Nsteps,n_wavem,j_wavem,RandomWave3D%dx,RandomWave3D%h0,g,RandomWave3D%inc_wave_file,RandomWave3D%kh_max)
+      CALL waveGen3D(Nsteps,RandomWave3D%n1,j_wavem,RandomWave3D%dx,RandomWave3D%h0,g,RandomWave3D%inc_wave_file,RandomWave3D%kh_max)
 
      ENDIF
   ENDIF
@@ -294,6 +296,8 @@ SUBROUTINE OceanWave3DT0Setup
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
   ! Wave generation form paddle signal
+  !
+  CALL setupwavegenfrompaddle()
 
 
   !************************************************************************
@@ -448,8 +452,7 @@ SUBROUTINE OceanWave3DT0Setup
        '*** Copyright (C) 2009 Allan P. Engsig-Karup.         ***',/,&
        '***                                                   ***',/,&
        '*** This OceanWave3D program comes with ABSOLUTELY NO ***',/,&
-       '*** WARRANTY. This is free software, and you are      ***',/,&
-       '*** welcome to redistribute it under the conditions   ***',/,&
+       '*** WARRANTY. It is distributed under the conditions  ***',/,&
        '*** of the GNU General Public License version 3.      ***',/,&
        '***                                                   ***',/,&
        '***     Software library developed in 2009 by         ***',/,&

@@ -22,7 +22,7 @@ cd(dirpath)
 % *** Set these values to correspond to the run at hand.***
 initialstep = 0;
 Nsteps = 3000; %915;
-jump   = 1;
+jump   = 5;
 dt     = .0245
 g      = 9.81;
 plotmethod = 2;  % 1-> 2D, 2->3D

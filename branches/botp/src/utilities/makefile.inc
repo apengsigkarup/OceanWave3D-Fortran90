@@ -21,3 +21,4 @@ SOURCES += $(LDIR)/stream_func_coeffs.f
 SOURCES += $(LDIR)/stream_func_set_up.f90
 SOURCES += $(LDIR)/stream_func_wave_finite.f
 SOURCES += $(LDIR)/waveGen3D.f90
+SOURCES += $(LDIR)/waveGenerationFromPaddleSignal.f90 

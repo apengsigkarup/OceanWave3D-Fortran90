@@ -22,7 +22,7 @@
       ! Local variables
       !
       INTEGER :: j, k, Nx, Ny, Nz
-      REAL(KIND=long) :: omega, dz, dy_local 
+      REAL(KIND=long) :: omega, dz, dy_local,FAC,arg
       !REAL(KIND=long), ALLOCATABLE :: y(:,:), z(:) 
 
       Nx = FineGrid%Nx + GhostGridX*2
@@ -30,13 +30,23 @@
       Nz = FineGrid%Nz + GhostGridZ
 
       !ALLOCATE(y(Nx,Ny),z(Nz))
-      !dy_local = FineGrid%y(2,1)
-      !dz = FineGrid%z(2)
+      !dy_local = FineGrid%y(1,3)
+      dz = FineGrid%z(3)
 
       !omega = 2*3.1415/1
-      DO j =1,Ny
-        DO k = 1,Nz
-              Uneumann(k,j) = waveFlux_inci(tstep,1)!0.05*cos(omega*time)
+
+        IF (time<4) THEN
+          FAC = time/4
+        ELSE
+          FAC = 1.0
+        ENDIF
+
+
+      DO j =1+GhostGridY,FineGrid%Ny + GhostGridY
+        DO k = 1+GhostGridZ,FineGrid%Nz + GhostGridZ
+        !arg = 3*3.1415*(j-1)/(Ny-1)
+              Uneumann(k,j) = FAC*waveFlux_inci(tstep,j-GhostGridY)!    
+              !Uneumann(k,j) = omega*0.01*cos(omega*time + arg)*FAC !waveFlux_inci(tstep,1)!    
         END DO
       END DO
       END SUBROUTINE
