@@ -24,7 +24,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf89
 
-USER = botp
+USER = botpGbar
 
 # Compiler-dependent section
 
@@ -76,10 +76,9 @@ endif
 ifeq ($(FC),f90)
   # gbar, DTU, apek
   LIBDIRS  = -L$(HOME)/lib/ 
-  LINLIB   = -lharwell -lskit -xlic_lib=sunperf
-  DBFLAGS  = -pg -g -O0 # -static -woffoptions
-  OPTFLAGS = -O -fast 
-#  OPTFLAGS = -g -fast
+  LINLIB   = -lharwell_gfortran -lskit_gfortran -llapack_gfortran -lblas_gfortran 
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
 endif
 
 # Then this the blocks for specific users (this clobbers the above info.)
@@ -92,6 +91,16 @@ ifeq ($(USER),botp)
   DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
   OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
   SHlibFLAGS  = -shared -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
+endif
+
+ifeq ($(USER),botpGbar)
+  # botp Gbar
+  FC       = gfortran
+  LIBDIRS  = -L$(HOME)/OceanWave3D/branches/botp/ThirdParty/lib/ 
+  LINLIB   = -lharwell_gfortran -lskit_gfortran -llapack_gfortran -lblas
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+  SHlibFLAGS  = -shared -O2 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
 endif
 
 

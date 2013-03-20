@@ -13,7 +13,7 @@
 #installd = $(HOME)/lib
 
 #Kubuntu 12.04, botp
-FF = gfortran-4.6
+FF = gfortran
 FFLAGS = -O3 -ffree-line-length-none -pedantic -fno-automatic -shared -fPIC
 installd = ../lib/
 

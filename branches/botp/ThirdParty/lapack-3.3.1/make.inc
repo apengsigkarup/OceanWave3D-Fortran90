@@ -11,7 +11,7 @@ SHELL = /bin/sh
 #
 #  The machine (platform) identifier to append to the library names
 #
-PLAT = _gfortran-4.6
+PLAT = _gfortran
 #  
 #  Modify the FORTRAN and OPTS definitions to refer to the
 #  compiler and desired compiler options for your machine.  NOOPT
@@ -19,11 +19,11 @@ PLAT = _gfortran-4.6
 #  selected.  Define LOADER and LOADOPTS to refer to the loader
 #  and desired load options for your machine.
 #
-FORTRAN  = gfortran-4.6 -fimplicit-none -fPIC
-OPTS     = -O3
+FORTRAN  = gfortran -fimplicit-none -shared -fPIC
+OPTS     = 
 DRVOPTS  = $(OPTS)
 NOOPT    = -g -O0
-LOADER   = gfortran-4.6 
+LOADER   = gfortran 
 LOADOPTS =
 #
 # Timer for the SECOND and DSECND routines

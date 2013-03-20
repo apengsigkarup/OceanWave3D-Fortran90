@@ -20,13 +20,13 @@
 # Last Updated:  May 9, 1994.
 
 SHELL = /bin/sh
-F77 = gfortran-4.6
+F77 = gfortran
 # F77 = f77 
 # AR = ar rcv 
 AR = ar -rcv 
 # OPT = -c 
 # OPT = -c -static -64 -mips4 -O3 -r10000
-OPT = -c -O3 -fPIC
+OPT = -c -O3 -shared -fPIC
 
 # Cray options
 #F77 = cf77
@@ -82,7 +82,7 @@ DIRS =	.			\
 	UNSUPP/PLOTS
 
 lib libskit.a: $(OBJ) 
-	 $(AR) libskit_gfortran-4.6.a  $(OBJ) 
+	 $(AR) libskit_gfortran.a  $(OBJ) 
 ##	 ranlib libskit.a
 
 # do not ranlib on some architectures
@@ -97,7 +97,7 @@ clean:
 tarit: 
 	(cd ..; tar cvf - SPARSKIT2 | gzip -c > SPARSKIT2.tar.gz) 
 
-all: $(OBJ) $(OBJ2) libskit.a
+all: $(OBJ) $(OBJ2) libskit_gfortran.a
 
 BLASSM/blassm.o: BLASSM/blassm.f
 	(cd BLASSM ; $(F77)  $(OPT) blassm.f)
