@@ -153,12 +153,21 @@ TYPE RandomWaveParam
 END TYPE RandomWaveParam
 
 ! DEFINE a structure for 3D random wave generation
-TYPE RandomWave3Dparam
-	REAL(KIND=long) :: kh_max, x0, h0, dx,dy
-	INTEGER :: n2_data, order,n1
-        CHARACTER(len=30)  inc_wave_file
-        REAL(KIND=long), allocatable :: eta(:,:,:), Phis(:,:,:), y(:),x(:)
-END TYPE RandomWave3Dparam
+! OBSOLETE!!!!
+!TYPE RandomWave3Dparam
+	!REAL(KIND=long) :: kh_max, x0, h0, dx,dy
+	!INTEGER :: n2_data, order,n1
+        !CHARACTER(len=30)  inc_wave_file
+        !REAL(KIND=long), allocatable :: eta(:,:,:), Phis(:,:,:), y(:),x(:)
+!END TYPE RandomWave3Dparam
+
+! DEFINE a structure for 3D random wave generation by flux conditions
+TYPE wave3DFluxStruct
+	REAL(KIND=long) :: dt, rampTime
+	INTEGER :: n2, order
+    CHARACTER(len=30)  inc_wave_file
+    REAL(KIND=long), allocatable :: flux(:,:), y(:), time(:)
+END TYPE wave3DFluxStruct
 
 ! DEFINE a Structure for the wave breaking model parameters
 

@@ -75,13 +75,13 @@ print *, time
         !WRITE (6,2005) MINITER, MAXITER
      !endif
   !endif
- ! IF(MOD(tstep,10)==0)THEN
- !    WRITE (6,2020) ((count_1-count_0)*one)/count_rate
- !    WRITE (6,333) '    MINITER = ',MINITER,', MAXITER = ',MAXITER,', AVG. ITER=', &
- !         REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep,long))
- !    WRITE (6,334) '    STEP : ',tstep,', Step. iterations = ', &
- !         REAL(TOTALITER,long)-REAL(TOTALITEROLD,long)
- ! endif
+  !IF(MOD(tstep,10)==0)THEN
+     !WRITE (6,2020) ((count_1-count_0)*one)/count_rate
+     !WRITE (6,333) '    MINITER = ',MINITER,', MAXITER = ',MAXITER,', AVG. ITER=', &
+          !REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep,long))
+     !WRITE (6,334) '    STEP : ',tstep,', Step. iterations = ', &
+          !REAL(TOTALITER,long)-REAL(TOTALITEROLD,long)
+  !endif
 
   IF (StoreDataONOFF>0) THEN
      IF (MOD(tstep,StoreDataONOFF)==0) THEN		

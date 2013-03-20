@@ -19,7 +19,7 @@ BUILDDIR = $(PWD)/../build
 # flag, or by creating a block for a specific $USER.  
 # Choose the Fortran compiler on this system
 # E.g. pathf90, f90, gfortran, gf90, ifort
-FC = gfortran
+#FC = gfortran
 #FC = gfortran44
 #FC = gfortran-4.4
 #FC = gf89
@@ -87,9 +87,9 @@ endif
 ifeq ($(USER),botp)
   # botp kubuntu, 10.04-64bit
   FC       = gfortran-4.6
-  LIBDIRS  = -L$(HOME)/OceanWave3D/branches/botp/ThirdParty/lib/ 
-  LINLIB   = -lharwell_gfortran-4.6 -lskit_gfortran-4.6 -llapack_gfortran-4.6 -lblas 
-  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -pedantic -fstack-protector-all
+  LIBDIRS  = -L$(HOME)/OceanWave3D/branches/botp/ThirdParty/lib/ -L/usr/local/include
+  LINLIB   = -lharwell_gfortran-4.6 -lskit_gfortran-4.6 -llapack_gfortran-4.6 -lblas -lfftw3
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
   OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
   SHlibFLAGS  = -shared -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
 endif

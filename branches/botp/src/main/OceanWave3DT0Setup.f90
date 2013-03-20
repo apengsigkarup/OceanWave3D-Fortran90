@@ -168,31 +168,37 @@ SUBROUTINE OceanWave3DT0Setup
              RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf, time0)
      ELSEIF(IncWaveType==3)THEN
         
-        ! The grid is also assumed to be uniform in the relaxation/generation zone(s) and 
-        ! we expect to generate in X-directed relaxation zones.  Other areas are 
-        ! not yet supported.  -HBB
-        !
-        RandomWave3D%dx=FineGrid%x(RelaxZones(1)%idx(1)+1,1)-FineGrid%x(RelaxZones(1)%idx(1),1)
-        j_wavem=nint(RandomWave3D%x0/RandomWave3d%dx)+2
-        RandomWave3D%h0=FineGrid%h(j_wavem,1)
-        
-        ! Count the total number of grid points in the x-directed relaxation zones.  
-        !
-        if(RandomWave3D%n1<=0)THEN
-        n_wavem=0
-        DO i=1,relaxNo
-           If(RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X' &
-                .AND. RelaxZones(i)%WavegenONOFF==1) THEN
-              n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
-           END If
-        END DO
-        n_wavem=n_wavem!+GhostGridX ! Include the ghost point at the left boundary.  
-        RandomWave3d%n1 = n_wavem
-        ENDIF
-        print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1), &
-             ' in a depth of',RandomWave3D%h0,', the wave gauge grid contains ',RandomWave3D%n1, ' points.'
+        ! The following code is for 3D-wave genetation by relaxation Zones. This
+        ! method is OBSOLETE and we use inhomogeneous boundary conditions
+        ! instead 
 
-      CALL waveGen3D(Nsteps,RandomWave3D%n1,j_wavem,RandomWave3D%dx,RandomWave3D%h0,g,RandomWave3D%inc_wave_file,RandomWave3D%kh_max)
+        !! The grid is also assumed to be uniform in the relaxation/generation zone(s) and 
+        !! we expect to generate in X-directed relaxation zones.  Other areas are 
+        !! not yet supported.  -HBB
+        !!
+        !RandomWave3D%dx=FineGrid%x(RelaxZones(1)%idx(1)+1,1)-FineGrid%x(RelaxZones(1)%idx(1),1)
+        !j_wavem=nint(RandomWave3D%x0/RandomWave3d%dx)+2
+        !RandomWave3D%h0=FineGrid%h(j_wavem,1)
+        
+        !! Count the total number of grid points in the x-directed relaxation zones.  
+        !!
+        !if(RandomWave3D%n1<=0)THEN
+        !n_wavem=0
+        !DO i=1,relaxNo
+           !If(RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X' &
+                !.AND. RelaxZones(i)%WavegenONOFF==1) THEN
+              !n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
+           !END If
+        !END DO
+        !n_wavem=n_wavem!+GhostGridX ! Include the ghost point at the left boundary.  
+        !RandomWave3d%n1 = n_wavem
+        !ENDIF
+        !print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1), &
+             !' in a depth of',RandomWave3D%h0,', the wave gauge grid contains ',RandomWave3D%n1, ' points.'
+
+      !CALL waveGen3D(Nsteps,RandomWave3D%n1,j_wavem,RandomWave3D%dx,RandomWave3D%h0,g,RandomWave3D%inc_wave_file,RandomWave3D%kh_max)
+      
+      CALL setupwavegenfrompaddle()
 
      ENDIF
   ENDIF
@@ -294,10 +300,6 @@ SUBROUTINE OceanWave3DT0Setup
 !
   ! GD: Test to define correct initial spatail derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
-
-  ! Wave generation form paddle signal
-  !
-  CALL setupwavegenfrompaddle()
 
 
   !************************************************************************
@@ -439,11 +441,13 @@ SUBROUTINE OceanWave3DT0Setup
 
   ! BOTP
   !
- ALLOCATE( &
+  ALLOCATE( &
   UOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   WOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
   ALLOCATE(dOF(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
+  ALLOCATE(Uneumann(FineGrid%Nz+GhostGridZ,FineGrid%Ny+2*GhostGridY))
+  Uneumann = zero
 
 2010 FORMAT(/, '*********************************************************',/,&
        '***                                                   ***',/,&

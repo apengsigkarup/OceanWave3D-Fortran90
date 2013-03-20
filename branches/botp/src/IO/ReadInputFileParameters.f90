@@ -411,11 +411,11 @@ SUBROUTINE ReadInputFileParameters
 32     Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop
  ELSEIF (IncWaveType==3) THEN
-   READ(FILEIP(1),*,ERR=34,END=34)RandomWave3d%n1, RandomWave3D%order, RandomWave3D%x0, RandomWave3D%kh_max, &
-   RandomWave3D%inc_wave_file
+   !READ(FILEIP(1),*,ERR=34,END=34)RandomWave3d%n1, RandomWave3D%order, RandomWave3D%x0, RandomWave3D%kh_max, &
+   READ(FILEIP(1),*,ERR=34,END=34) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
    
-   print *, RandomWave3d%n1, RandomWave3D%order, RandomWave3D%x0, RandomWave3D%kh_max, &
-   RandomWave3D%inc_wave_file
+   !print *, RandomWave3d%n1, RandomWave3D%order, RandomWave3D%x0, RandomWave3D%kh_max, &
+   !RandomWave3D%inc_wave_file
   Go To 33
 34     Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need irregular wave parameters.'
      Stop

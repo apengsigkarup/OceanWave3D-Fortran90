@@ -8,47 +8,51 @@
       USE GlobalVariables
       USE DataTypes
       IMPLICIT NONE
-      INTEGER :: Nx, Ny, Nz, ndat, i
+      INTEGER :: Ny, Nz, ndat, i,n2,j,nt
       REAL(KIND=long) :: dt_inc 
+      REAL(KIND=long),ALLOCATABLE :: y(:), waveFlux_inci(:,:)
+
       CHARACTER(len=30) header
       
 
-      ALLOCATE(waveFlux_inci(Nsteps,FineGrid%Ny))
-      !ALLOCATE(waveFlux_tmp(Nsteps))
-
-      Nx = FineGrid%Nx + GhostGridX*2
       Ny = FineGrid%Ny + GhostGridY*2
       Nz = FineGrid%Nz + GhostGridZ
 
-      ! Read paddle signal from file
-      
-      !IF(i_spec==2)THEN
-      open(21,file='paddleSignal',status='old')
+      ! Read header
+      !
+      open(21,file=wave3DFlux%inc_wave_file,status='old')
       READ(21,'(A)',err=15)header
-      READ(21,*)dt_inc
-          IF(ABS(dt-dt_inc)>1.e-6)THEN
-             print *, 'setupWaveField.f90: The .inp and .iwf time steps &
-                 do not agree.'
-             print *, header
-             print *, dt,dt_inc
-             stop
-          END IF
+      READ(21,*)dt_inc, nt, n2
+      ! Allocate fields
+      !
+      ALLOCATE(waveFlux_inci(nt,n2),y(n2),wave3DFlux%time(nt))
 
-          DO i=1,Nsteps-1
-             READ(21,*,end=13)waveFlux_inci(i,:)
-          END DO
-          go to 14
-13    ndat=i-1
-      print *, ' Found ',ndat,' data points in the incident wave file.  &
-          Padding with zeros up to ',Nsteps
-      DO i=ndat+1,Nsteps
-         waveFlux_inci(i,:)=zero
-      END DO
+      ! Read rest of file
+      !
+      READ(21,*)(y(j),j=1,n2)
+      DO i=1,nt
+          READ(21,*,end=16) wave3DFlux%time(i),(waveFlux_inci(i,j),j=1,n2)
+      ENDDO
       go to 14
 15    print *, 'wave paddle.f90: No header line in the .iwf'
       stop
+16    print *, 'error reading wave flux data'
+      stop
 14    CLOSE(21)
 
-      ALLOCATE(Uneumann(Nz+GhostGridZ,Ny+GhostGridY))
+      IF(nt < Nsteps) THEN 
+        PRINT *, 'Time series for incident 3D-waves is to short, nt = ', &
+        nt , '< Nsteps = ' , Nsteps ,'. Reduce number of timesteps or zeropad signal.'  
+      stop
+      ENDIF
+
+      ALLOCATE(wave3DFlux%flux(ndat,n2))
+      !ALLOCATE(Uneumann(Nz,Ny))
+
+      ! Save data in global struct
+      !
+      wave3DFlux%flux = waveFlux_inci
+      wave3DFlux%n2 = n2
+      wave3DFlux%y = y
 
       END SUBROUTINE

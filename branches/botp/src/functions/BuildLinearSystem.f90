@@ -4,7 +4,7 @@ USE Precision
 USE Constants
 USE DataTypes
 USE GlobalVariables, ONLY: GhostGridX, GhostGridY, GhostGridZ, &
-	swenseONOFF, Wavefield, Uneumann ! FIXME: Wavefield is a problem here?? due to Multigrid algorithm
+	swenseONOFF, Wavefield, Uneumann,IncWaveType ! FIXME: Wavefield is a problem here?? due to Multigrid algorithm
 IMPLICIT NONE
 TYPE (Level_def), INTENT(IN) :: GridStruct
 INTEGER::Gidx, Gidx2, Nx, Ny, Nz, i, j, k, alpha, beta, gamma
@@ -140,7 +140,9 @@ ENDIF
   ! FIXME: Assumption here is that the plane is aligned with the x- and y-axes. Extend to
   !        general curvilinear coordinates.
   ! West  boundary
-  CAll waveGenerationFromPaddleSignal()
+  If(IncWaveType==3) THEN
+      CAll waveGenerationFromPaddleSignal()
+  ENDIF
   IF (GhostGridX==1) THEN
     i = 1
     DO j = 1+GhostGridY, Ny-GhostGridY
