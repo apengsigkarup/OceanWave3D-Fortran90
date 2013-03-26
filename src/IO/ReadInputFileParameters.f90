@@ -403,11 +403,24 @@ SUBROUTINE ReadInputFileParameters
      WRITE(*,'(A/)') '   Standard Cartesian model employed.'
      curvilinearONOFF = 0    ! Make sure it is the standard model which is employed (also for curvilinear 2D choices)
   END IF
-
+!
+! Linear mono-chromatic or random wave generation parameters.  
+!
+  READ(FILEIP(1),*,ERR=31,END=31)RandomWave%ispec, RandomWave%Tp, RandomWave%Hs, RandomWave%h0,   &
+       RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%x0, RandomWave%y0, &
+       RandomWave%inc_wave_file,RandomWave%beta
+  Go To 33
+31 Backspace(FILEIP(1)) 
   READ(FILEIP(1),*,ERR=32,END=32)RandomWave%ispec, RandomWave%Tp, RandomWave%Hs, RandomWave%h0,   &
        RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%x0, RandomWave%y0, &
        RandomWave%inc_wave_file
-  Go To 33
+  If(RandomWave%ispec /= 3) Then
+     RandomWave%beta=0
+  ELSE
+     Print *, 'ReadInputFileParameters:  For RandomWave%ispec==3, we need a heading angle.'
+     STOP
+  END If
+
 32 IF(IncWaveType==2)THEN
      Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop

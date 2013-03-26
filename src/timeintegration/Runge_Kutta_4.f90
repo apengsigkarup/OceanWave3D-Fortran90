@@ -283,7 +283,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   IF (filteringONOFF>0) THEN
      IF (MOD(tstep,filteringONOFF)==0) THEN
         IF (SWENSEOnOff==0) THEN
-           !hbb I've turned off the boundary filtering unless the incident-scattered decomposition is applied.  
+           !
            CALL FILTERING(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E,filterNP,filterALPHA,filtercoefficients, &
                 tstep,GhostGridX,GhostGridY,filtercoefficients2)
            CALL FILTERING(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%P,filterNP,filterALPHA,filtercoefficients, &
