@@ -44,6 +44,7 @@ SUBROUTINE OceanWave3DT0Setup
   CALL InitializeVariables
   !
   ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
+  !
   time=zero
   !
   ! Set up the initial conditions and the bathymetry data
@@ -52,6 +53,8 @@ SUBROUTINE OceanWave3DT0Setup
   CALL SetupInitialConditions
   time=time0
   print*,'done with ICs'
+  !
+  ! Set up for relaxations zones and wave generation.
   !
   IF (relaxONOFF>0) THEN
      CALL PreprocessRelaxationZones
@@ -109,17 +112,21 @@ SUBROUTINE OceanWave3DT0Setup
                 ' T=', e10.4,' and H=',e10.4,'.',//)
         ELSEIF(RandomWave%ispec==0)THEN
            WRITE(6,71)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
-71         FORMAT(' The incident wave is a P-M spectrum wave with',/,&
+71         FORMAT(' The incident wave is a 2D P-M spectrum with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave%ispec==1)THEN
            WRITE(6,72)RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
-72         FORMAT(' The incident wave is a JONSWAP spectrum wave with ',/, &
+72         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
                 'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave%ispec==2)THEN
            WRITE(6,73)RandomWave%inc_wave_file
 73         FORMAT(' The incident wave will be read from file ',a30,/)
+        ELSEIF(RandomWave%ispec==3)THEN
+           WRITE(6,74)RandomWave%beta,RandomWave%Tp,RandomWave%Hs,RandomWave%seed,RandomWave%seed2
+74         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
+                'to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSE
-           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1, or 2.'
+           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1,2 or 3.'
            STOP
         END IF
         !

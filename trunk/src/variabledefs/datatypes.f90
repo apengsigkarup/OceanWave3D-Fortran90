@@ -115,10 +115,10 @@ TYPE SFparam
 	REAL(KIND=long), POINTER :: zz(:), yy(:)
 END TYPE SFparam
 
-! DEFINE a Structure for random wave generation parameters
+! DEFINE a Structure for random and mono-chromatic wave generation parameters
 
 TYPE RandomWaveParam
-	REAL(KIND=long) :: Tp, Hs, h0, kh_max, dx, x0, y0
+	REAL(KIND=long) :: Tp, Hs, h0, kh_max, dx, x0, y0, beta
 	INTEGER :: ispec, seed, seed2, nf
         CHARACTER(len=30)  inc_wave_file
         REAL(KIND=long), allocatable :: eta(:,:), Phis(:,:), eta0(:), Phis0(:)
