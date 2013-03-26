@@ -119,6 +119,7 @@ ELSE
 END IF
 END Do
 792 FORMAT(2i8,1E16.6)
+Close(fileop(13))
 
 CONTAINS
 
