@@ -32,7 +32,7 @@
       ! Linear ramping in time
       !
       IF (time<wave3DFlux%rampTime) THEN
-        FAC = time/4
+        FAC = time/wave3DFlux%rampTime
       ELSE
         FAC = 1.0
       ENDIF
