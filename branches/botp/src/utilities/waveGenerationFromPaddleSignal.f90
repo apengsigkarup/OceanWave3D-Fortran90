@@ -51,8 +51,9 @@
           NNY = nint(y0/dy_local)+1-wave3DFlux%order/2
 
           ! One sided stencils at the boundaries
+          !
           IF(NNY<1) THEN
-            NNy = 1
+            NNY = 1
           ELSEIF((NNY+wave3DFlux%order-1)>wave3DFlux%n2) THEN
             NNY = wave3DFlux%n2 - wave3DFlux%order + 1
           ENDIF
