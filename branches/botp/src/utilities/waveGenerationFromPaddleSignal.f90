@@ -65,7 +65,7 @@
 
           ! Loop over the vertical direction and copy into global array
           DO k = 1+GhostGridZ,FineGrid%Nz + GhostGridZ
-                  Uneumann(k,j) = FAC*flux    
+                  Uneumann(k,j) = -FAC*flux    
           END DO
       END DO
       END SUBROUTINE
