@@ -10,8 +10,10 @@ SUBROUTINE ReadInputFileParameters
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
-    INTEGER ios, i, nxIC, nyIC, iflag_phi
-  REAL(kind=long) :: xtankIC, ytankIC, t0IC
+  INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones
+  REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, seed, seed2, x0, &
+       y0, betaR
+  CHARACTER(len=30):: inc_wave_file
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
   WRITE (*,FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
@@ -406,26 +408,47 @@ SUBROUTINE ReadInputFileParameters
 !
 ! Linear mono-chromatic or random wave generation parameters.  
 !
-  READ(FILEIP(1),*,ERR=31,END=31)RandomWave%ispec, RandomWave%Tp, RandomWave%Hs, RandomWave%h0,   &
-       RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%x0, RandomWave%y0, &
-       RandomWave%inc_wave_file,RandomWave%beta
+  READ(FILEIP(1),*,ERR=31,END=31) ispec,  Tp,  Hs,  h0,   &
+        kh_max,  seed,  seed2,  x0,  y0, &
+        inc_wave_file, betaR
   Go To 33
 31 Backspace(FILEIP(1)) 
-  READ(FILEIP(1),*,ERR=32,END=32)RandomWave%ispec, RandomWave%Tp, RandomWave%Hs, RandomWave%h0,   &
-       RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%x0, RandomWave%y0, &
-       RandomWave%inc_wave_file
-  If(RandomWave%ispec /= 3) Then
-     RandomWave%beta=0
+  READ(FILEIP(1),*,ERR=32,END=32) ispec,  Tp,  Hs,  h0,   &
+        kh_max,  seed,  seed2,  x0,  y0, &
+        inc_wave_file
+  If( ispec /= 3) Then
+      betaR=0
   ELSE
      Print *, 'ReadInputFileParameters:  For RandomWave%ispec==3, we need a heading angle.'
      STOP
   END If
+  Go To 33
 
 32 IF(IncWaveType==2)THEN
      Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop
   END IF
+
 33 Continue
+  !
+  ! Allocate a RandomWave structure for each zone, whether we need it or not so that 
+  ! each zone has a RandomWave associated with it.  
+  !
+  Allocate(RandomWave(relaxNo))
+  ! Put the scalar wave parameters into each structure and count the ones that will 
+  ! actually be used.  
+  nGenZones=0
+  Do i=1,relaxNo
+     RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
+     RandomWave(i)%h0=h0; RandomWave(i)%h0=x0; RandomWave(i)%y0=y0;
+     RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
+     RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
+     If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+        nGenZones=nGenZones+1
+     END If
+  END Do
+  Print *, '  Found ',nGenZones,' generation zones for the linear wave.'
+  Print *, ' '
 
   RETURN
 

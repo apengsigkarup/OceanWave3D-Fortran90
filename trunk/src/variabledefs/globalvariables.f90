@@ -73,7 +73,7 @@ TYPE (SFparam) :: SFsol
 
 ! VARIABLES FOR Random waves
 INTEGER :: n_fft, n_wavem, j_wavem
-TYPE (RandomWaveParam) :: RandomWave
+TYPE (RandomWaveParam), Allocatable :: RandomWave(:)
 
 ! VARIABLES FOR the breaking model
 TYPE (BreakingModelParam) :: BreakMod
