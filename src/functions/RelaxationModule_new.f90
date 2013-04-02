@@ -58,7 +58,7 @@ DO i = 1, relaxNo
          END IF
       ELSE
          IF (RelaxZones(i)%degrees==zero) THEN
-            CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
+            CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
                  FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),time, &
                  time0,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
 !      	CALL stream_func_wave_finite(RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1,&
@@ -74,7 +74,7 @@ DO i = 1, relaxNo
             END DO
          ELSE
             DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
-               CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
+               CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),&
                     tmpx(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2))*COS(RelaxZones(i)%degrees/180.0_long*pi) &
                     +tmpy(j)*SIN(RelaxZones(i)%degrees/180.0_long*pi),time,time0, &
                     RelaxZones(i)%Ea,RelaxZones(i)%Pa)
@@ -110,7 +110,7 @@ DO i = 1, relaxNo
          END IF
       ELSE
          IF (RelaxZones(i)%degrees==zero) THEN
-            CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(3),RelaxZones(i)%idx(4),   &
+            CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(3),RelaxZones(i)%idx(4),   &
                  tmpy(RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),time,time0,  &
                  RelaxZones(i)%Ea,RelaxZones(i)%Pa)
            !         CALL stream_func_wave_finite(RelaxZones(i)%idx(4)-RelaxZones(i)%idx(3)+1,&
@@ -124,7 +124,7 @@ DO i = 1, relaxNo
             END DO
          ELSE
             DO j = RelaxZones(i)%idx(1),RelaxZones(i)%idx(2)
-               CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(3),RelaxZones(i)%idx(4), &
+               CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(3),RelaxZones(i)%idx(4), &
                     -tmpy(RelaxZones(i)%idx(3):RelaxZones(i)%idx(4))                 &
                     *SIN(RelaxZones(i)%degrees/180.0_long*pi)+tmpx(j)*COS(RelaxZones(i)%degrees/180.0_long*pi), &
                     time,time0,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
@@ -158,7 +158,7 @@ DO i = 1, relaxNo
          END IF
       ELSE
          IF (RelaxZones(i)%degrees==zero) THEN
-            CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(3),RelaxZones(i)%idx(4),   &
+            CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(3),RelaxZones(i)%idx(4),   &
                  tmpy(RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),time,time0, &
                  RelaxZones(i)%Ea,RelaxZones(i)%Pa)
 !         CALL stream_func_wave_finite(RelaxZones(i)%idx(4)-RelaxZones(i)%idx(3)+1,&
@@ -174,7 +174,7 @@ DO i = 1, relaxNo
          ELSE
             DO j = RelaxZones(i)%idx(1),RelaxZones(i)%idx(2)
                k = j - RelaxZones(i)%idx(1) + 1
-               CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(3),RelaxZones(i)%idx(4),            &
+               CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(3),RelaxZones(i)%idx(4),            &
                     -tmpy(RelaxZones(i)%idx(3):RelaxZones(i)%idx(4))                            &
                     *SIN(RelaxZones(i)%degrees/180.0_long*pi)+tmpx(j)*COS(RelaxZones(i)%degrees/180.0_long*pi), &
                     time,time0,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
@@ -208,7 +208,7 @@ DO i = 1, relaxNo
          END IF
       ELSE
          IF (RelaxZones(i)%degrees==zero) THEN
-            CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2), &
+            CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(1),RelaxZones(i)%idx(2), &
                  tmpx(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2)),time,time0, &
                  RelaxZones(i)%Ea,RelaxZones(i)%Pa)
 	    DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
@@ -221,7 +221,7 @@ DO i = 1, relaxNo
          ELSE
 	    DO j = RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
                k = j - RelaxZones(i)%idx(3) + 1
-               CALL AnalyticWaveMaker2D(RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),            &
+               CALL AnalyticWaveMaker2D(i,RelaxZones(i)%idx(1),RelaxZones(i)%idx(2),            &
                     tmpx(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2))                            &
                     *COS(RelaxZones(i)%degrees/180.0_long*pi)+tmpy(j)*SIN(RelaxZones(i)%degrees/180.0_long*pi),&
                     time,time0,RelaxZones(i)%Ea,RelaxZones(i)%Pa)
