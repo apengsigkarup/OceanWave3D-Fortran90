@@ -29,6 +29,7 @@
       ! scheme.
       itime = (time-time0)/dt0+1
 
+      !print *, itime
       ! Linear ramping in time
       !
       IF (time<wave3DFlux%rampTime) THEN
@@ -53,9 +54,9 @@
           ! One sided stencils at the boundaries
           !
           IF(NNY<1) THEN
-            NNY = 1
+                NNY = 1
           ELSEIF((NNY+wave3DFlux%order-1)>wave3DFlux%n2) THEN
-            NNY = wave3DFlux%n2 - wave3DFlux%order + 1
+                NNY = wave3DFlux%n2 - wave3DFlux%order + 1
           ENDIF
 
           FluxInterp = wave3DFlux%flux(tstep,NNy:NNy+wave3DFlux%order-1)
