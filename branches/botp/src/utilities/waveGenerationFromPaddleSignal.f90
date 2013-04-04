@@ -33,9 +33,9 @@
       ! Linear ramping in time
       !
       IF (time<wave3DFlux%rampTime) THEN
-        FAC = time/wave3DFlux%rampTime
+        FAC = -two/(wave3DFlux%rampTime**3)*time**3+three/(wave3DFlux%rampTime**2)*time**2
       ELSE
-        FAC = 1.0
+        FAC = one
       ENDIF
 
       ! We assume that the wave gauges are uniformly spaced
