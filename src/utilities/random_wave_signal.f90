@@ -2,7 +2,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      grav, inc_wave_file, kh_max, seed, seed2, eta, Vs, etat0, Vst0, nf, time0)
   !-----------------------------------------------------------------------
   !
-  ! Generate a psuedo-random long crested wave over N1 time steps at
+  ! Generate a pseudo-random long crested wave over N1 time steps at
   ! N2 points over the 1D computational free-surface which has a total of NF
   ! points.  The grid spacing dx and the time step dt are assumed to be uniform 
   ! in the wave generation zone.  The water depth at the wavemaker (grid point j0) 

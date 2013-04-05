@@ -434,21 +434,23 @@ SUBROUTINE ReadInputFileParameters
   ! Allocate a RandomWave structure for each zone, whether we need it or not so that 
   ! each zone has a RandomWave associated with it.  
   !
-  Allocate(RandomWave(relaxNo))
-  ! Put the scalar wave parameters into each structure and count the ones that will 
-  ! actually be used.  
-  nGenZones=0
-  Do i=1,relaxNo
-     RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
-     RandomWave(i)%h0=h0; RandomWave(i)%h0=x0; RandomWave(i)%y0=y0;
-     RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
-     RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
-     If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
-        nGenZones=nGenZones+1
-     END If
-  END Do
-  Print *, '  Found ',nGenZones,' generation zones for the linear wave.'
-  Print *, ' '
+  IF (relaxONOFF==1) THEN ! GD: add this test in case of no relaxation zones defined
+      Allocate(RandomWave(relaxNo))
+      ! Put the scalar wave parameters into each structure and count the ones that will 
+      ! actually be used.  
+      nGenZones=0
+      Do i=1,relaxNo
+         RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
+         RandomWave(i)%h0=h0; RandomWave(i)%h0=x0; RandomWave(i)%y0=y0;
+         RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
+         RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
+         If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+            nGenZones=nGenZones+1
+         END If
+      END Do
+      Print *, '  Found ',nGenZones,' generation zones for the linear wave.'
+      Print *, ' '
+  ENDIF
 
   RETURN
 
@@ -459,7 +461,7 @@ SUBROUTINE ReadInputFileParameters
 102 WRITE (*,'(A)') 'Error: Stencil for y-direction too large (rank>Ny) or too small (rank=0).'; STOP
 103 WRITE (*,'(A)') 'Error: Stencil for z-direction too large (rank>Nz) or too small (rank=0).'; STOP
 104 WRITE (*,'(A)') 'Error: Multigrid solver can only implemented when ghost layer is invoked.'; STOP
-105 WRITE (*,'(A)') 'Error: Cannot read all required parameters of line with Lx, Ly, Lz, É'; STOP
+105 WRITE (*,'(A)') 'Error: Cannot read all required parameters of line with Lx, Ly, Lz, ...'; STOP
 
   ! REUSABLE OUTPUT FORMATS
 900 FORMAT (A,I5,A,I5,A,I5,A)

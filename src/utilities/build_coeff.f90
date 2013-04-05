@@ -12,7 +12,8 @@
         pm_spectrum, jonswap_spectrum, zero=0._long,          &
         one=1._long, two=2._long, four=4._long, half=.5_long,          &
         twopi, ran1, psi, mag
-   COMPLEX(kind=long) :: ETA(n/2), czero=(0._long,0._long), phase
+   REAL(kind=long) :: ETA(n) ! GD : modif so that types are compatible... n has to be a power of 2
+   COMPLEX(kind=long) :: phase
    EXTERNAL gasdev, ran1_b, pm_spectrum, jonswap_spectrum
 
    pi = acos(-one)
@@ -22,7 +23,9 @@
 
 ! Take care of zero and Nyquist frequencies.
 
-   eta (1) = czero
+   !eta (1) = czero
+   eta (1) = zero
+   eta (2) = zero
    open(unit=78,file='spectrum',status='unknown')
    write(78,79)
 79 format('# Spectrum for the random wave wavemaker signal. f, T, S(f)')
@@ -51,7 +54,11 @@
 
       write(78,*)freq,1/freq,spec
 
-      eta (i) = sqrt (two * spec) * cst * phase
+      !eta (i)   = sqrt (two * spec) * cst * phase
+      ! Real part
+      eta (2*i-1) = REAL(sqrt (two * spec) * cst * phase)
+      ! Imaginary part
+      eta (2*i)   = AIMAG(sqrt (two * spec) * cst * phase)
 
    END DO
 

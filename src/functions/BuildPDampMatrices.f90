@@ -20,7 +20,9 @@ SUBROUTINE BuildPDampMatrices(Nx,Ny,PDamp,FineGrid,alpha,beta)
   ! Build the 1D, derivative operators
   !
   ALLOCATE( PDamp%Grad(rank,rank,Nx) ) 
-  CAll BuildStencil_1D_Uneven(Nx,rank,FineGrid%x(PDamp%idx(1),1),PDamp%Grad)
+  !CAll BuildStencil_1D_Uneven(Nx,rank,FineGrid%x(PDamp%idx(1),1),PDamp%Grad)
+  ! GD: everything is done on Nx points afterward: don't see where the PDamp%idx(1) comes from? A vector has to be specified
+  CAll BuildStencil_1D_Uneven(Nx,rank,FineGrid%x(:,1),PDamp%Grad)
   ! 
   ! ALLOCATE TEMPORARY VECTORS FOR SPARSE OPERATOR ASSEMBLY
   dummy = Nx*Ny*rank 
