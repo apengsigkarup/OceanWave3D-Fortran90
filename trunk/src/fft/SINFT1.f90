@@ -2,7 +2,7 @@
 ! This is a version of Numerical Recipes fast sine transform routine.
       IMPLICIT NONE
       INTEGER n, j
-      REAL(8) y(n),y1,y2,SUM
+      REAL(4) y(n),y1,y2,SUM
       REAL(8) WR,WI,WPR,WPI,WTEMP,THETA
 
       THETA=3.141592653589793D0/DBLE(N)

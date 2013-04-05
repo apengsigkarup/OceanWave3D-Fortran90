@@ -19,9 +19,9 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran
 #FC = gfortran44
 #FC = gfortran-4.4
-FC = gf90
+#FC = gf90
 
-#USER = botp
+USER = gudu
 
 # First the blocks based on compiler name:  
 
@@ -100,4 +100,13 @@ ifeq ($(USER),olli)
   OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
 endif
 
+
+ifeq ($(USER),gudu)
+  # gudu linux machine
+  FC       = ifort
+  LIBDIRS  = -L$(HOME)/lib/
+  LINLIB   = -lharwell -lskit -llapack -lblas 
+  DBFLAGS  = -O0 -traceback -check all -warn all 
+  OPTFLAGS = -O3 -xHOST -ipo -ip
+endif
 

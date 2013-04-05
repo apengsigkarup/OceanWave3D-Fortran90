@@ -7,7 +7,7 @@
 !
       IMPLICIT NONE
       INTEGER n, j
-      REAL(8) Y (N + 1), SUM, y1, y2
+      REAL(4) Y (N + 1), SUM, y1, y2
       REAL(8) WR, WI, WPR, WPI, WTEMP, THETA
       THETA = 3.141592653589793D0 / DBLE (n)
       WR = 1.0D0
