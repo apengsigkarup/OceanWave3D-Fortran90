@@ -1,0 +1,224 @@
+!!\section{VTK\_GEO}
+!!
+!!VTK\_GEO is an interface to 8 different functions; there are 2 functions for each 4 different topologies actually supported:
+!!one function for mesh coordinates with R8P precision and one for mesh coordinates with R4P precision.
+!!This function must be called after VTK\_INI. It saves the mesh geometry. The inputs that must be passed change depending on
+!!the topologies choiced. Not all VTK topologies have been implemented (\virgo{polydata} topologies are absent). The signatures
+!!for all implemented topologies are now reported.
+!!
+!!\subsection{VTK\_GEO STRUCTURED POINTS}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Points Signature}]
+!! function VTK_GEO(Nx,Ny,Nz,X0,Y0,Z0,Dx,Dy,Dz) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{structured points} is useful for structured grid with uniform discretization steps.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Points Variables}]
+!!integer(I4P),     intent(IN):: Nx   ! number of nodes in x direction
+!!integer(I4P),     intent(IN):: Ny   ! number of nodes in y direction
+!!integer(I4P),     intent(IN):: Nz   ! number of nodes in z direction
+!!real(R8P or R4P), intent(IN):: X0   ! x coordinate of origin
+!!real(R8P or R4P), intent(IN):: Y0   ! y coordinate of origin
+!!real(R8P or R4P), intent(IN):: Z0   ! z coordinate of origin
+!!real(R8P or R4P), intent(IN):: Dx   ! space step in x
+!!real(R8P or R4P), intent(IN):: Dy   ! space step in y
+!!real(R8P or R4P), intent(IN):: Dz   ! space step in z
+!!integer(I4P)::                 E_IO ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X0,Y0,Z0,Dx,Dy,Dz} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be sure
+!!that all variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO structured point variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}Nx}] indicates the number of nodes in $X$ direction.
+!! \item[{\color{RoyalBlue}Ny}] indicates the number of nodes in $Y$ direction.
+!! \item[{\color{RoyalBlue}NZ}] indicates the number of nodes in $Z$ direction.
+!! \item[{\color{RoyalBlue}X0}] indicates the $X$ value of coordinates system origin. It is a scalar.
+!! \item[{\color{RoyalBlue}Y0}] indicates the $Y$ value of coordinates system origin. It is a scalar.
+!! \item[{\color{RoyalBlue}Z0}] indicates the $Z$ value of coordinates system origin. It is a scalar.
+!! \item[{\color{RoyalBlue}Dx}] indicates the uniform grid step discretization in $X$ direction. It is a scalar.
+!! \item[{\color{RoyalBlue}Dy}] indicates the uniform grid step discretization in $Y$ direction. It is a scalar.
+!! \item[{\color{RoyalBlue}DZ}] indicates the uniform grid step discretization in $Z$ direction. It is a scalar.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO structured point calling:
+!!
+!!\begin{boxred}{VTK\_GEO Structured Points Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4):: Nx,Ny,Nz
+!!real(8):: X0,Y0,Z0
+!!real(8):: Dx,Dy,Dz
+!!...
+!!E_IO = VTK_GEO(Nx,Ny,Nz, &
+!!               X0,Y0,Z0,Dx,Dy,Dz)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_GEO STRUCTURED GRID}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Grid Signature}]
+!!function VTK_GEO(Nx,Ny,Nz,NN,X,Y,Z) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{structured grid} is useful for structured grid with non-uniform discretization steps.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Structured Grid Variables}]
+!!integer(I4P),     intent(IN):: Nx      ! number of nodes in x direction
+!!integer(I4P),     intent(IN):: Ny      ! number of nodes in y direction
+!!integer(I4P),     intent(IN):: Nz      ! number of nodes in z direction
+!!integer(I4P),     intent(IN):: NN      ! number of all nodes
+!!real(R8P or R4P), intent(IN):: X(1:NN) ! x coordinates
+!!real(R8P or R4P), intent(IN):: Y(1:NN) ! y coordinates
+!!real(R8P or R4P), intent(IN):: Z(1:NN) ! z coordinates
+!!integer(I4P)::                 E_IO    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+!!sure that all variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO structured grid variables have the following meaning:
+!!
+!!\begin{description}
+!!  \item[{\color{RoyalBlue}Nx}] indicates the number of nodes in $X$ direction.
+!!  \item[{\color{RoyalBlue}Ny}] indicates the number of nodes in $Y$ direction.
+!!  \item[{\color{RoyalBlue}NZ}] indicates the number of nodes in $Z$ direction.
+!!  \item[{\color{RoyalBlue}NN}] indicates the number of all nodes, $NN= Nx\cdot Ny\cdot Nz$.
+!!  \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+!!  \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+!!  \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+!!  \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO structured grid calling:
+!!
+!!\begin{boxred}{VTK\_GEO Structured Grid Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: Nx=10,Ny=10,Nz=10
+!!integer(4), parameter:: Nnodi=Nx*Ny*Nz
+!!real(8):: X(1:Nnodi),Y(1:Nnodi),Z(1:Nnodi)
+!!...
+!!E_IO = VTK_GEO(Nx,Ny,Nz,Nnodi,X,Y,Z)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_GEO RECTILINEAR GRID}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Rectilinear Grid Signature}]
+!!function VTK_GEO(Nx,Ny,Nz,X,Y,Z) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{rectilinear grid} is useful for structured grid with non-uniform discretization steps even
+!!in generalized coordinates.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Rectilinear Grid Signature}]
+!!integer(I4P),     intent(IN):: Nx      ! number of nodes in x direction
+!!integer(I4P),     intent(IN):: Ny      ! number of nodes in y direction
+!!integer(I4P),     intent(IN):: Nz      ! number of nodes in z direction
+!!real(R8P or R4P), intent(IN):: X(1:Nx) ! x coordinates
+!!real(R8P or R4P), intent(IN):: Y(1:Ny) ! y coordinates
+!!real(R8P or R4P), intent(IN):: Z(1:Nz) ! z coordinates
+!!integer(I4P)::                 E_IO    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+!!sure that all variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO rectilinear grid variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}Nx}] indicates the number of nodes in $X$ direction.
+!! \item[{\color{RoyalBlue}Ny}] indicates the number of nodes in $Y$ direction.
+!! \item[{\color{RoyalBlue}Nz}] indicates the number of nodes in $Z$ direction.
+!! \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of nodes. It is a vector of $[1:Nx]$.
+!! \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of nodes. It is a vector of $[1:Ny]$.
+!! \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of nodes. It is a vector of $[1:Nz]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO rectilinear grid calling:
+!!
+!!\begin{boxred}{VTK\_GEO Rectilinear Grid Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: Nx=10,Ny=20,Nz=30
+!!real(4):: X(1:Nx),Y(1:Ny),Z(1:Nz)
+!!...
+!!E_IO = VTK_GEO(Nx,Ny,Nz,X,Y,Z)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_GEO UNSTRUCTURED GRID}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Unstructured Grid Signature}]
+!!function VTK_GEO(Nnodi,X,Y,Z) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{unstructured grid} is necessary for unstructured grid, the most general mesh format. This
+!!topology is also useful for scructured mesh in order to save only a non-structured clip of mesh.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO Unstructured Grid Variables}]
+!!integer(I4P),     intent(IN):: NN      ! number of nodes
+!!real(R8P or R4P), intent(IN):: X(1:NN) ! x coordinates of all nodes
+!!real(R8P or R4P), intent(IN):: Y(1:NN) ! y coordinates of all nodes
+!!real(R8P or R4P), intent(IN):: Z(1:NN) ! z coordinates of all nodes
+!!integer(I4P)::                 E_IO    ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+!!sure that all variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO unstructured grid variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}NN}] indicates the number of all nodes.
+!! \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of nodes. It is a vector of $[1:NN]$.
+!! \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of nodes. It is a vector of $[1:NN]$.
+!! \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of nodes. It is a vector of $[1:NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO unstructured grid calling:
+!!
+!!\begin{boxred}{VTK\_GEO Unstructured Grid Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: NN=100
+!!real(4):: X(1:NN),Y(1:NN),Z(1:NN)
+!!...
+!!E_IO = VTK_GEO(NN,X,Y,Z)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!In order to use the \virgo{unstructured grid} it is necessary to save also the \virgo{connectivity} of the grid. The
+!!connectivity must be saved with the function \MaiuscolettoBS{VTK\_CON}.
+!!

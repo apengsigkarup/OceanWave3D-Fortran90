@@ -1,0 +1,17 @@
+************************************************
+****           OceanWave3D TODOlist         ****
+************************************************
+
+SYNTAX:
+- TODO (Reported by who?)
+
+TODO-list:
+************************************************
+- Fix the linear problem. (eta=0 in system matrix, matrix re-built at every stage?) -HBB
+- Define different stable release versions using cvs tag <releasename>. I have defined a tag "beta" Feb 8, 2011, which should be a stable version. (APEK)
+- It appears that HBB? only added breaking model terms to the 1D setup with Nx>1 and Ny=1. Should be applied to all terms in the setup. (APEK)
+- setup error in SUBROUTINE ConstructTableCrossDerivatives. It is not setup correctly for 2D cases. BuildLinearSystemMatrix relies on this routine for the XZ and YZ stencils which in 2D have rank corresponding to 3D rather than 2D. 3D should be ok.  (APEK)
+- Makefile should include a test of existence of $(builddir) directory and if not, create it. (GUDU)
+- Include Thirdparty sources as done by BOTP in his branch and create a makefile to build all libraries (make use of common.mk maybe). The make all in lapack-3.3.1 is not working on my computer (problem in the make variants). By the way, we only need libblas and liblapack. (GUDU)
+- Examples present in examples/inputfiles are not working for now. (GUDU)
+
