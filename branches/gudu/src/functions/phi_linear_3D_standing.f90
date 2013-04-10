@@ -4,14 +4,14 @@ USE Precision
 USE Constants
 IMPLICIT NONE
 !
-REAL(KIND=long), INTENT(IN)  :: H,Lx,Ly,xc,yc,z,d,omega,time,grav
+REAL(KIND=long), INTENT(IN)  :: H,Lx,Ly,xc,yc,z,d,omega,time,grav,angle
 REAL(KIND=long), INTENT(OUT) :: phix,phiy,phiz
 REAL(KIND=long), INTENT(OUT), OPTIONAL :: phi,phit
 ! REAL(KIND=long), OPTIONAL :: y,phi,phiyy !Boundary fitted ?
 ! Local variables
 REAL(KIND=long) :: kx, ky, k_omegat, sink_omegat, cosk_omegat, temp1, temp2
 !
-REAL(KIND=long) :: HH,k,w,g,c,angle,x,y,tmp
+REAL(KIND=long) :: HH,k,w,g,c,x,y,tmp
 !
 x = xc*COS(-angle)-yc*SIN(-angle)
 y = xc*SIN(-angle)+yc*COS(-angle)

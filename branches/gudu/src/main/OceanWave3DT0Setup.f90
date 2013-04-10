@@ -46,13 +46,13 @@ SUBROUTINE OceanWave3DT0Setup
   ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
   !
   time=zero
-  !
-  ! Set up the initial conditions and the bathymetry data
-  !
-  print*,'setup ICs...'
-  CALL SetupInitialConditions
-  time=time0
-  print*,'done with ICs'
+!  !
+!  ! Set up the initial conditions and the bathymetry data
+!  !
+!  print*,'setup ICs...'
+!  CALL SetupInitialConditions
+!  time=time0
+!  print*,'done with ICs'
   !
   ! Set up for relaxations zones and wave generation.
   !
@@ -178,7 +178,6 @@ SUBROUTINE OceanWave3DT0Setup
         END DO
      ENDIF
   ENDIF
-stop
   !
   ! Set up the Pressure Damping Zones if any.
   !
@@ -188,6 +187,15 @@ stop
      print *, 'Pressure damping zones are set up'
      print *, ' '
   END If
+  !
+  ! Set up the initial conditions and the bathymetry data
+  ! FIXME: is it needed somewhere to have this setup before
+  ! PreprocessRelaxationZones?
+  !
+  print*,'setup ICs...'
+  CALL SetupInitialConditions
+  time=time0
+  print*,'done with ICs'
   IF (.FALSE.) THEN
      !
      ! Test code to validate buildlinearsystem subroutines.

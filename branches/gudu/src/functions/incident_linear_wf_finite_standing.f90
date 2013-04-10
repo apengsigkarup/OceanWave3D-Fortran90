@@ -19,6 +19,7 @@ IMPLICIT NONE
 INTERFACE
 	SUBROUTINE phi_linear_3D_standing(H,angle,Lx,Ly,x,y,z,d,omega,time,grav,phix,phiy,phiz,phi,phit)
     USE PRECISION
+    USE Constants
    	REAL(KIND=long), INTENT(IN)  :: H,Lx,Ly,x,y,z,d,omega,time,grav,angle
    	REAL(KIND=long), INTENT(OUT) :: phix,phiy,phiz
    	REAL(KIND=long), INTENT(OUT), OPTIONAL :: phi,phit
@@ -36,9 +37,9 @@ REAL(KIND=long), DIMENSION(nfx,nfy) :: bottom
 TYPE(Wavefield_FS) :: Wavefield
 ! Local variables
 INTEGER i, j, k, tmpIdx, Gidx3
-REAL(KIND=long) temp1,omega,angle
-REAL(KIND=long) zbp
-REAL(KIND=long) FAC
+REAL(KIND=long) :: temp1,omega,angle
+REAL(KIND=long) :: zbp
+REAL(KIND=long) :: FAC
 !
 !
 ! Time ramp and its derivatives

@@ -102,8 +102,13 @@ SUBROUTINE OceanWave3DTakeATimeStep
      ENDIF
   ELSEIF(StoreDataOnOff<0)THEN
      IF (MOD(tstep,-StoreDataONOFF)==0) THEN		
-        CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E,Wavefield%P, &
-             FineGrid,-tstep/StoreDataOnOff)
+        IF(swenseONOFF/=0) THEN
+            CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E+Wavefield%E_I,&
+                 Wavefield%P+Wavefield%P_I_s,FineGrid,-tstep/StoreDataOnOff)
+        ELSE
+            CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E,Wavefield%P, &
+                 FineGrid,-tstep/StoreDataOnOff)
+        ENDIF
      END IF
   ENDIF
   !
