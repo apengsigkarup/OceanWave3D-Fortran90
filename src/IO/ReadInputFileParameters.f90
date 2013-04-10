@@ -14,6 +14,7 @@ SUBROUTINE ReadInputFileParameters
   REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, seed, seed2, x0, &
        y0, betaR
   CHARACTER(len=30):: inc_wave_file
+  CHARACTER(len=80):: line  ! the line buffer for relaxation zones
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
   WRITE (*,FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
@@ -343,10 +344,13 @@ SUBROUTINE ReadInputFileParameters
      ALLOCATE( RelaxZones(relaxNo) )
      ! 
      DO i=1,relaxNo
-        READ (FILEIP(1),*, err=43) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
+        ! read a line into memory : allows to read line by line!
+45      READ (FILEIP(1), '(A)', err=43) line
+        ! read value from the line
+        RelaxZones(i)%PhiOnOff=1 ! Assign value before READ so that it is assigned even if error
+        READ (LINE, *, end=43) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
              RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
-             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees !, RelaxZones(i)%PhiOnOff
-        RelaxZones(i)%PhiOnOff=1
+             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees, RelaxZones(i)%abstype !, RelaxZones(i)%PhiOnOff
         !        print *, i,'yes',RelaxZones(i)%BBox(1),RelaxZones(i)%PhiOnOff
      END DO
      go to 44
@@ -357,9 +361,24 @@ SUBROUTINE ReadInputFileParameters
      !hbb
      !443  format(4F10.2,I2,F10.2,A1,I2,A1,F10.2,I2)
      !443     format(4F16.6,I8,F16.6,A1,I8,A1,F16.6,I8)
-43   print *, 'Error reading the relaxation zone lines.' !  Note the new format that requires '
+43   print *, 'Error reading the relaxation zone lines.'
+     !BACKSPACE FILEIP(1) ! READ the same line another time / FIXED : use LINE instead
+     READ (LINE,*, err=431, end=431) RelaxZones(i)%BBox(1), RelaxZones(i)%BBox(2), RelaxZones(i)%BBox(3), &
+             RelaxZones(i)%BBox(4), RelaxZones(i)%ftype, RelaxZones(i)%param, RelaxZones(i)%XorY, &
+             RelaxZones(i)%WavegenOnOff, RelaxZones(i)%XorYgen, RelaxZones(i)%degrees
+     !  Note the new format that requires '
      ! print *, 'a value for PhiOnOff=0 (off) or 1 (on) at the end of each zone defn. line.'
-     stop
+     print *, 'missing a value for abstype=0 (absorption of scattered) or 1 (absorption of incident+scattered)'
+     print *, 'put to zero by default...'
+     RelaxZones(i)%abstype = 0
+     !pause
+     IF(i.LT.relaxNo) THEN
+        i = i+1
+        go to 45
+     ELSE
+        go to 44
+     ENDIF
+431  stop
 44   continue
   ENDIF
   !
@@ -427,7 +446,11 @@ SUBROUTINE ReadInputFileParameters
 32 IF(IncWaveType==2)THEN
      Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
      Stop
-  END IF
+   ELSE !Assign values for next lines
+     ispec=0;  Tp=0;  Hs=0;  h0=0;   &
+        kh_max=0;  seed=0;  seed2=0;  x0=0;  y0=0; &
+        inc_wave_file='zero'; betaR=0
+   END IF
 
 33 Continue
   !
@@ -441,7 +464,7 @@ SUBROUTINE ReadInputFileParameters
       nGenZones=0
       Do i=1,relaxNo
          RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
-         RandomWave(i)%h0=h0; RandomWave(i)%h0=x0; RandomWave(i)%y0=y0;
+         RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
          RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
          RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
          If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN

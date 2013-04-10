@@ -153,6 +153,7 @@ TYPE RelaxZone
 	CHARACTER(len=1)               :: XorYgen        ! coordinate direction for generation
     REAL(KIND=long), DIMENSION(:), POINTER :: Ea, Pa ! Storage for analytical solution
     REAL(KIND=long)                :: degrees        ! coordinate rotation angle in degrees
+    INTEGER                        :: abstype        ! absorption to be used with NL decomposition : scattered (0) or total (1)
 END TYPE RelaxZone
 
 ! Pressure Damping Zones.  

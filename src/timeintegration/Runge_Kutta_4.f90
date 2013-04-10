@@ -7,7 +7,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
        RHS, relaxONOFF, LASTPHI, tstep, extrapolationONOFF, LinearONOFF, filteringONOFF, &
        filterALPHA, filterNP, filtercoefficients, GhostGridX, GhostGridY,                &
        swenseONOFF, swenseDir, SFsol, Wavefield , curvilinearONOFF, Wavefield_tmp,       &
-       filtercoefficients2, BreakMod, fileop
+       filtercoefficients2, BreakMod, fileop, East_refl, West_refl, North_refl, South_refl
   IMPLICIT NONE
   !
   EXTERNAL rhsFreeSurface, BuildLinearSystem, BuildLinearSystemTransformedCurvilinear, DiffXEven, DiffYEven, FILTERING, &
@@ -35,11 +35,13 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      IF (LinearONOFF==0) THEN
         ! First stage: no need to recalculate incident wavefield (linear only), Wavefield and Wavefield_tmp are OK
      ELSE
-        CALL incident_wf_finite(swenseDir, Wavefield, &
-             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
-             FineGrid%h,time,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
-        ! GD: Assign the incident wavefield part...
-        CALL ASSIGN_IncidentWavefield(Wavefield_tmp, Wavefield, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+        ! FIXME: do we need this computation?
+        ! GD: change Jan 2013
+        !CALL incident_wf_finite(swenseDir, Wavefield, &
+        !     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+        !     FineGrid%h,time,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+        !! GD: Assign the incident wavefield part...
+        !CALL ASSIGN_IncidentWavefield(Wavefield_tmp, Wavefield, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
      ENDIF
   ENDIF
   !
@@ -63,14 +65,50 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   Wavefield_tmp%P = Wavefield%P + half*dt*k1_P
   RKtime = time+half*dt
 
+  ! GD: choice of rhs for SWENSE...
+  IF (swenseONOFF/=0) THEN ! Evaluation of incident wavefield
+     IF (LinearONOFF==0) THEN
+        CALL incident_linear_wf_finite(swenseDir, Wavefield_tmp, &
+             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+             FineGrid%h,time+half*dt,SFsol%k,g,SFsol%HH,SFsol%h)
+        ! Assign incident wavefield values to Wavefield Needed in the buildlinear subroutines FIXME ! (define Wavefield as argument in interative_solution+buildlinear)
+        CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+     ELSE
+        !DO i1=1,relaxno
+        !    IF(RelaxZones(i1)%abstype==1) THEN
+                CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+                    FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,FineGrid%h,&
+                    time+half*dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+                ! Assign incident wavefield values to Wavefield Needed in the buildlinear subroutines FIXME ! (define Wavefield as argument in interative_solution+buildlinear)
+                CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+        !        EXIT
+        !    ENDIF
+        !ENDDO
+     ENDIF
+  ENDIF
+
   ! Relaxation
   IF (relaxONOFF==1) THEN
-     ! CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
+     IF (swenseONOFF/=0) THEN
+        CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0,Wavefield_tmp%E_I,Wavefield_tmp%P_I_s)
+     ELSE
+        CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
+     ENDIF
   ENDIF
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
+
   IF (LinearONOFF==1) THEN
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! FIXME : not necessary this step... ?
+    IF (swenseONOFF/=0) THEN
+      CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+	 		FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+            FineGrid%h,RKtime,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+!      ! GD: Assign the incident wavefield part...
+  	  CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+    ENDIF
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      !	CALL DetermineTransformationConstants(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
      !	     FineGrid%Nz+GhostGridZ,FineGrid,FineGrid%dsigma,Wavefield_tmp)
      ! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
@@ -78,6 +116,10 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
           FineGrid,FineGrid%dsigmanew,Wavefield_tmp)
      !  ENDIF
+    ! FIXME : useful only if reflection on boundaries is activated...
+    IF((East_refl==1).OR.(West_refl==1).OR.(North_refl==1).OR.(South_refl==1)) THEN
+        CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+    ENDIF
   ENDIF
 
   RHS(FineGrid%Nz+GhostGridZ,1+GhostGridX:FineGrid%Nx+GhostGridX,1+GhostGridY:FineGrid%Ny+GhostGridY) = &
@@ -103,19 +145,24 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! GD: choice of rhs for SWENSE...
   IF (swenseONOFF/=0) THEN ! Evaluation of incident wavefield
      IF (LinearONOFF==0) THEN
-        CALL incident_linear_wf_finite(swenseDir, Wavefield_tmp, &
-             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
-             FineGrid%h,time+half*dt,SFsol%k,g,SFsol%HH,SFsol%h)
+        ! No need to recalculate incident wavefield (linear only)
+        !CALL incident_linear_wf_finite(swenseDir, Wavefield_tmp, &
+        !     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+        !     FineGrid%h,time+half*dt,SFsol%k,g,SFsol%HH,SFsol%h)
      ELSE
         !print*,'This has to be done...'
         !PAUSE
-        CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
-             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,FineGrid%h,&
-             time+half*dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+        ! FIXME : not necessary this step... ?
+        ! GD: change Jan 2013
+        !CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+        !     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,FineGrid%h,&
+        !     time+half*dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
      ENDIF
      ! Assign incident wavefield values to Wavefield Needed in the buildlinear subroutines FIXME ! (define Wavefield as argument in interative_solution+buildlinear)
-     CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+     ! GD: change Jan 2013
+     !CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
   ENDIF
+
   !
   ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
@@ -137,20 +184,55 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   Wavefield_tmp%P = Wavefield%P + half*dt*k2_P
   RKtime = time+half*dt
 
+  ! GD: choice of rhs for SWENSE...
+  IF (swenseONOFF/=0) THEN
+     IF (LinearONOFF==0) THEN
+        ! No need to recalculate incident wavefield (linear only)
+     ELSE
+        !DO i1=1,relaxno
+        !    IF(RelaxZones(i1)%abstype==1) THEN
+                CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+                     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+                     FineGrid%h,time+half*dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+                ! Assign incident wavefield values to Wavefield Needed in the buildlinear subroutines FIXME ! (define Wavefield as argument in interative_solution+buildlinear)
+                CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+        !        EXIT
+        !    ENDIF
+        !ENDDO
+     ENDIF
+  ENDIF
+
   ! Relaxation
   IF (relaxONOFF==1) THEN
-     !     CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
+     IF (swenseONOFF/=0) THEN
+        CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0,Wavefield_tmp%E_I,Wavefield_tmp%P_I_s)
+     ELSE
+        CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
+     ENDIF
   ENDIF
+
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+
   IF (LinearONOFF==1) THEN
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! FIXME : not necessary this step... ?
+    IF (swenseONOFF/=0) THEN
+      CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+	 		FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+            FineGrid%h,RKtime,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+    ENDIF
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      CALL DetermineTransformationConstants(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,FineGrid,&
           FineGrid%dsigmanew,Wavefield_tmp)
      ! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
-     IF (curvilinearONOFF==1) THEN
-        CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
-             FineGrid,FineGrid%dsigmanew,Wavefield_tmp)
-     ENDIF
+     !IF (curvilinearONOFF==1) THEN
+     !   CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
+     !        FineGrid,FineGrid%dsigmanew,Wavefield_tmp)
+     !ENDIF
+     ! FIXME : useful only if reflection on boundaries is activated...
+    IF((East_refl==1).OR.(West_refl==1).OR.(North_refl==1).OR.(South_refl==1)) THEN
+        CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+    ENDIF
   ENDIF
 
   RHS(FineGrid%Nz+GhostGridZ,1+GhostGridX:FineGrid%Nx+GhostGridX,1+GhostGridY:FineGrid%Ny+GhostGridY) = &
@@ -173,11 +255,13 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      IF (LinearONOFF==0) THEN
         ! Third stage: no need to recalculate incident wavefield (linear only)
      ELSE
-        CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
-             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
-             FineGrid%h,time+half*dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
-        ! Assign incident wavefield values to Wavefield Needed in the buildlinear subroutines FIXME ! (define Wavefield as argument in interative_solution+buildlinear)
-        CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+        ! FIXME : not necessary this step... ?
+        ! GD: change Jan 2013
+        !CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+        !     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+        !     FineGrid%h,time+half*dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+        !! Assign incident wavefield values to Wavefield Needed in the buildlinear subroutines FIXME ! (define Wavefield as argument in interative_solution+buildlinear)
+        !CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
      ENDIF
   ENDIF
   !
@@ -198,22 +282,62 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   Wavefield_tmp%P = Wavefield%P + dt*k3_P
   RKtime = time+dt
 
+ ! GD: choice of rhs for SWENSE...
+  IF (swenseONOFF/=0) THEN ! Evaluation of incident wavefield
+     IF (LinearONOFF==0) THEN
+        CALL incident_linear_wf_finite(swenseDir, Wavefield_tmp, &
+             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+             FineGrid%h,time+dt,SFsol%k,g,SFsol%HH,SFsol%h)
+        ! Assign incident wavefield values to Wavefield (to prevent from 1st RKstep computation + following computation)
+        CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+     ELSE
+        !DO i1=1,relaxno
+        !    IF(RelaxZones(i1)%abstype==1) THEN
+                CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+                    FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+                    FineGrid%h,time+dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+                ! Assign incident wavefield values to Wavefield (to prevent from 1st RKstep computation + following computation)
+                CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+        !        EXIT            
+        !     ENDIF
+        !ENDDO
+     ENDIF
+  ENDIF
+
   ! Relaxation
   IF (relaxONOFF==1) THEN
-     !     CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
+     IF (swenseONOFF/=0) THEN
+        CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0,Wavefield_tmp%E_I,Wavefield_tmp%P_I_s)
+     ELSE
+        CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time0)
+     ENDIF
   ENDIF
 
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+
   IF (LinearONOFF==1) THEN
-     ! GD: New variable definition
-     CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,FineGrid, &
-          FineGrid%dsigmanew,Wavefield_tmp)
-     ! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
-     IF (curvilinearONOFF==1) THEN
+      IF (swenseONOFF/=0) THEN
+        ! FIXME : not necessary this step... ?
+    !!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+	     		FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+                FineGrid%h,RKtime,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+          !
+      	  CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+      ENDIF
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !! GD: New variable definition
+     !CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,FineGrid, &
+     !     FineGrid%dsigmanew,Wavefield_tmp)
+     !! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
+     !IF (curvilinearONOFF==1) THEN
         CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
              FineGrid,FineGrid%dsigmanew,Wavefield_tmp)
-     ENDIF
+     !ENDIF
+    ! FIXME : useful only if reflection on boundaries is activated...
+    IF((East_refl==1).OR.(West_refl==1).OR.(North_refl==1).OR.(South_refl==1)) THEN
+        CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+    ENDIF
   ENDIF
 
   RHS(FineGrid%Nz+GhostGridZ,1+GhostGridX:FineGrid%Nx+GhostGridX,1+GhostGridY:FineGrid%Ny+GhostGridY) = &
@@ -245,16 +369,20 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! GD: choice of rhs for SWENSE...
   IF (swenseONOFF/=0) THEN ! Evaluation of incident wavefield
      IF (LinearONOFF==0) THEN
-        CALL incident_linear_wf_finite(swenseDir, Wavefield_tmp, &
-             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
-             FineGrid%h,time+dt,SFsol%k,g,SFsol%HH,SFsol%h)
+        ! No need to recalculate incident wavefield (linear only)
+        !CALL incident_linear_wf_finite(swenseDir, Wavefield_tmp, &
+        !     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+        !     FineGrid%h,time+dt,SFsol%k,g,SFsol%HH,SFsol%h)
      ELSE
-        CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
-             FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
-             FineGrid%h,time+dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+        ! FIXME : not necessary this step... ?
+        ! GD: change Jan 2013
+        !CALL incident_wf_finite(swenseDir, Wavefield_tmp, &
+        !     FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+        !     FineGrid%h,time+dt,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
      ENDIF
      ! Assign incident wavefield values to Wavefield (to prevent from 1st RKstep computation + following computation)
-     CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+     ! GD: change Jan 2013
+     !CALL ASSIGN_IncidentWavefield(Wavefield, Wavefield_tmp, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
   ENDIF
   !
   ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
@@ -300,22 +428,65 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
      ENDIF
   ENDIF
 
+  ! FIXME: what is the best choice : do this before or after filtering?
+  IF (LinearONOFF==1) THEN
+    !DO i1=1,relaxno
+    !    IF(RelaxZones(i1)%abstype==1) THEN
+    IF (swenseONOFF/=0) THEN
+    !!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        CALL incident_wf_finite(swenseDir, Wavefield, &
+            FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+            FineGrid%h,RKtime,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+        ! GD: Assign the incident wavefield part...
+        CALL ASSIGN_IncidentWavefield(Wavefield_tmp, Wavefield, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+    !!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ENDIF
+     !CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,FineGrid, &
+     !     FineGrid%dsigmanew,Wavefield)
+     !! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
+     !IF (curvilinearONOFF==1) THEN
+        !! FIXME : necessary to compute dsigmanew here ?
+        !CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
+        !     FineGrid,FineGrid%dsigmanew,Wavefield)
+     !ENDIF
+    !    EXIT
+    !    ENDIF
+    !ENDDO
+  ENDIF
+
   ! Relaxation
   IF (relaxONOFF==1) THEN
-     !     CALL RelaxationModule(Wavefield%E,Wavefield%P,RKtime)
-     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time0)
+     IF (swenseONOFF/=0) THEN
+        CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time0,Wavefield%E_I,Wavefield%P_I_s)
+     ELSE
+        CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time0)
+     ENDIF
   ENDIF
 
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
   IF (LinearONOFF==1) THEN
-     CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,FineGrid, &
-          FineGrid%dsigmanew,Wavefield)
-     ! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
-     IF (curvilinearONOFF==1) THEN
+    IF (swenseONOFF/=0) THEN
+! FIXME : not necessary this step... ?
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      CALL incident_wf_finite(swenseDir, Wavefield, &
+	 		FineGrid%Nx+2*GhostGridX,FineGrid%x,FineGrid%Ny+2*GhostGridY,FineGrid%y,FineGrid%Nz+GhostGridz,FineGrid%z,&
+            FineGrid%h,RKtime,SFsol%k,g,SFsol%n_four_modes,SFsol%zz,SFsol%yy)
+      ! GD: Assign the incident wavefield part...
+  	  CALL ASSIGN_IncidentWavefield(Wavefield_tmp, Wavefield, FineGrid%Nx+2*GhostGridX, FineGrid%Ny+2*GhostGridY)
+!!!!!!!!!!!!!!!!!!!! test GD july 2011 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ENDIF
+     !CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,FineGrid, &
+     !     FineGrid%dsigmanew,Wavefield)
+     !! GD: test !FIXME: check that dsigma is not used in Curvilinear (i.e. just dsigmanew) NO keep both for VerticalFreeSurfaceVelocity (to optimize)
+     !IF (curvilinearONOFF==1) THEN
         CALL DetermineTransformationConstantsArray(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%Nz+GhostGridZ,&
              FineGrid,FineGrid%dsigmanew,Wavefield)
-     ENDIF
+     !ENDIF
+    ! FIXME : useful only if reflection on boundaries is activated...
+    IF((East_refl==1).OR.(West_refl==1).OR.(North_refl==1).OR.(South_refl==1)) THEN
+        CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
+    ENDIF
   ENDIF
 
   RHS(FineGrid%Nz+GhostGridZ,1+GhostGridX:FineGrid%Nx+GhostGridX,1+GhostGridY:FineGrid%Ny+GhostGridY) = &
