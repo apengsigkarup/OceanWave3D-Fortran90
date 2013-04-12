@@ -24,7 +24,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf89
 
-USER = botp
+USER = botpGbar
 
 # Compiler-dependent section
 
