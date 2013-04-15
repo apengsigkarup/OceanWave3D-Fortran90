@@ -1,15 +1,16 @@
-SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
+SUBROUTINE random_wave_signal(i_spec, n1, n2, x0, x, dt, Tp, Hs, depth, &
      grav, inc_wave_file, kh_max, seed, seed2, eta, Vs, etat0, Vst0, nf, time0)
   !-----------------------------------------------------------------------
   !
-  ! Generate a pseudo-random long crested wave over N1 time steps at
-  ! N2 points over the 1D computational free-surface which has a total of NF
-  ! points.  The grid spacing dx and the time step dt are assumed to be uniform 
-  ! in the wave generation zone.  The water depth at the wavemaker (grid point j0) 
-  ! is depth.  The wave can be based on a P-M or JONSWAP spectrum, or an 
-  ! input time series read from inc_wave_file, depending on i_spec.  The 
-  ! wave is moved around in space using linear theory in the frequency 
-  ! domain.  eta & Vs are returned with time series
+  ! Generate a pseudo-random long crested wave with direction beta to the 
+  ! x-axis, over N1 time steps at N2 points over the 1D computational
+  ! free-surface which has a total of NF points.  
+  ! The x-positions of the points in the wave generation zone are given by x(1:n2) 
+  ! and the time-step dt is uniform.  The water depth at the wavemaker (x0) 
+  ! is depth.  The wave can be based on a P-M (i_spec=0) or JONSWAP (ispec=1) 
+  ! spectrum, or an input time series read from inc_wave_file (i_spec=2).  
+  ! The wave is moved around in space using linear theory in the frequency 
+  ! domain.  eta & Vs are returned with the time series
   ! of elevation and potential at z=0 in the wavemaker zone (j=1,n2).
   ! etat0 & Vst0 hold the initial conditions over the entire domain for the P-M or
   ! JONSWAP case but not for an input wave (this is not implemented yet !HBB).  
@@ -21,17 +22,17 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
   IMPLICIT none
   CHARACTER(len=30) inc_wave_file, header
   integer, parameter :: long=selected_real_kind(12,99)
-  integer i_spec, seed, seed2, n1, n2, j0, nf
-  real(kind=long) :: Tp, Hs, dx, dt, depth, time0
-  real(kind=long) :: Vs(n2,n1,*), eta(n2,n1), Vst0(nf,*), etat0(nf)
+  integer i_spec, seed, seed2, n1, n2, nf
+  real(kind=long) :: Tp, Hs, dt, depth, time0, x0, grav
+  real(kind=long) :: x(n2), Vs(n2,n1,*), eta(n2,n1), Vst0(nf,*), etat0(nf)
 
   ! Local variables
   INTEGER :: i, j, ns_inc, n_cut, ndat
-  real(kind=long) :: cosb, sinb, factor, domega, realpt, beta, grav,     &
+  real(kind=long) :: cosb, sinb, factor, domega, realpt, beta, dx,       &
        imagpt, spec, phase, nu, coslnu, sinlnu, magx2, x2(3), x1(2),     &
-       kinf, omega, dist, fn, realarg, imagarg, reala, imaga,            &
+       kinf, omega, dist, realarg, imagarg, reala, imaga,                &
        zero=0._long,  one=1._long, two=2._long, pi,twopi,udum=1.0_long,  &
-       velfact, tanhkhi, dt_inc, dum, kh_max, phifact, kh, t, x, amp
+       velfact, tanhkhi, dt_inc, dum, kh_max, phifact, kh, t, amp
   !
   ! Local workspace
   !
@@ -67,7 +68,6 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      ! Note that the same spectral parameters and SEED values always give the same
      ! incident wave.
      !
-     fn = zero
      IF(i_spec==2)THEN
         open(21,file=inc_wave_file,status='old')
         READ(21,'(A)',err=15)header
@@ -103,6 +103,7 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      n_cut=nint(sqrt(grav*kh_max/depth*tanh(kh_max))/domega)+1
      Print *, 'Truncating the spectrum at T=',twopi/((n_cut-1)*domega), &
           ' which corresponds to kh=',kh_max
+     dx=x(2)-x(1)
      print *, 'The deep water resolution of this wave is ',2*pi*depth/(kh_max*dx)+one, &
           ' points per wavelength.'
      Print *, ' '
@@ -147,13 +148,13 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
      !
      DO j = 1, n2
         !
-        ! Compute the distance (dist) from the origin of the coordinates (j0) to
+        ! Compute the distance (dist) from the origin of the coordinates (x0) to
         ! the point where the wave elevation is to be obtained, measured along
         ! the direction of wave propogation.
         !
         x1 (1) = cos (beta)
         x1 (2) = sin (beta)
-        x2 (1) = (j-j0)*dx
+        x2 (1) = x(j)-x0
         x2 (2) = zero
         !
         ! Beta is the angle between the (positive sense of the) incident wave
@@ -240,17 +241,17 @@ SUBROUTINE random_wave_signal(i_spec, n1, n2, j0, dx, dt, Tp, Hs, depth, &
         t=time0+(i-1)*dt
         eta0(i)=amp*cos(-omega*t)
         do j=1,n2
-           x=(j-j0)*dx
-           eta(j,i)=amp*cos(nu*x-omega*t)
-           Vs(j,i,1)=phifact*amp*sin(nu*x-omega*t)
+           dist=x(j)-x0
+           eta(j,i)=amp*cos(nu*dist-omega*t)
+           Vs(j,i,1)=phifact*amp*sin(nu*dist-omega*t)
         end do
      end do
      !
      !  Write the wavemaker signal.
      !
      open(21,file='eta0_irregular',status='unknown')
-     write(21,36)Hs,Tp
-36      format('% Mono-chromatic wave with H=',e12.4,' T=',e12.4,'.')
+     write(21,36)Hs,Tp,depth
+36      format('% Mono-chromatic wave with H=',e12.4,' T=',e12.4,' at x=',e12.4,'.')
      do i=1,n1
         write(21,*)(i-1)*dt,eta0(i)
      end do

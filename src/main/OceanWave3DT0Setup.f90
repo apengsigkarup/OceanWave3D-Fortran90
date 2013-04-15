@@ -78,16 +78,11 @@ SUBROUTINE OceanWave3DT0Setup
         ENDIF
         dsigmamin = FineGrid%z(FineGrid%Nz)-FineGrid%z(FineGrid%Nz-1)
         c = SFsol%L / SFsol%T
-        !print*,'dxmin=',dxmin
-        !print*,'dymin=',dymin
-        !print*,'min dx,dy =',MIN(dxmin,dymin)
-        !print*,'c=',c
-        !print*,'CFL=',CFL
         dt = CFL*MIN(dxmin,dymin)/c
         PRINT*,''
         PRINT*,'  Time step size modified based on the incident wave. dt = ',dt
-        PRINT*,'  Courant number, Cr = ',c*dt/MIN(dxmin,dymin)
-        PRINT*,'  Discrete anisotropy, ds/dx = ',dsigmamin/dxmin
+        PRINT*,'  Courant number based on min. (dx,dy) and c=',c,', Cr = ',c*dt/MIN(dxmin,dymin)
+        PRINT*,'  Discrete anisotropy, ds_min/dx_min = ',dsigmamin/dxmin
      END IF
      IF (IncWaveType==1 ) THEN
         CALL stream_func_set_up(g,SFsol%h,SFsol%T,SFsol%i_wavel_or_per,SFsol%L,  &
@@ -121,12 +116,29 @@ SUBROUTINE OceanWave3DT0Setup
         ELSEIF(RandomWave(1)%ispec==2)THEN
            WRITE(6,73)RandomWave(1)%inc_wave_file
 73         FORMAT(' The incident wave will be read from file ',a30,/)
-        ELSEIF(RandomWave(1)%ispec==3)THEN
-           WRITE(6,74)RandomWave(1)%beta,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2
-74         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
-                'to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
+        ELSEIF(RandomWave(1)%ispec==-30)THEN
+           WRITE(6,74)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%beta
+74         FORMAT(' The incident wave is a linear, long-crested mono-chromatic wave with',/,&
+                ' T=', e10.4,' and H=',e10.4,' at angle ',f10.2,' deg. to the x-axis.',//)
+        ELSEIF(RandomWave(1)%ispec==30)THEN
+           WRITE(6,75)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
+                RandomWave(1)%beta
+75         FORMAT(' The incident wave is a 2D P-M spectrum with',/,&
+                ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/, &
+                ' at angle ',f10.2,' deg. to the x-axis.',// )
+        ELSEIF(RandomWave(1)%ispec==31)THEN
+           WRITE(6,76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
+                RandomWave(1)%beta
+76         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
+                'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/,  &
+                ' at angle ',f10.2,' deg. to the x-axis.',// )
+        ELSEIF(RandomWave(1)%ispec==33)THEN
+           WRITE(6,77)RandomWave(1)%beta,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
+                RandomWave(1)%seed2
+77         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
+                ' deg. to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSE
-           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1,2 or 3.'
+           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1,2 for 2D waves; or -30,30,31,33 for 3D waves.'
            STOP
         END IF
         !
@@ -145,40 +157,69 @@ SUBROUTINE OceanWave3DT0Setup
            n_fft=Nsteps
         END IF
         !
-        ! The grid is also assumed to be uniform in the relaxation/generation zone(s) and 
-        ! we expect to generate in X-directed relaxation zones.  Other areas are 
-        ! not yet supported.  -HBB
+        ! Linear wave generation is only implemented for X-directed relaxation zones.  
+        ! Other areas are not yet supported.  -HBB
         !
         !
         ! Count the total number of grid points in each generation zone and allocate space
         ! for eta and phiS
         !  
-        DO i=1,relaxNo
-           n_wavem=0
-           If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
-              n_wavem=n_wavem+RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
-              RandomWave(i)%dx=FineGrid%x(RelaxZones(i)%idx(1)+1,1)  &
-                   -FineGrid%x(RelaxZones(i)%idx(1),1)
-              j_wavem=nint(RandomWave(1)%x0/RandomWave(1)%dx)+2
-              n_wavem=n_wavem+GhostGridX ! Include the ghost point at the left boundary.  
-              print *, 'The generated wave is centered at x=',FineGrid%x(j_wavem,1),      &
-                   ' in a depth of',RandomWave(i)%h0,', the generation zone contains ',   &
-                   n_wavem, ' points.'
-              RandomWave(i)%nf=FineGrid%nx
-              !
-              ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft), &
-                   RandomWave(i)%eta0(max(n_fft,RandomWave(i)%nf)),                         &
-                   RandomWave(i)%Phis0(max(n_fft,RandomWave(i)%nf)) )
-              CALL random_wave_signal(RandomWave(i)%ispec, n_fft, n_wavem, j_wavem-1,       &
-                   RandomWave(i)%dx, dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, &
-                   g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
-                   RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis,               &
-                   RandomWave(i)%eta0, RandomWave(i)%Phis0, RandomWave(i)%nf, time0)
-           END If
-        END DO
+        If (abs(RandomWave(1)%ispec)<30) Then
+           ! 2D waves along the x-axis.  
+           DO i=1,relaxNo
+              If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+                 n_wavem=RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
+                 RandomWave(i)%dx=FineGrid%x(RelaxZones(i)%idx(1)+1,1)  &
+                      -FineGrid%x(RelaxZones(i)%idx(1),1)
+                 !
+                 print *, 'Zone ',i,':'
+                 print *, 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',&
+                      RandomWave(i)%y0,      &
+                      ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',&
+                      n_wavem, ' grid points.'
+                 RandomWave(i)%nf=FineGrid%nx+2*GhostGridX
+                 !
+                 ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft), &
+                      RandomWave(i)%eta0(max(n_fft,RandomWave(i)%nf)),                         &
+                      RandomWave(i)%Phis0(max(n_fft,RandomWave(i)%nf)) )
+
+                 CALL random_wave_signal(RandomWave(i)%ispec, n_fft, n_wavem, RandomWave(i)%x0, &
+                      FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),                  &
+                      dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
+                      g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
+                      RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis,               &
+                      RandomWave(i)%eta0, RandomWave(i)%Phis0, RandomWave(i)%nf, time0 )
+              END If
+           END DO
+        ELSE
+           ! 3D waves at angle beta to the x-axis.  
+           DO i=1,relaxNo
+              If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+                 RandomWave(i)%nx=RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
+                 RandomWave(i)%ny=RelaxZones(i)%idx(4)-RelaxZones(i)%idx(3)+1
+                 n_wavem=RandomWave(i)%nx*RandomWave(i)%ny
+                 !
+                 print *, 'Zone ',i,':'
+                 print *, 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',   &
+                      RandomWave(i)%y0,      &
+                      ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',   &
+                      RandomWave(i)%nx, ' by ',RandomWave(i)%ny,' grid points.'
+                 !
+                 ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
+
+                 CALL random_wave_signal_3D(RandomWave(i)%ispec, n_fft, RandomWave(i)%nx,        &
+                      RandomWave(i)%ny, RandomWave(i)%beta, RandomWave(i)%x0, RandomWave(i)%y0, &
+                      FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),                  &
+                      FineGrid%y(RelaxZones(i)%idx(3):RelaxZones(i)%idx(4),1),                  &
+                      dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
+                      g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
+                      RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis, time0 )
+                 stop
+              END If
+           END DO
+        END If
      ENDIF
   ENDIF
-stop
   !
   ! Set up the Pressure Damping Zones if any.
   !

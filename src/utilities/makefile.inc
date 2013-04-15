@@ -16,6 +16,7 @@ SOURCES += $(LDIR)/lubksb.f90
 SOURCES += $(LDIR)/ludcmp.f90
 SOURCES += $(LDIR)/ran1.f90
 SOURCES += $(LDIR)/random_wave_signal.f90
+SOURCES += $(LDIR)/random_wave_signal_3D.f90
 SOURCES += $(LDIR)/savgol.f90
 SOURCES += $(LDIR)/stream_func_coeffs.f
 SOURCES += $(LDIR)/stream_func_set_up.f90
