@@ -21,7 +21,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf90
 
-USER = gudu
+USER = hbb
 
 # First the blocks based on compiler name:  
 
@@ -42,14 +42,6 @@ ifeq ($(FC),ifort)
 #  OPTFLAGS = -g -fast
 endif
 
-ifeq ($(FC),gf90)
-  # hbb home machine
-  LIBDIRS  = -L $(HOME)/lib/ 
-  LINLIB   = -lharwell -lskit -llapack -lblas
-  DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic
-  OPTFLAGS = -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow
-#  OPTFLAGS = -g -fast
-endif
 
 ifeq ($(FC),gfortran)
   # MacOS, apek
@@ -80,6 +72,15 @@ ifeq ($(FC),f90)
 endif
 
 # Then this the blocks for specific users (this clobbers the above info.)
+ifeq ($(USER),hbb)
+  # hbb home machine
+  FC=gf90	
+  LIBDIRS  = -L $(HOME)/lib/ 
+  LINLIB   = -lharwell -lskit -llapack -lblas
+  DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic
+  OPTFLAGS = -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow
+#  OPTFLAGS = -g -fast
+endif
 
 ifeq ($(USER),botp)
   # botp kubuntu, 10.04-64bit

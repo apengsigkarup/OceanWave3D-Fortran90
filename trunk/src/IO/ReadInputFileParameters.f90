@@ -247,15 +247,15 @@ SUBROUTINE ReadInputFileParameters
         !
         ! Check that the requested output ranges exist on this grid.
         !
-        if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx) THEN
+        if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
            Print *, 'ReadInputFileParameters: Kinematics xrange is invalid'
            stop
         end if
-        if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny) THEN
+        if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
            Print *, 'ReadInputFileParameters: Kinematics yrange is invalid'
            stop
         end if
-        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps) THEN
+        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
            Print *, 'ReadInputFileParameters: Kinematics trange is invalid'
            stop
         end if
@@ -416,10 +416,10 @@ SUBROUTINE ReadInputFileParameters
   READ(FILEIP(1),*,ERR=32,END=32) ispec,  Tp,  Hs,  h0,   &
         kh_max,  seed,  seed2,  x0,  y0, &
         inc_wave_file
-  If( ispec /= 3) Then
+  If( abs(ispec)<30 ) Then
       betaR=0
   ELSE
-     Print *, 'ReadInputFileParameters:  For RandomWave%ispec==3, we need a heading angle.'
+     Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle.'
      STOP
   END If
   Go To 33
@@ -441,7 +441,7 @@ SUBROUTINE ReadInputFileParameters
       nGenZones=0
       Do i=1,relaxNo
          RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
-         RandomWave(i)%h0=h0; RandomWave(i)%h0=x0; RandomWave(i)%y0=y0;
+         RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
          RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
          RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
          If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
