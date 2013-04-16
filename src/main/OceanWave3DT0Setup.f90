@@ -11,7 +11,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! GD: to test the cross derivatives...
   REAL(KIND=long), DIMENSION(:,:,:), ALLOCATABLE :: tmpPHI
   TYPE (Diff_def)        :: FullRankStencils
-  INTEGER i, j, k
+  INTEGER i, j, k, n_cut
 
   ! OUTPUT HEADER TO SCREEN
   WRITE (6,2010)
@@ -117,23 +117,23 @@ SUBROUTINE OceanWave3DT0Setup
            WRITE(6,73)RandomWave(1)%inc_wave_file
 73         FORMAT(' The incident wave will be read from file ',a30,/)
         ELSEIF(RandomWave(1)%ispec==-30)THEN
-           WRITE(6,74)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%beta
+           WRITE(6,74)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%beta0
 74         FORMAT(' The incident wave is a linear, long-crested mono-chromatic wave with',/,&
                 ' T=', e10.4,' and H=',e10.4,' at angle ',f10.2,' deg. to the x-axis.',//)
         ELSEIF(RandomWave(1)%ispec==30)THEN
            WRITE(6,75)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
-                RandomWave(1)%beta
+                RandomWave(1)%beta0
 75         FORMAT(' The incident wave is a 2D P-M spectrum with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/, &
                 ' at angle ',f10.2,' deg. to the x-axis.',// )
         ELSEIF(RandomWave(1)%ispec==31)THEN
            WRITE(6,76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
-                RandomWave(1)%beta
+                RandomWave(1)%beta0
 76         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
                 'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/,  &
                 ' at angle ',f10.2,' deg. to the x-axis.',// )
         ELSEIF(RandomWave(1)%ispec==33)THEN
-           WRITE(6,77)RandomWave(1)%beta,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
+           WRITE(6,77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
                 RandomWave(1)%seed2
 77         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
                 ' deg. to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
@@ -192,7 +192,35 @@ SUBROUTINE OceanWave3DT0Setup
               END If
            END DO
         ELSE
-           ! 3D waves at angle beta to the x-axis.  
+           !
+           ! 3D waves at angle beta0 to the x-axis.  
+           !
+           ! First compute the Fourier coefficients of the wave.  Find the first 
+           ! relaxation zone for generation and base the coefficients on those 
+           ! parameters.  
+           !
+           Do i=1,relaxNo
+              If (RelaxZones(i)%XorYgen=='X' .or. RelaxZones(i)%WavegenONOFF==1) exit
+           END Do
+           If (i>relaxNo) then
+              print *, 'Inconsistent relaxation/generation parameters, no x-generation zone '
+              print *, 'found even though 3D waves have been asked for.'  
+              stop
+           end If
+           !
+           ! Regardless of which parameters we're using, store the coefficients with relaxation 
+           ! zone 1.  
+           !
+           Allocate( RandomWave(1)%eta0(n_fft), RandomWave(1)%beta(n_fft) )
+           ! 
+           Call random_wave_coefficients_3D( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
+                dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
+                      RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
+                      RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, n_cut )
+           !
+           ! Now use the coefficients to get the incident wave time series at all points in 
+           ! all wave making relaxation zones.  
+           !
            DO i=1,relaxNo
               If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
                  RandomWave(i)%nx=RelaxZones(i)%idx(2)-RelaxZones(i)%idx(1)+1
@@ -207,8 +235,9 @@ SUBROUTINE OceanWave3DT0Setup
                  !
                  ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
 
-                 CALL random_wave_signal_3D(RandomWave(i)%ispec, n_fft, RandomWave(i)%nx,       &
-                      RandomWave(i)%ny, RandomWave(i)%beta, RandomWave(i)%x0, RandomWave(i)%y0, &
+                 CALL random_wave_signal_3D(RandomWave(i)%ispec, RandomWave(1)%eta0, n_cut,     &
+                      RandomWave(1)%beta, n_fft, RandomWave(i)%nx, RandomWave(i)%ny,            &
+                      RandomWave(i)%beta0, RandomWave(i)%x0, RandomWave(i)%y0,                  &
                       FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
                                               RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),       &
                       FineGrid%y(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
