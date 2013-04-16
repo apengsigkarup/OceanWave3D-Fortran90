@@ -12,7 +12,7 @@ SUBROUTINE ReadInputFileParameters
   IMPLICIT NONE
   INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones
   REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, seed, seed2, x0, &
-       y0, betaR
+       y0, beta0
   CHARACTER(len=30):: inc_wave_file
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
@@ -410,14 +410,14 @@ SUBROUTINE ReadInputFileParameters
 !
   READ(FILEIP(1),*,ERR=31,END=31) ispec,  Tp,  Hs,  h0,   &
         kh_max,  seed,  seed2,  x0,  y0, &
-        inc_wave_file, betaR
+        inc_wave_file, beta0
   Go To 33
 31 Backspace(FILEIP(1)) 
   READ(FILEIP(1),*,ERR=32,END=32) ispec,  Tp,  Hs,  h0,   &
         kh_max,  seed,  seed2,  x0,  y0, &
         inc_wave_file
   If( abs(ispec)<30 ) Then
-      betaR=0
+      beta0=0
   ELSE
      Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle.'
      STOP
@@ -443,7 +443,7 @@ SUBROUTINE ReadInputFileParameters
          RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
          RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
          RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
-         RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
+         RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta0=beta0; 
          If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
             nGenZones=nGenZones+1
             If(abs(RandomWave(i)%ispec) >= 30 .and. RelaxZones(i)%degrees /= 0) THEN
