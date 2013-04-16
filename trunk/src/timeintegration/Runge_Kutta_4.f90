@@ -66,7 +66,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      ! CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time,time0)
+     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time)
   ENDIF
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
@@ -140,7 +140,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      !     CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time,time0)
+     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time)
   ENDIF
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
   IF (LinearONOFF==1) THEN
@@ -201,7 +201,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      !     CALL RelaxationModule(Wavefield_tmp%E,Wavefield_tmp%P,RKtime)
-     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time,time0)
+     CALL RelaxationModule_new(Wavefield_tmp%E,Wavefield_tmp%P,RKtime,time)
   ENDIF
 
   CALL DifferentiationsFreeSurfacePlane(Wavefield_tmp,GhostGridX,GhostGridY,FineGrid,alpha,beta)
@@ -303,7 +303,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   ! Relaxation
   IF (relaxONOFF==1) THEN
      !     CALL RelaxationModule(Wavefield%E,Wavefield%P,RKtime)
-     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time,time0)
+     CALL RelaxationModule_new(Wavefield%E,Wavefield%P,RKtime,time)
   ENDIF
 
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)

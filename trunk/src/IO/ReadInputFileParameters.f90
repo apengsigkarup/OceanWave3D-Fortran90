@@ -446,10 +446,15 @@ SUBROUTINE ReadInputFileParameters
          RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta=betaR; 
          If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
             nGenZones=nGenZones+1
+            If(abs(RandomWave(i)%ispec) >= 30 .and. RelaxZones(i)%degrees /= 0) THEN
+               print *, '3D wave generation is only supported for RelaxZones%degrees=0'
+               stop
+            END If
          END If
       END Do
       Print *, '  Found ',nGenZones,' generation zones for the linear wave.'
       Print *, ' '
+
   ENDIF
 
   RETURN

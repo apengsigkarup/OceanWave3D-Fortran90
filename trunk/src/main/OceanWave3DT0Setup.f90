@@ -207,14 +207,15 @@ SUBROUTINE OceanWave3DT0Setup
                  !
                  ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
 
-                 CALL random_wave_signal_3D(RandomWave(i)%ispec, n_fft, RandomWave(i)%nx,        &
+                 CALL random_wave_signal_3D(RandomWave(i)%ispec, n_fft, RandomWave(i)%nx,       &
                       RandomWave(i)%ny, RandomWave(i)%beta, RandomWave(i)%x0, RandomWave(i)%y0, &
-                      FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),                  &
-                      FineGrid%y(RelaxZones(i)%idx(3):RelaxZones(i)%idx(4),1),                  &
+                      FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
+                                              RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),       &
+                      FineGrid%y(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
+                                              RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),       &
                       dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
                       g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
                       RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis, time0 )
-                 stop
               END If
            END DO
         END If
