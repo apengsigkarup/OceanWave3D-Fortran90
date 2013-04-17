@@ -1,4 +1,4 @@
-SUBROUTINE random_wave_coefficients_3D(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
+SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
      grav, inc_wave_file, kh_max, seed, seed2, eta0, beta, n_cut)
   !-----------------------------------------------------------------------
   !
@@ -22,8 +22,9 @@ SUBROUTINE random_wave_coefficients_3D(i_spec, nt, beta0, dt, dx, Tp, Hs, depth,
   real(kind=long) :: eta0(nt), beta(nt)
 
   ! Local variables
+  integer :: ndat
   real(kind=long) :: factor, domega, beta0, spec, zero=0._long,  one=1._long, &
-       two=2._long, pi, twopi
+       two=2._long, pi, twopi, dt_inc
   !
   ! Some parameters 
   !
@@ -43,20 +44,52 @@ SUBROUTINE random_wave_coefficients_3D(i_spec, nt, beta0, dt, dx, Tp, Hs, depth,
   domega = twopi / (nt * dt)
   !
   !
-  ! Generate the Fourier components of the wave elevation at the origin.
-  ! Note that the same spectral parameters and SEED values always give the same
-  ! incident wave.
+  ! Generate the Fourier components of the wave elevation at the wavemaker.
+  ! Note that the same spectral and time parameters, and SEED values always give 
+  ! the same coefficients.
   !
-  IF(i_spec==30)THEN 
-     ! A P-M spectrum
+  ! Initialize the heading angle vector
+  beta=beta0
+  !
+  IF(i_spec==0 .or. i_spec==30)THEN 
+     ! A long-crested P-M spectrum
      CALL build_coeff(eta0, nt, Hs, Tp, dt, seed, seed2, 0)
-  ELSEIf(i_spec==31)THEN
-     ! A JONSWAP spectrum
+  ELSEIf(i_spec==1 .or. i_spec==31)THEN
+     ! A long-crested JONSWAP spectrum
      CALL build_coeff(eta0, nt, Hs, Tp, dt, seed, seed2, 1)
   ELSEIF(i_spec==33)THEN
      ! A JONSWAP spectrum with a normal spreading
      CALL build_coeff_3D(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0)
-  ELSEIF(i_spec==-30)THEN
+  ELSEIF(i_spec == 2) THEN
+     open(21,file=inc_wave_file,status='old')
+     READ(21,'(A)',err=15)header
+     READ(21,*)dt_inc
+     IF(ABS(dt-dt_inc)>1.e-6)THEN
+        print *, 'random_wave_signal.f90: The .inp and .iwf time steps do not agree.'
+        print *, header
+        print *, dt,dt_inc
+        stop
+     END IF
+     do i=1,nt
+        READ(21,*,end=13)eta0(i)
+     end do
+     go to 14
+13   ndat=i-1
+     print *, ' Found ',ndat,' data points in the incident wave file.  Padding with zeros up to ',nt
+     do i=ndat+1,nt
+        eta0(i)=zero
+     end do
+     go to 14
+15   print *, 'random_wave_signal.f90: No header line in the .iwf'
+     stop
+14   CLOSE(21)
+     CALL drealft (eta0, nt, 1)
+     !
+     ! Scale the FFT
+     !
+     eta0=eta0*factor
+
+  ELSEIF(i_spec<0)THEN
      ! Mono-chromatic waves, nothing to do here.  
      RETURN
   END IF
@@ -110,4 +143,4 @@ SUBROUTINE random_wave_coefficients_3D(i_spec, nt, beta0, dt, dx, Tp, Hs, depth,
   close(21)
 
 RETURN
-END SUBROUTINE random_wave_coefficients_3D
+END SUBROUTINE random_wave_coefficients

@@ -5,6 +5,7 @@
 ! The coefficients are based on a JONSWAP spectrum with a normal spreading 
 ! around the heading angle beta0.
 !
+   USE Error_Function
    IMPLICIT none
    integer, parameter :: long=selected_real_kind(12,99)
    INTEGER SEED, seed2, n
@@ -17,9 +18,9 @@
         jonswap_spectrum, zero=0._long,                                &
         one=1._long, two=2._long, four=4._long, half=.5_long,          &
         twopi, ran1, psi, mag, deg2rad, fp, sigma, erf1, erf2,         &
-        Erf, InvErf, rad2deg
+        rad2deg
    COMPLEX(kind=long) :: phase
-   EXTERNAL gasdev, ran1_b, jonswap_spectrum, Erf, InvErf
+   EXTERNAL gasdev, ran1_b, jonswap_spectrum
 !
 ! Open the file to write the spectral coeeficients out to 
 !
@@ -62,22 +63,21 @@
       spec= jonswap_spectrum(freq, Hs, Tp)
 
       sigma=0.2_long*(freq/fp)**2.5_long
-
       erf1=Erf(pi/(two*sqrt(two*sigma)))
       erf2=InvErf((two*psi-one)*erf1)
 
       beta(i)=beta0+rad2deg*sqrt(2*sigma)*erf2
 
       write(78,*)freq,1/freq,spec,beta(i)
-
-      !eta (i)   = sqrt (two * spec) * cst * phase
+      !
+      ! Load the Fourier coefficients for this frequency
+      !
       ! Real part
       eta (2*i-1) = REAL(sqrt (two * spec) * cst * phase)
       ! Imaginary part
       eta (2*i)   = AIMAG(sqrt (two * spec) * cst * phase)
 
    END DO
-
    close(78)
 
    RETURN

@@ -160,9 +160,31 @@ SUBROUTINE OceanWave3DT0Setup
         ! Linear wave generation is only implemented for X-directed relaxation zones.  
         ! Other areas are not yet supported.  -HBB
         !
+        ! First compute the Fourier coefficients of the wave.  Find the first 
+        ! relaxation zone for generation and base the coefficients on those 
+        ! parameters (though they all should be the same.) 
+        !
+        Do i=1,relaxNo
+           If (RelaxZones(i)%XorYgen=='X' .or. RelaxZones(i)%WavegenONOFF==1) exit
+        END Do
+        If (i>relaxNo) then
+           print *, 'Inconsistent relaxation/generation parameters, no x-generation zone '
+           print *, 'found even though 3D waves have been asked for.'  
+           stop
+        end If
+        !
+        ! Regardless of which parameters we're using, store the coefficients with relaxation 
+        ! zone 1.  
+        !
+        Allocate( RandomWave(1)%eta0(n_fft), RandomWave(1)%beta(n_fft) )
+        ! 
+        Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
+             dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
+             RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
+             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, n_cut )
         !
         ! Count the total number of grid points in each generation zone and allocate space
-        ! for eta and phiS
+        ! for eta and phiS and compute the elevation and surface potential time-histories.  
         !  
         If (abs(RandomWave(1)%ispec)<30) Then
            ! 2D waves along the x-axis.  
@@ -179,44 +201,20 @@ SUBROUTINE OceanWave3DT0Setup
                       n_wavem, ' grid points.'
                  RandomWave(i)%nf=FineGrid%nx+2*GhostGridX
                  !
-                 ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft), &
-                      RandomWave(i)%eta0(max(n_fft,RandomWave(i)%nf)),                         &
-                      RandomWave(i)%Phis0(max(n_fft,RandomWave(i)%nf)) )
+                 ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
 
                  CALL random_wave_signal(RandomWave(i)%ispec, n_fft, n_wavem, RandomWave(i)%x0, &
                       FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),                  &
                       dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
                       g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
                       RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis,               &
-                      RandomWave(i)%eta0, RandomWave(i)%Phis0, RandomWave(i)%nf, time0 )
+                      RandomWave(1)%eta0, n_cut, time0 )
               END If
            END DO
         ELSE
            !
            ! 3D waves at angle beta0 to the x-axis.  
            !
-           ! First compute the Fourier coefficients of the wave.  Find the first 
-           ! relaxation zone for generation and base the coefficients on those 
-           ! parameters.  
-           !
-           Do i=1,relaxNo
-              If (RelaxZones(i)%XorYgen=='X' .or. RelaxZones(i)%WavegenONOFF==1) exit
-           END Do
-           If (i>relaxNo) then
-              print *, 'Inconsistent relaxation/generation parameters, no x-generation zone '
-              print *, 'found even though 3D waves have been asked for.'  
-              stop
-           end If
-           !
-           ! Regardless of which parameters we're using, store the coefficients with relaxation 
-           ! zone 1.  
-           !
-           Allocate( RandomWave(1)%eta0(n_fft), RandomWave(1)%beta(n_fft) )
-           ! 
-           Call random_wave_coefficients_3D( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
-                dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
-                      RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
-                      RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, n_cut )
            !
            ! Now use the coefficients to get the incident wave time series at all points in 
            ! all wave making relaxation zones.  
