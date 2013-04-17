@@ -142,6 +142,9 @@ ENDIF
   ! West  boundary
   If(IncWaveType==3) THEN
       CAll waveGenerationFromPaddleSignal()
+      !! NOTICE !!
+      !   IF IncWaveType /= 3 THEN Uneumann == 0 by initialization
+      !! NOTICE !!
   ENDIF
   IF (GhostGridX==1) THEN
     i = 1
@@ -151,10 +154,7 @@ ENDIF
       !But keep this loop from 1 to Nz for SWENSE (use of Gidx3...)
 		Gidx  = k + (i-1)*Nz + (j-1)*Nx*Nz
 		Gidx2  = k + (i-1+1)*Nz + (j-1)*Nx*Nz
-		output(Gidx) = dpdx(Gidx2) 
-        If(IncWaveType==3) THEN
-            output(Gidx) = output(Gidx) + Uneumann(k,j)
-        ENDIF
+		output(Gidx) = dpdx(Gidx2) + Uneumann(k,j)
         ! GD: SWENSE addition comes here
         IF (swenseONOFF/=0) THEN
             output(Gidx) = output(Gidx) + Wavefield%Px_I_bp(Gidx3)

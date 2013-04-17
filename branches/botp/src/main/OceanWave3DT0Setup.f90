@@ -131,6 +131,7 @@ SUBROUTINE OceanWave3DT0Setup
            ! are using FFT's based on powers of two.
            !
            i=NINT(LOG(real(Nsteps,long))/LOG(two))
+           print *, "i = ",i
            IF(two**i<Nsteps)i=i+1
            n_fft=2**i;
         ELSE
