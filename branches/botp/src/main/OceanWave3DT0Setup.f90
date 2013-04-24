@@ -167,7 +167,10 @@ SUBROUTINE OceanWave3DT0Setup
              RandomWave%Tp, RandomWave%Hs, RandomWave%h0, g, RandomWave%inc_wave_file,          &
              RandomWave%kh_max, RandomWave%seed, RandomWave%seed2, RandomWave%eta,              &
              RandomWave%Phis, RandomWave%eta0, RandomWave%Phis0, RandomWave%nf, time0)
-     ELSEIF(IncWaveType==3)THEN
+     
+     ENDIF
+  ENDIF
+IF(IncWaveType==3)THEN
         
         ! The following code is for 3D-wave genetation by relaxation Zones. This
         ! method is OBSOLETE and we use inhomogeneous boundary conditions
@@ -198,11 +201,9 @@ SUBROUTINE OceanWave3DT0Setup
              !' in a depth of',RandomWave3D%h0,', the wave gauge grid contains ',RandomWave3D%n1, ' points.'
 
       !CALL waveGen3D(Nsteps,RandomWave3D%n1,j_wavem,RandomWave3D%dx,RandomWave3D%h0,g,RandomWave3D%inc_wave_file,RandomWave3D%kh_max)
-      
       CALL setupwavegenfrompaddle()
-
-     ENDIF
   ENDIF
+
   !
   ! Set up the Pressure Damping Zones if any.
   !

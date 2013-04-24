@@ -52,5 +52,6 @@
       !
       wave3DFlux%flux = waveFlux_inci
       wave3DFlux%n2 = n2
+      wave3DFlux%dt = dt_inc
 
       END SUBROUTINE
