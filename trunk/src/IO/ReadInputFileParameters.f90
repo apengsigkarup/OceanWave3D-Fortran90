@@ -242,7 +242,7 @@ SUBROUTINE ReadInputFileParameters
      print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.bin".'
      print *, ' '
      Do i=1,nOutFiles
-        READ (FILEIP(1),*)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
+        READ (FILEIP(1),*,err=110)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
              Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
         !
         ! Check that the requested output ranges exist on this grid.
@@ -266,6 +266,11 @@ SUBROUTINE ReadInputFileParameters
   ELSE
      iKinematics=0
   END IF
+  go to 111
+110 print *, 'ReadInputFile Parameters:  Error reading kinematics file parameters.'
+  print *, 'Failed after reading ',i-1,' output file lines.'
+  stop
+111 continue
 
   ! LINEAR/NONLINEAR COMPUTATIONS, applied free-surface pressure
   READ (FILEIP(1),*) LinearONOFF, PressureTermONOFF
