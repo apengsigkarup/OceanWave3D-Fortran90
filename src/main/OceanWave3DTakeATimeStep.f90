@@ -104,6 +104,22 @@ SUBROUTINE OceanWave3DTakeATimeStep
      IF (MOD(tstep,-StoreDataONOFF)==0) THEN		
         CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E,Wavefield%P, &
              FineGrid,-tstep/StoreDataOnOff)
+        !
+        ! Write the file OceanWave3D.end, which can be used as initial conditions for a hot start
+        WRITE(*,FMT='(A)') 'Writing OceanWave3D.end file, for possible restart.'
+        WRITE(*,FMT='(A)') 'Change the file name to OceanWave3D.init and change IC to -1 for a hot start.'
+        CLOSE(fileip(3))
+        OPEN(fileip(3), file = 'OceanWave3D.end', status = 'unknown')
+        WRITE(fileip(3),*) 'Initial conditions outputted from a previous simulation.' ! Header
+        WRITE(fileip(3),*) FineGrid%x(FineGrid%Nx,1)-FineGrid%x(1,1),FineGrid%y(FineGrid%Nx,1)-FineGrid%y(1,1), &
+             FineGrid%Nx, FineGrid%Ny, time  ! Domain size, number of grid points and ending time.
+        DO j=1+GhostGridY,FineGrid%Ny+GhostGridY
+           DO i=1+GhostGridX,FineGrid%Nx+GhostGridX
+              WRITE(fileip(3),*)WaveField%E(i,j),phi(FineGrid%Nz+GhostGridZ,i,j)
+           END DO
+        END DO
+        close(fileip(3))
+!
      END IF
   ENDIF
   !
