@@ -85,7 +85,8 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
   end do
   !
   dx_inv=one/dx;
-  ! eta_x at j+1/2.
+  ! eta_x at j+1/2.  This is just a second-order differencing, and really should be 
+  ! made consistent with the rest of the differencing -hbb
   do j=2,nfx-2
      eta_x(j)=dx_inv*(et(j+1,1)-et(j,1))
   end do
