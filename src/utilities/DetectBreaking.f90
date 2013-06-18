@@ -8,7 +8,7 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
   USE Precision
   USE Constants
   USE DataTypes
-  USE GlobalVariables, ONLY: FineGrid, BreakMod, g, dt, dx, tstep, nsteps
+  USE GlobalVariables, ONLY: FineGrid, BreakMod, g, rho, dt, dx, tstep, nsteps
   IMPLICIT NONE
 
   INTEGER fop, istep, nfx
@@ -27,7 +27,9 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
   REAL(kind=long), POINTER :: et(:,:), Vs(:,:), Ws(:,:), Qr_x(:,:), Mr_t(:,:)
   ! local workspace
   REAL(kind=long) :: Qr(nfx), Mr(nfx), eta_x(nfx), tan_phi_old(nfx)
-
+  !
+  ! Local pointers to simplify the coding.
+  !
   et => Wave%E; Vs => Wave%Px; Ws => Wave%W; 
   Mr_t=>Wave%Mr_t; Qr_x=>Wave%Qr_x;
 
@@ -149,7 +151,7 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
            BreakMod%i_roller(1,BreakMod%n_rollers)=BreakMod%i_roller(1,BreakMod%n_rollers)+1
            Usx = half*dx_inv*((Vs(i+1,1) - Wave%Ex(i+1,1) * Ws(i+1,1))- &
                 (Vs(i-1,1) - Wave%Ex(i-1,1) * Ws(i-1,1)))
-           Mr(i) = (BreakMod%gamma_break*h_roller)**2*d*UxStar*Abs(Usx)
+           Qr(i) = g*BreakMod%roller_thickness(i)
            IF (eta_x(i) .lt. sxm) THEN
               sxm = eta_x(i)
               jm  = i
@@ -184,12 +186,12 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
 
   IF(BreakMod%n_rollers>0)THEN
      IF(BreakMod%i_breaking==1)THEN
-        ! Smooth Mr.  
+        ! Smooth the pressure.  
         DO j=3,nfx-2
            !            Mr_t(j,1)=half*dx_inv*(Mr(j+1)-Mr(j-1)) ! Second order deriv.
            ! Second order deriv. plus 3 point smoothing, alpha=1/4.
 !           Mr_t(j,1)=eighth*dx_inv*(Mr(j+2)+two*Mr(j+1)-two*Mr(j-1)-Mr(j-2)) 
-           Mr_t(j,1)=(quart*Mr(j+1)+half*Mr(j)+quart*Mr(j-1)) 
+           Qr_x(j,1)=(quart*Qr(j+1)+half*Qr(j)+quart*Qr(j-1)) 
         END DO
      ELSE
         ! For BreakMod%i_breaking==2, we compute the breaker geometry, but don't include 

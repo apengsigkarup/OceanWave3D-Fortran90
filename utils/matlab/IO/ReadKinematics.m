@@ -58,7 +58,7 @@ nz = fread(fid1,1,'int'); %
 
 junk = fread(fid1,2,int_nbit); % Junk read statements are necessary for eol markers
 
-nx=(xend-xbeg)/xstride+1; ny=(yend-ybeg)/ystride+1; nt=(tend-tbeg)/tstride+1;
+nx=floor((xend-xbeg)/xstride)+1; ny=floor((yend-ybeg)/ystride)+1; nt=floor((tend-tbeg)/tstride)+1;
 %
 % A scratch vector for reading the data
 %
