@@ -183,7 +183,13 @@ SUBROUTINE ReadInputFileParameters
      STOP
   END SELECT
 
-  READ (FILEIP(1),*) g
+  READ (FILEIP(1),*,err=139) g, rho
+  Go To 140
+139  BACKSPACE(fileip(1))
+  READ (FILEIP(1),*,err=139) g
+  Print *, '  ** No input value for rho, using 1000.'
+  rho=1000.
+140 continue
 
   READ (FILEIP(1),*,err=141) solver, Precond, MGCoarseningStrategy, GMRESmaxiterations, reltol, abstol, maxit, cyclet, &
        nu(1), nu(2), MGmaxgrids
@@ -331,7 +337,10 @@ SUBROUTINE ReadInputFileParameters
      print*, ' '
      Print*, 'Breaking model has been turned on.'
      print*, ' '
-     IF (BreakMod%i_breaking==2) BreakMod%i_break_time=2*nsteps
+     IF (BreakMod%i_breaking==2) Then
+        BreakMod%i_break_time=2*nsteps
+        print *, '  Breaking geometry will be computed, but no model is being applied.'
+     END IF
   end If
   GoTo 42
 41 print*, ' '

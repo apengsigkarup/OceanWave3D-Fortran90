@@ -27,7 +27,7 @@ INTEGER :: alphaprecond, betaprecond, gammaprecond
 INTEGER :: GridX, GridY, GridZ ! Type of grid in each Cartesian direction (0=even)
 INTEGER :: GhostGridX, GhostGridY, GhostGridZ, DetermineBottomGradients
 REAL(KIND=long) :: Lx, Ly, Lz  ! Length of computational domain in each direction
-REAL(KIND=long) :: g, accel_tol_fact=1000.           ! gravitational acceleration constant
+REAL(KIND=long) :: g, accel_tol_fact=1000., rho    ! gravitational acceleration constant, density
 
 ! SOLUTION VARIABLES
 REAL(KIND=long), DIMENSION(:,:,:), POINTER :: PHI, RHS, PHI2 ! Solution variable in transformed domain
