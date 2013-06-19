@@ -44,8 +44,8 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
      OPEN(unit=fop,file='roller.dat',status='unknown')
      WRITE(fop,12)
 12   FORMAT('# Breaking model data:  itime,n_rollers,(i_roller(1,i),i_roller(2,i),i=1,n_rollers),',/, &
-          '# (x_roller(i),eta_roller(i),roller_thickness(i),tan_phi(i_roller(2,i)),  i=1,n_rollers)',/, &
-          '# i_roller(1,i)=number of grid points in the roller, i_roller(2,i)=roller toe grid point')
+          '# (x_roller(i),eta_roller(i),roller_thickness(jr-1),tan_phi(i_roller(2,i)),  i=1,n_rollers)',/, &
+          '# i_roller(1,i)=number of grid points in the roller, i_roller(2,i)=jr, roller toe grid point')
      PRINT *, ' '
      PRINT *, '  The Zelt-type breaking model is being applied.  T_1/2=',BreakMod%T_half
      PRINT *, '  phi_b=',BreakMod%tan_phi_b,' phi_0=',BreakMod%tan_phi_0 
@@ -206,7 +206,7 @@ SUBROUTINE detect_breaking(fop,nfx,Wave,istep)
 
      WRITE(fop,*)tstep,BreakMod%n_rollers,                                                    &
           (BreakMod%i_roller(1,i),BreakMod%i_roller(2,i),i=1,BreakMod%n_rollers),             &
-          (BreakMod%x_roller(i),BreakMod%eta_roller(i), BreakMod%roller_thickness(i),         &
+          (BreakMod%x_roller(i),BreakMod%eta_roller(i), BreakMod%roller_thickness(BreakMod%i_roller(2,i)-1),         &
           BreakMod%tan_phi(BreakMod%i_roller(2,i)),  i=1,BreakMod%n_rollers)
   END IF
 
