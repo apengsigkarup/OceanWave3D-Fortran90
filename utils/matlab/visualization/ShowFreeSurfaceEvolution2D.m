@@ -15,14 +15,14 @@ curdir = cd;
 %dirpath = '/Users/apek/CVS/tests/OleLindberg';
 %dirpath = '/Users/apek/OW3Dtest';
 %dirpath = '/Users/apek/Desktop/OCW3D';
-dirpath = '/Users/apek/Desktop/OCW3DtestBoTerp';
+dirpath = '/Users/apek/Desktop/OCWD3DWhalinTest';
 cd(dirpath)
 %
 %************************************************************************
 % *** Set these values to correspond to the run at hand.***
 initialstep = 0;
-Nsteps = 3000; %915;
-jump   = 5;
+Nsteps = 1283; %915;
+jump   = 1;
 dt     = .0245
 g      = 9.81;
 plotmethod = 2;  % 1-> 2D, 2->3D

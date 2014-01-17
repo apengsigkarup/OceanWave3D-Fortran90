@@ -119,7 +119,7 @@ where the source files are included in a tree structure as
 4. Authors and Contact
 ------------------------
 
-Allan Peter Engsig-Karup (apek@imm.dtu.dk, Author, Lead developer and maintainer)
+Allan Peter Engsig-Karup (apek@dtu.dk, Original Author, Lead developer and maintainer)
 Harry B. Bingham (hbb@mek.dtu.dk, Lead developer and maintainer)
 
 With contributions from 
@@ -137,9 +137,9 @@ OceanWave3D is developed in collaboration between
 A. Acknowledgment and License
 ------------------------------
 
-Please acknowledge OceanWave3D in your work and any of your publications by using the following references:
+Please acknowledge this software referred to as "OceanWave3D" in your work and any of the publications below by using the following references:
 
-  @ARTICLE{EBL08,
+  @ARTICLE{EngsigKarupEtAl08,
   AUTHOR    = "Engsig-Karup, A.P. and Bingham, H.B. and Lindberg, O.",
   TITLE     = "An efficient flexible-order model for {3D} nonlinear water waves",
   YEAR      = "2009",
@@ -148,9 +148,23 @@ Please acknowledge OceanWave3D in your work and any of your publications by usin
   PAGES     = "2100-2118"
   }
 
+and this chapter with general details on the properties of the model and its parallel implementation
+
+  @inbook{EngsigKarupEtAl2013,
+  title     = "Fast hydrodynamics on heterogenous many-core hardware",
+  publisher = "Taylor & Francis",
+  author    = "Engsig-Karup, {Allan Peter} and Glimberg, {Stefan Lemvig} and Nielsen, {Allan S.} and Ole Lindberg",
+  note      = "2013; 11",
+  year      = "2013",
+  editor    = "Rapha\'el Couturier",
+  isbn      = "978-1-4665-7162-4",
+  pages     = "251--294",
+  booktitle = "Designing Scientific Applications on GPUs",
+  }
+
 OceanWave3D is distributed under the GNU General Public License (See file LICENSE) and a base code was developed at DTU Mechanics 2006-2008 by Allan P. Engsig-Karup and entirely rewritten at DTU Informatics 2008-2011 (current version) by Allan P. Engsig-Karup with contributions as mentioned below section 4 of this file.
 
-A GPU-accelerated massively parallel version of OceanWave3D that can execute on heterogenous archictures using the CUDA programming model has been developed in collaboration between Morten Gorm Madsen (first proof-of-concept version), Stefam Lemvig Glimberg (advanced version within library) and Allan P. Engsig-Karup. In this version of the code the multigrid preconditioned defect correction method (PDC) appeared for the first time and it accessbile in this fortran version of the code as well. This work can be cited by the following reference
+A GPU-accelerated massively parallel version of OceanWave3D that can execute on heterogenous archictures using the CUDA programming model has been developed in collaboration between Morten Gorm Madsen (first proof-of-concept version), Stefan Lemvig Glimberg (advanced version within GPULAB library) and Allan P. Engsig-Karup. In this version of the code the multigrid preconditioned defect correction method (PDC) appeared for the first time and it accessbile in this fortran version of the code as well. This work can be cited by the following reference
 
    @ARTICLE{EngsigKarupEtAl2011,
    AUTHOR = "Engsig-Karup, A. P. and Madsen, M. G. and Glimberg, S. L.",
@@ -159,4 +173,41 @@ A GPU-accelerated massively parallel version of OceanWave3D that can execute on 
    YEAR = "2011",
    DOI = "10.1002/fld.2675"
    }
+
+The properties of the PDC method is analyzed in great detail in
+
+   @ARTICLE{EngsigKarupEtAl2013,
+   AUTHOR = "Engsig-Karup, A.P.",
+   TITLE = "Analysis of Efficient Preconditioned Defect Correction Methods for Nonlinear Water Waves",
+   JOURNAL = "International Journal of Numerical Methods in Fluids",
+   YEAR = "2013",
+   }
+
+The splitting technique that can be used for efficient wave-structure interactions are described here
+
+   @article{DucrozetEtAl2013,
+   title     = "A non-linear wave decomposition model for efficient wave‚Äìstructure interaction. Part A: Formulation, validations and analysis",
+   publisher = "Academic Press",
+   author    = "Guillaume Ducrozet and Engsig-Karup, {Allan Peter} and Bingham, {Harry B.} and Pierre Ferrant",
+   year      = "2014",
+   volume    = "257",
+   pages     = "863--883",
+   journal   = "Journal of Computational Physics",
+   issn      = "0021-9991",
+   }
+
+A comparison between OceanWave3D and HOS is described here
+
+   @article{DucrozetEtAl2012,
+   title     = "A comparative study of two fast nonlinear free-surface water wave models",
+   publisher = "John/Wiley & Sons Ltd.",
+   author    = "Guillaume Ducrozet and Bingham, {Harry B.} and Engsig-Karup, {Allan Peter} and Felicien Bonnefoy and Pierre Ferrant",
+   year      = "2012",
+   volume    = "69",
+   pages     = "1818--1834",
+   journal   = "International Journal for Numerical Methods in Fluids",
+   issn      = "0271-2091",
+   }
+
+
 
