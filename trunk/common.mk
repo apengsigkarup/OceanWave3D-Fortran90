@@ -21,7 +21,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf90
 
-USER = hbb
+USER = apek
 
 # First the blocks based on compiler name:  
 
@@ -111,3 +111,14 @@ ifeq ($(USER),gudu)
   OPTFLAGS = -O3 -xHOST -ipo -ip
 endif
 
+ifeq ($(USER),apek)
+  # MacOS, apek
+  FC       = gfortran
+  LIBDIRS  = -L $(HOME)/lib/
+# -L/Users/apek/Documents/Fortran/Harwell/lib -L/usr/local/atlas/lib -L/Users/apek/Documents/Fortran/SPARSKIT2                                                                                   
+#  LINLIB   = -lharwell -lskit -latlas -llapack -l_VTK_IO                                                                                                                                        
+#  LINLIB   = -lharwell -lskit -latlas -l_VTK_IO -framework veclib                                                                                                                               
+  LINLIB   = -lharwell -lskit -latlas -framework veclib
+  DBFLAGS  = -pg -g -O -fcheck=all -ffpe-trap=invalid,zero,overflow
+  OPTFLAGS = -O2
+endif

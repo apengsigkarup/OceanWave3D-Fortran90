@@ -448,7 +448,9 @@ SUBROUTINE OceanWave3DT0Setup
           FineGrid,99999,formattype)
   ELSEIF(StoreDataOnOff<0)THEN
      CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,Wavefield%E,Wavefield%P,FineGrid,0)
-  ENDIF
+     ! Also store bottom profile
+     CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%h,FineGrid%hx,FineGrid,899)
+ENDIF
   !
   ! Open and initialize the kinematics output file(s) if called for
   !
