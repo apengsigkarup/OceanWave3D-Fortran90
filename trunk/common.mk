@@ -21,7 +21,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf90
 
-USER = apek
+USER = botp-dev
 
 # First the blocks based on compiler name:  
 
@@ -82,11 +82,11 @@ ifeq ($(USER),hbb)
 #  OPTFLAGS = -g -fast
 endif
 
-ifeq ($(USER),botp)
+ifeq ($(USER),botp-dev)
   # botp kubuntu, 10.04-64bit
-  FC       = gfortran-4.4
+  FC       = gfortran
   LIBDIRS  = -L$(HOME)/lib/ 
-  LINLIB   = -lharwell -lskit -llapack_LINUX_Gfortran4-4-3 -lblas 
+  LINLIB   = -lharwell_gfortran -ltmglib_gfortran -llapack_gfortran -lblas -lskit_gfortran
   DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
   OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
 endif
