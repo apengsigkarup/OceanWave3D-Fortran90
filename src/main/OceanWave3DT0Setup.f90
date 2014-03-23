@@ -52,6 +52,7 @@ SUBROUTINE OceanWave3DT0Setup
   print*,'setup ICs...'
   CALL SetupInitialConditions
   time=time0
+  dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
   print*,'done with ICs'
   !
   ! Set up for relaxations zones and wave generation.
@@ -248,6 +249,17 @@ SUBROUTINE OceanWave3DT0Setup
         END If
      ENDIF
   ENDIF
+  IF(IncWaveType==3) THEN
+      ! Wave generation by flux condition on western wall, botp
+      CALL setupWavePaddle()
+
+  ENDIF
+  ! Uneumann is in all cases added to the western boundary. Only if
+  ! IncWaveType==3 is it non-zero. 
+  ! FIXME: Is there a better solution where this field is only loadded if needed?
+  ! botp
+  ALLOCATE(Uneumann(FineGrid%Nz+GhostGridZ,FineGrid%Ny+2*GhostGridY))
+  Uneumann = zero
   !
   ! Set up the Pressure Damping Zones if any.
   !
@@ -487,6 +499,18 @@ ENDIF
         END IF
      END Do
   END IF
+
+  ! For coupling OceanWave3D with OpenFOAM we need the velocities and free
+  ! surface elevation to be availible at all times.
+  ! FIXME: Is there a better solution where fields are only allocated if needed?
+  ! General problem!!
+  !botp
+  ALLOCATE( &
+  UOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
+  VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
+  WOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
+  ALLOCATE(dOF(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY))
+
 
 2010 FORMAT(/, '*********************************************************',/,&
        '***                                                   ***',/,&
