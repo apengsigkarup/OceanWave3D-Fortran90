@@ -428,14 +428,14 @@ SUBROUTINE ReadInputFileParameters
       READ(FILEIP(1),*,ERR=34,END=34) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
       Go To 35
 34     Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need: Ramp &
-time, horizontal interpolation order, file with wave paddle signal.'
+time, Order of interpolation in horizontal direction, file with wave paddle signal.'
 35    continue
   ELSE
       READ(FILEIP(1),*,ERR=31,END=31) ispec,  Tp,  Hs,  h0,   &
             kh_max,  seed,  seed2,  x0,  y0, &
             inc_wave_file, beta0
       Go To 33
-31     Backspace(FILEIP(1)) 
+31    Backspace(FILEIP(1)) 
       READ(FILEIP(1),*,ERR=32,END=32) ispec,  Tp,  Hs,  h0,   &
             kh_max,  seed,  seed2,  x0,  y0, &
             inc_wave_file
@@ -447,7 +447,7 @@ time, horizontal interpolation order, file with wave paddle signal.'
       END If
       Go To 33
 
-32     IF(IncWaveType==2)THEN
+32    IF(IncWaveType==2)THEN
          Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
          Stop
       END IF
