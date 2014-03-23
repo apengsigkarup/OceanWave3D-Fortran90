@@ -1,0 +1,7 @@
+MODULE OFmodule
+USE Precision
+
+REAL(KIND=long), DIMENSION(:,:,:), ALLOCATABLE :: UOF, VOF, WOF
+REAL(KIND=long), DIMENSION(:,:), ALLOCATABLE :: dOF
+
+END MODULE OFmodule
