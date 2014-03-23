@@ -26,6 +26,7 @@ include src/initialization/makefile.inc
 include src/IO/makefile.inc
 include src/main/makefile.inc
 include src/iterative/makefile.inc
+include src/OpenFoam/makefile.inc
 
 # Search paths for source dependencies
 VPATH  = src/variabledefs 
@@ -44,6 +45,9 @@ VPATH += src/timeintegration
 VPATH += src/utilities
 VPATH += src/wrappers
 VPATH += src/iterative
+VPATH += src/OpenFoam
+VPATH += src/OpenFoam/IO
+VPATH += src/OpenFoam/OpenFoam
 VPATH += $(BUILDDIR)
 
 # Include directories
@@ -86,6 +90,19 @@ Debug: $(OBJECTSBUILDDIR)
 	$(FC) $(FFLAGS) -o $(INSTALLDIR)/$(PROGNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
 
 all: Release
+
+
+sharedLib: FFLAGS = $(SHLIBFLAGS)
+sharedLib: $(OBJECTSBUILDDIR)
+	@if ls *.mod &> /dev/null; then \
+	mv -v ./*.mod $(BUILDDIR); \
+	cp -v ./thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
+	fi
+	@echo "*** Starting linking of files for OceanWave3D (Release)... ***"
+	@$(FC) $(FFLAGS) -o $(FOAM_USER_LIBBIN)/$(LIBNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
+	@echo "Shared library for OceanWave3D has been built successfully."
+
+
 
 # Compile only - compile all source file to build directory
 compile: $(OBJECTSBUILDDIR)

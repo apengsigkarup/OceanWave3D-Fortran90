@@ -100,3 +100,4 @@ SOURCES += $(LDIR)/phi_nonlinear_3D_standing.f90
 SOURCES += $(LDIR)/phi_nonlinear_standing.f90
 SOURCES += $(LDIR)/rhsFreeSurface3D_SWENSE.f90
 SOURCES += $(LDIR)/rhsLinearFreeSurface3D_SWENSE.f90
+SOURCES += $(LDIR)/polint.f90

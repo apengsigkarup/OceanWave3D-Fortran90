@@ -8,6 +8,34 @@ MODULE DataTypes
 USE Precision
 IMPLICIT NONE
 
+! Used for interpolation between OceanWave3D and OpenFOAM, botp
+TYPE Interpolation_def
+
+        ! order = 2*alpha/beta + 1 derivatives the x/y-direction respectively.  
+        !
+        REAL(KIND=long), DIMENSION(:,:), POINTER :: dx
+        REAL(KIND=long), DIMENSION(:,:), POINTER :: dy
+        
+        ! order = 2 * gamma + 1 derivatives in the z-direction.
+        !
+        REAL(KIND=long), DIMENSION(:,:,:), POINTER :: dz
+
+        ! Local interpolation stencils 
+        !
+        REAL(KIND=long), DIMENSION(:), POINTER :: stencilX
+        REAL(KIND=long), DIMENSION(:), POINTER :: stencilY
+        REAL(KIND=long), DIMENSION(:), POINTER :: stencilZ
+
+        ! Vector containing nearest neighbour 
+        !
+        INTEGER, DIMENSION(:), POINTER :: NN
+
+        ! Integer indicating however a cell is above or below the free surface
+        ! 0=below, 1=above
+        INTEGER, POINTER :: inOrOut
+
+END TYPE Interpolation_def
+
 TYPE SparseArray_CSR
 ! Sparse storage using: Compressed Storage Row (CSR) format
 	REAL(KIND=long), DIMENSION(:), POINTER :: val ! Array values
@@ -123,7 +151,13 @@ TYPE RandomWaveParam
         CHARACTER(len=30)  inc_wave_file
         REAL(KIND=long), allocatable :: eta(:,:), Phis(:,:), eta0(:), Phis0(:), beta(:)
 END TYPE RandomWaveParam
-
+! DEFINE a structure for 3D random wave generation by flux condition, botp
+TYPE wave3DFluxStruct
+	REAL(KIND=long) :: dt, rampTime
+	INTEGER :: n2, order
+    CHARACTER(len=30)  inc_wave_file
+    REAL(KIND=long), allocatable :: flux(:,:), y(:), time(:)
+END TYPE wave3DFluxStruct
 ! DEFINE a Structure for the wave breaking model parameters
 
 TYPE BreakingModelParam
