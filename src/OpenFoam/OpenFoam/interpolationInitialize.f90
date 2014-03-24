@@ -61,8 +61,9 @@ IF (Nx>1) THEN
         x = GhostGridX + alpha + 2
         x0(1) = FineGrid%x(x,1)! Expansion point, only x0(1) is used!
 
-        CALL interpolation1D(xStencil,x0,FineGrid%x(x - alpha :x + alpha,1),rankx)
+        !CALL interpolation1D(xStencil,x0,FineGrid%x(x - alpha :x + alpha,1),rankx)
         
+        CALL  weights(x0,FineGrid%x(x-alpha:x+alpha,1),2*alpha,2*alpha,2*alpha,xStencil)
         Interpolation%dx = xStencil
 ENDIF
 
@@ -82,8 +83,9 @@ IF (Ny>1) THEN
         y = GhostGridY + beta + 2 
         x0(1) = FineGrid%y(1,y)! Expansion point, only x0(1) is used!
 
-        CALL interpolation1D(yStencil,x0,FineGrid%y(1,y - beta : y + beta),ranky)
+        !CALL interpolation1D(yStencil,x0,FineGrid%y(1,y - beta : y + beta),ranky)
          
+        CALL  weights(x0,FineGrid%y(1,y-beta:y+beta),2*beta,2*beta,2*beta,yStencil)
         Interpolation%dy = yStencil
 ENDIF
 
@@ -126,8 +128,9 @@ DO i = 1, Nzp
         END IF
 ! Calculate derivativatives at x0
 !
-        CALL interpolation1D(zStencil,x0,FineGrid%z(i - left : i + right),rankz)
+        !CALL interpolation1D(zStencil,x0,FineGrid%z(i - left : i + right),rankz)
 
+        CALL  weights(x0,FineGrid%z(i-left:i+right),2*gamma,2*gamma,2*gamma,zStencil)
 
 ! Save interpolation stencil
 !

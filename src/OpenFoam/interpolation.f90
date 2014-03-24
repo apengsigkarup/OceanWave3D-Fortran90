@@ -213,9 +213,9 @@
           count1 = count1 +1 
                 DO m = 1,r 
                       count2 = count2 +1 
-           mat(count1,count2) = (factor*(x(count1)-x0(1)))**(m-1)/fact(m-1)
+          mat(count1,count2) = (factor*(x(count1)-x0(1)))**(m-1)/fact(m-1)
                 END DO
-           count2 = 0
+          count2 = 0
       END DO
         C = inv(mat)
 
@@ -284,11 +284,9 @@
                         dlVector(i+1) = dl**i / fact(i)
                END DO
 
-               transMAT = TRANSPOSE(Interpolation%dx(:,:)) 
 
                xStencil = &
-               MATMUL(transMAT,dlVector)
-
+               MATMUL(Interpolation%dx,dlVector)
        ENDIF
       
        IF(dir == 2) THEN
@@ -299,7 +297,7 @@
                END DO
 
                yStencil = &
-               MATMUL(TRANSPOSE(Interpolation%dy(:,:)),dlVector)
+               MATMUL(Interpolation%dy(:,:),dlVector)
 
        ENDIF
 
@@ -317,7 +315,7 @@
                END DO
 
                zStencil = &
-               MATMUL(TRANSPOSE(Interpolation%dz(:,:,NN(3))),dlVector)
+               MATMUL(Interpolation%dz(:,:,NN(3)),dlVector)
 
        ENDIF
         
