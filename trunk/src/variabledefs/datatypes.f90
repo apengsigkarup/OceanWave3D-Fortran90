@@ -146,7 +146,7 @@ END TYPE SFparam
 ! DEFINE a Structure for random and mono-chromatic wave generation parameters
 
 TYPE RandomWaveParam
-	REAL(KIND=long) :: Tp, Hs, h0, kh_max, dx, x0, y0, beta0
+	REAL(KIND=long) :: Tp, Hs, h0, kh_max, dx, x0, y0, beta0, S
 	INTEGER :: ispec, seed, seed2, nf, nx, ny
         CHARACTER(len=30)  inc_wave_file
         REAL(KIND=long), allocatable :: eta(:,:), Phis(:,:), eta0(:), Phis0(:), beta(:)

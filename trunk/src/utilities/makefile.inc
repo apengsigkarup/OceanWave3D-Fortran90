@@ -10,6 +10,7 @@ SOURCES += $(LDIR)/PM_spectrum.f90
 SOURCES += $(LDIR)/RAN1_b.f90
 SOURCES += $(LDIR)/build_coeff.f90
 SOURCES += $(LDIR)/build_coeff_3D.f90
+SOURCES += $(LDIR)/build_coeff_3D_Cos.f90
 SOURCES += $(LDIR)/distdot.f90
 SOURCES += $(LDIR)/eqns.f
 SOURCES += $(LDIR)/fdwvnum.f90
