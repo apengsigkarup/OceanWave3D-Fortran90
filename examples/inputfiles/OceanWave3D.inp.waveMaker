@@ -18,7 +18,7 @@ Atlantic basin Deltares; the WiFi project, Bo Terp Paulsen
 50 75 0 1 1 1 0
 0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
 0          <- Curvilinear on/off
-0 1 waveMakerSignal.inp
+0 1 waveMakerSignal.inp  <- RampTime, InterpolationOrder, Paddle signal file.
 
 
 

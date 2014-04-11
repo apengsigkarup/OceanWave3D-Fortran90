@@ -182,7 +182,7 @@ SUBROUTINE OceanWave3DT0Setup
         Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
              dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
              RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
-             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, n_cut )
+             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S, n_cut )
         !
         ! Count the total number of grid points in each generation zone and allocate space
         ! for eta and phiS and compute the elevation and surface potential time-histories.  

@@ -1,5 +1,5 @@
 SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
-     grav, inc_wave_file, kh_max, seed, seed2, eta0, beta, n_cut)
+     grav, inc_wave_file, kh_max, seed, seed2, eta0, beta, s0, n_cut)
   !-----------------------------------------------------------------------
   !
   ! Build the coefficients for a pseudo-random 3D wave with direction BETA0 to the 
@@ -18,7 +18,7 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
   CHARACTER(len=30) inc_wave_file, header
   integer, parameter :: long=selected_real_kind(12,99)
   integer i, i_spec, seed, seed2, nt, n_cut
-  real(kind=long) :: Tp, Hs, dt, depth, grav, kh_max, dx
+  real(kind=long) :: Tp, Hs, dt, depth, grav, kh_max, dx, s0
   real(kind=long) :: eta0(nt), beta(nt)
 
   ! Local variables
@@ -60,6 +60,9 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
   ELSEIF(i_spec==33)THEN
      ! A JONSWAP spectrum with a normal spreading
      CALL build_coeff_3D(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0)
+  ELSEIF(i_spec==34)THEN
+     ! A JONSWAP spectrum with a normal spreading
+     CALL build_coeff_3D_Cos(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0, s0)
   ELSEIF(i_spec == 2) THEN
      open(21,file=inc_wave_file,status='old')
      READ(21,'(A)',err=15)header
