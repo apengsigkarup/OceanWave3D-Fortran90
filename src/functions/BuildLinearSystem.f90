@@ -145,7 +145,7 @@ ENDIF
 
       CAll waveGenerationFromPaddleSignal()
       !! NOTICE !!
-      !   IF IncWaveType /= 3 THEN Uneumann == 0 by initialization
+      !   IF IncWaveType /= 3 THEN Neumann == 0 by initialization
       !! NOTICE !!
   ENDIF
   IF (GhostGridX==1) THEN
