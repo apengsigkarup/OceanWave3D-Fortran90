@@ -130,6 +130,9 @@ Guillaume Ducrozet (guillaume.ducrozet@ec-nantes.fr, developing contributor)
 Ole Lindberg (developing contributor)
    - Ship-wave techniques
 
+Ole Terp Paulsen (devloping contributor)
+   - Hybrid OceanWave3D and OpenFOAM coupling
+
 OceanWave3D is developed in collaboration between 
    - DTU Compute (merge between former DTU Informatics and DTU Mathematics), Technical University of Denmark, Denmark.
    - DTU Mechanics, Technical University of Denmark, Denmark.
