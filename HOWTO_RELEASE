@@ -16,13 +16,15 @@ Remark: Do a SVN UPDATE in the main directory or tag directory to get the files 
 A checkout of a release version is done using the shell scriptfile 
   ./checkoutrelease.sh
 
-This shell script contains the following lines of code and requires modification of the variables to be accurate.
+This shell script contains the following lines of code and requires modification of the variables to be accurate. A source directory is created and a tar file that can be used for distribution.
 
-#!/bin/sh
+#!/bin/sh                                                                                                                                                  
 PRODUCT="OceanWave3D"
 USER=apek
 NUM=0.99.0
 DIR="$PRODUCT"
-svn export svn://$USER@svn.gbar.dtu.dk/$USER/OceanWave3D/tags/Release-$NUM
-tar czf $PRODUCT-$NUM.tar.gz $DIR
+svn export svn://$USER@svn.gbar.dtu.dk/$USER/OceanWave3D/tags/Release-$NUM ../$DIR-$NUM
+tar czf $PRODUCT-$NUM.tar.gz ../$DIR-$NUM
+mv $PRODUCT-$NUM.tar.gz ../.
+
 
