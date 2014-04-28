@@ -59,6 +59,8 @@ The OceanWave3D contains a distributed set of source files with the following di
    |-- build/ (optional) : build (out-of-source) directory
    |
    |-- trunk/            : source code
+   |
+   |-- todo/             : contains a text file with a list of todo's for future releases
 
 where the source files are included in a tree structure as
 
@@ -94,8 +96,6 @@ where the source files are included in a tree structure as
    | 
    |-- doc/                  : documentation (doxygen)
    | 
-   |-- todo/                 : contains a text file with a list of todo's for future releases
-   | 
    |-- examples/             : tutorial and benchmarking applications
         | 
         |-- inputfiles/      : Example parameter input files for problems
@@ -113,13 +113,13 @@ where the source files are included in a tree structure as
              |-- visualization/ : various utility scripts useful for visualization of output
    | 
    |-- verification/         : automated test suite of source code
-   
- thirdpartylibs/             : thidpartylibs for compilation of static libraries to be included in path
+   |
+   |-- thirdpartylibs/             : thidpartylibs for compilation of static libraries to be included in path
 
 4. Authors and Contact
 ------------------------
 
-Allan Peter Engsig-Karup (apek@dtu.dk, Original Author, Lead developer and maintainer)
+Allan Peter Engsig-Karup (apek@dtu.dk, Lead developer and maintainer)
 Harry B. Bingham (hbb@mek.dtu.dk, Lead developer and maintainer)
 
 With contributions from 
@@ -151,7 +151,7 @@ Please acknowledge this software referred to as "OceanWave3D" in your work and a
   PAGES     = "2100-2118"
   }
 
-and this chapter with general details on the properties of the model and its parallel implementation
+and this chapter with general details on the properties of the model and its parallel implementation (note that this Fortran version is not yet parallel)
 
   @inbook{EngsigKarupEtAl2013,
   title     = "Fast hydrodynamics on heterogenous many-core hardware",
