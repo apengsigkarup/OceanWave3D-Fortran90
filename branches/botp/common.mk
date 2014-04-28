@@ -24,7 +24,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf89
 
-USER = botp
+USER = apek
 
 # Compiler-dependent section
 
@@ -103,6 +103,15 @@ ifeq ($(USER),botpGbar)
   SHlibFLAGS  = -shared -O2 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
 endif
 
+ifeq ($(USER),apek)
+  # MacOS, apek                                                                                                                                                 
+  FC       = gfortran
+  LIBDIRS  = -L $(HOME)/lib/
+# -L/Users/apek/Documents/Fortran/Harwell/lib -L/usr/local/atlas/lib -L/Users/apek/Documents/Fortran/SPARSKIT2                                                    #  LINLIB   = -lharwell -lskit -latlas -llapack -l_VTK_IO                                                                                                         #  LINLIB   = -lharwell -lskit -latlas -l_VTK_IO -framework veclib                                                                                             
+  LINLIB   = -lharwell -lskit -latlas -framework veclib
+  DBFLAGS  = -pg -g -O -fcheck=all -ffpe-trap=invalid,zero,overflow
+  OPTFLAGS = -O2
+endif
 
 ifeq ($(USER),olli)
   # olli linux machine
