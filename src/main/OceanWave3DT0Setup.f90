@@ -525,7 +525,6 @@ ENDIF
        '***     Software library developed in 2009 by         ***',/,&
        '***                                                   ***',/,&
        '***     Allan P. Engsig-Karup                         ***',/,&
-       '***     Guillaume Ducrozet                            ***',/,&
        '***                                                   ***',/,&
        '*** At DTU Informatics                                ***',/,&
        '***    Scientific Computing Section                   ***',/,&
@@ -534,7 +533,6 @@ ENDIF
        '***     Original software library written in 2007 by  ***',/,&
        '***                                                   ***',/,&
        '***     Allan P. Engsig-Karup                         ***',/,&
-       '***     Harry B. Bingham                              ***',/,&
        '***                                                   ***',/,&
        '*** At Department of Mechanical Engineering           ***',/,&
        '***    Coastal, Maritime and Structural Eng. Section  ***',/,&
