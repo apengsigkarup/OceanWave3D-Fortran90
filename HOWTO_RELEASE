@@ -13,9 +13,10 @@ svn copy svn://apek@svn.gbar.dtu.dk/apek/OceanWave3D/trunk svn://apek@svn.gbar.d
 Remark: Do a SVN UPDATE in the main directory or tag directory to get the files in the local version. It is not needed though. Never commit changes to a release version(!!!)
 
 2) How to check out a release version
-A checkout of a release version is done using the bash scriptfile checkoutrelease.sh .
+A checkout of a release version is done using the shell scriptfile 
+  ./checkoutrelease.sh
 
-This bash script contains the following lines of code and requires modification of the variables to be accurate.
+This shell script contains the following lines of code and requires modification of the variables to be accurate.
 
 #!/bin/sh
 PRODUCT="OceanWave3D"
