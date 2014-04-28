@@ -1,0 +1,216 @@
+************************************************
+****           OceanWave3D README           ****
+************************************************
+
+Table of Contents
+------------------
+1. Requirements
+2. Installation
+3. Project Layout
+4. Authors and Contact
+A. Acknowledgment and License
+
+1. Requirements
+-----------------
+OceanWave3D requires the following third-party software libraries:
+ * A Fortran compiler (e.g. gfortran, ifort, absoft, etc.)
+ * Software libraries
+	- Harwell Subroutine Library
+	- LAPACK
+	- SPARSKIT2
+ * For Visualization (CURRENTLY NOT USED DUE TO PORTABILITY PROBLEMS)
+        - LIB_VTK_IO (GPL V3 lisense)
+
+2. Installation
+-----------------
+
+For building the binary executable, proceed as follows:
+
+Unix-based clients:
+ * Set the variable INSTALLDIR in 'common.mk' to a directory in your path
+   or accept the default path '$HOME/bin'
+ * Set the variable FC to your system fortran compiler name.  This choice sets 
+   up the desired compiler options and library paths, if none of the existing 
+   choices matches your system, create a new compiler command and set-up block.  
+   $> emacs common.mk
+ * Compile third-party libraries mentioned in Requirements section and make
+   sure that they are accessible in the include paths used in common.mk.
+ * From the OceanWave3D top directory use 'make' to build the OceanWave3D package
+   $> make
+ * To run an example problem, create a new directory, fx
+   $> mkdir $HOME/OW3D_test
+ * Change to the OceanWave3D root directory and copy an example input file to the test directory
+   $> cp trunk/examples/inputfiles/Whalin3D.inp $HOME/OW3D_test/Whalin3D.inp
+ * Then execute in the 'OW3D_test' directory
+   $> cd $HOME/OW3D_test
+   If the OceanWave3D binary is in the PATH then type
+   $> OceanWave3D Whalin3D.inp
+   or else if the default path was accepted use
+   $> $HOME/bin/OceanWave3D Whalin3D.inp
+   to generate output from test case.
+
+3. Project Layout
+-----------------
+
+The OceanWave3D contains a distributed set of source files with the following directory tree layout:
+
+---- OceanWave3D
+   |
+   |-- build/ (optional) : build (out-of-source) directory
+   |
+   |-- trunk/            : source code
+   |
+   |-- todo/             : contains a text file with a list of todo's for future releases
+
+where the source files are included in a tree structure as
+
+ trunk/
+   |
+   |-- src/                  : source code
+        | 
+        |-- timeintegration/ : ODE solvers
+        | 
+        |-- functions/       : various functions
+        | 
+        |-- IO/              : IO methods
+        | 
+        |-- analyticalsolutions/ : various analytical solutions for wave generation, etc.
+        | 
+        |-- curvilinear/     : source for curvilinear functionality
+        | 
+        |-- fft/             : source for fft stuff
+        | 
+        |-- initialization/  : source for OceanWave3D initialization
+        | 
+        |-- main/            : driver routines
+        | 
+        |-- multigrid/       : multigrid stuff
+        | 
+        |-- pressure/        : handling of free surface pressures
+        | 
+        |-- utilities/       : useful stuff
+        | 
+        |-- variabledefs/    : global variable definitions
+	|
+	|-- iterative/       : iterative methods for linear systems
+   | 
+   |-- doc/                  : documentation (doxygen)
+   | 
+   |-- examples/             : tutorial and benchmarking applications
+        | 
+        |-- inputfiles/      : Example parameter input files for problems
+        | 
+        |-- benchmarks/      : A small benchmarking suite
+        |
+        |-- tutorial/        : Some tutorials explaining the usage of OceanWave3D
+   | 
+   |-- utils/                : utilities for generating and processing data input and output in Matlab
+        | 
+        |-- analytical/      : analytical solutions useful for wave generation, comparison, etc.
+        | 
+        |-- matlab/          : Various matlab useful files
+             | 
+             |-- visualization/ : various utility scripts useful for visualization of output
+   | 
+   |-- verification/         : automated test suite of source code
+   |
+   |-- thirdpartylibs/             : thidpartylibs for compilation of static libraries to be included in path
+
+4. Authors and Contact
+------------------------
+
+Allan Peter Engsig-Karup (apek@dtu.dk, Lead developer and maintainer)
+Harry B. Bingham (hbb@mek.dtu.dk, Lead developer and maintainer)
+
+With contributions from 
+
+Guillaume Ducrozet (guillaume.ducrozet@ec-nantes.fr, developing contributor)
+   - Splitting method for potential
+
+Ole Lindberg (developing contributor)
+   - Ship-wave techniques
+
+Ole Terp Paulsen (devloping contributor)
+   - Hybrid OceanWave3D and OpenFOAM coupling
+
+OceanWave3D is developed in collaboration between 
+   - DTU Compute (merge between former DTU Informatics and DTU Mathematics), Technical University of Denmark, Denmark.
+   - DTU Mechanics, Technical University of Denmark, Denmark.
+
+A. Acknowledgment and License
+------------------------------
+
+Please acknowledge this software referred to as "OceanWave3D" in your work and any of the publications below by using the following references:
+
+  @ARTICLE{EngsigKarupEtAl08,
+  AUTHOR    = "Engsig-Karup, A.P. and Bingham, H.B. and Lindberg, O.",
+  TITLE     = "An efficient flexible-order model for {3D} nonlinear water waves",
+  YEAR      = "2009",
+  JOURNAL   = "Journal of Computational Physics",
+  VOLUME    = "228",
+  PAGES     = "2100-2118"
+  }
+
+and this chapter with general details on the properties of the model and its parallel implementation (note that this Fortran version is not yet parallel)
+
+  @inbook{EngsigKarupEtAl2013,
+  title     = "Fast hydrodynamics on heterogenous many-core hardware",
+  publisher = "Taylor & Francis",
+  author    = "Engsig-Karup, {Allan Peter} and Glimberg, {Stefan Lemvig} and Nielsen, {Allan S.} and Ole Lindberg",
+  note      = "2013; 11",
+  year      = "2013",
+  editor    = "Rapha\'el Couturier",
+  isbn      = "978-1-4665-7162-4",
+  pages     = "251--294",
+  booktitle = "Designing Scientific Applications on GPUs",
+  }
+
+OceanWave3D is distributed under the GNU General Public License (See file LICENSE) and a base code was developed at DTU Mechanics 2006-2008 by Allan P. Engsig-Karup and entirely rewritten at DTU Informatics 2008-2011 (current version) by Allan P. Engsig-Karup with contributions as mentioned below section 4 of this file.
+
+A GPU-accelerated massively parallel version of OceanWave3D that can execute on heterogenous archictures using the CUDA programming model has been developed in collaboration between Morten Gorm Madsen (first proof-of-concept version), Stefan Lemvig Glimberg (advanced version within GPULAB library) and Allan P. Engsig-Karup. In this version of the code the multigrid preconditioned defect correction method (PDC) appeared for the first time and it accessbile in this fortran version of the code as well. This work can be cited by the following reference
+
+   @ARTICLE{EngsigKarupEtAl2011,
+   AUTHOR = "Engsig-Karup, A. P. and Madsen, M. G. and Glimberg, S. L.",
+   TITLE = "A massively parallel {GPU}-accelerated model for analysis of fully nonlinear free surface waves",
+   JOURNAL = "International Journal of Numerical Methods in Fluids",
+   YEAR = "2011",
+   DOI = "10.1002/fld.2675"
+   }
+
+The properties of the PDC method is analyzed in great detail in
+
+   @ARTICLE{EngsigKarupEtAl2013,
+   AUTHOR = "Engsig-Karup, A.P.",
+   TITLE = "Analysis of Efficient Preconditioned Defect Correction Methods for Nonlinear Water Waves",
+   JOURNAL = "International Journal of Numerical Methods in Fluids",
+   YEAR = "2013",
+   }
+
+The splitting technique that can be used for efficient wave-structure interactions are described here
+
+   @article{DucrozetEtAl2013,
+   title     = "A non-linear wave decomposition model for efficient wave‚Äìstructure interaction. Part A: Formulation, validations and analysis",
+   publisher = "Academic Press",
+   author    = "Guillaume Ducrozet and Engsig-Karup, {Allan Peter} and Bingham, {Harry B.} and Pierre Ferrant",
+   year      = "2014",
+   volume    = "257",
+   pages     = "863--883",
+   journal   = "Journal of Computational Physics",
+   issn      = "0021-9991",
+   }
+
+A comparison between OceanWave3D and HOS is described here
+
+   @article{DucrozetEtAl2012,
+   title     = "A comparative study of two fast nonlinear free-surface water wave models",
+   publisher = "John/Wiley & Sons Ltd.",
+   author    = "Guillaume Ducrozet and Bingham, {Harry B.} and Engsig-Karup, {Allan Peter} and Felicien Bonnefoy and Pierre Ferrant",
+   year      = "2012",
+   volume    = "69",
+   pages     = "1818--1834",
+   journal   = "International Journal for Numerical Methods in Fluids",
+   issn      = "0271-2091",
+   }
+
+
+

@@ -1,0 +1,707 @@
+Guillaume setup - cylinder case (nonlinear test)
+11                             <- Initial condition
+0.059524 2 1 40 200 7 0 0 1 1 1 1 <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+1000 0.005 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 1 0 24 1e-6 1e-4 1 F 1 1 5 <- solver (0:DC, 1:GMRES), GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.045518 0.164885 1.0 2.0 0 0.0 1 4 24         <- 0.032627 ; 0.045518 ; 0.061275 Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+1 6 10 0.08 0.08 0.4 <- SG-filtering on/off, filter half width, poly order, sigma_1stpoint, sigma_2ndpoint, sigma_3rdpoint (filtering weights on boundaries)
+1 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) 0 59 50 99 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH) 
+-1 40 100 200 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 0.5 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)2
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Guillaume setup - Linear Shoaling (SWENSE)
+6                             <- Initial condition
+20 1 1 161 1 9 0 0 1 1 1 1 <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+1500 0.0125 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 24 1e-10 1e-8 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.001 0.5 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10 0.02 0.02 0.2 <- SG-filtering on/off, filter half width, poly order, sigma_1stpoint, sigma_2ndpoint, sigma_3rdpoint (filtering weights on boundaries)
+1 0 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0  4  0 1 -9 5 X 0 X 0 ! Zone 1: Wave absorber (left)
+16 20 0 1  9 5 X 0 X 0 ! Zone 2: Wave absorber (right)
+1 0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)2
+0          <- Curvilinear on/off
+
+
+***************************************************************
+
+
+Guillaume setup - Linear Shoaling (Original)
+6                             <- Initial condition
+16 1 1 257 1 9 0 0 1 1 1 1 <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+6000 0.006 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 24 1e-9 1e-7 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.001 0.50 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10 0.02 0.02 0.2 <- SG-filtering on/off, filter half width, poly order, sigma_1stpoint, sigma_2ndpoint, sigma_3rdpoint (filtering weights on boundaries)
+1 0.8 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0  2  0 1 10 5 X 1 X 0 ! Zone 1: Wave maker (left)
+14 16 0 1  9 5 X 0 X 0 ! Zone 2: Wave absorber (right) 9  5 X 0 X 0
+0 1.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)2
+0          <- Curvilinear on/off
+
+
+***************************************************************
+
+
+
+Guillaume setup - SWENSE type - reflexion on wall
+10                             <- Initial condition
+6 1 1 180 1 9 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+1000 0.02 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 40 1e-8 1e-6 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.08 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+1 6 10 0.02 0.02 0.2 <- SG-filtering on/off, filter half width, poly order, sigma_1stpoint, sigma_2ndpoint, sigma_3rdpoint (filtering weights on boundaries)
+1 0 1 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+2 6 0 5 9 5 X 0 X 0 ! Zone 1: Absorption (EAST) 0 1 0 5 -9 5 X 0 X 0 ! Zone 1: Absorption (West)
+1 5.0 -1 1 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - cylinder case (linear initial)
+11                             <- Initial condition
+0.5 5.5 1 20 30 24 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+1 1 1 1 1 1                     <- alpha, beta, gamma
+1200 0.005 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10 0.02 0.02 0.2 <- SG-filtering on/off, filter half width, poly order, sigma_1stpoint, sigma_2ndpoint, sigma_3rdpoint (filtering weights on boundaries)
+0 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) -1 60 25 50 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+0 1.00 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Guillaume setup - cylinder case (nonlinear test)
+11                             <- Initial condition
+0.038993 2 1 30 200 7 0 0 1 1 1 1 <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+2000 0.01 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.046155 0.77986 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+1 5 4   <- SG-filtering on/off, filter half width, poly order
+1 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) 0 59 50 99 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+-1 62 100 202 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 1.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)2
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Test on flat bottom
+7                             <- Initial condition
+16 1 1 257 21 6 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                          <- alpha, beta, gamma
+100 0.039 2 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 35 1e-6 1e-4 1 F 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.031831 1.0 1.0 3.0 0 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1   <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order !1 5 2 0
+1 0.0 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0 2 -0.5 1.5 10 5 X 1 X 0 ! Zone 1: Wave maker 0  5  0 3.048 -9 5 X 0 X 0 ! Zone 1: Wave absorber (left)
+14 16 -0.5 1.5 9  5 X 0 X 0 ! Zone 2: Wave absorber (right)
+0 5.0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+
+
+
+
+Whalins experiment - X (Release Version)
+3                             <- Initial condition
+35 3.048 1 257 21 6 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                          <- alpha, beta, gamma
+1283 0.039 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 35 1e-6 1e-4 1 F 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.015 0.4572 2.0 3.0 1 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1   <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order !1 5 2 0
+1 5 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0  5  0 3.048 10 5 X 1 X 0 ! Zone 1: Wave maker 0  5  0 3.048 -9 5 X 0 X 0 ! Zone 1: Wave absorber (left)
+30 35 0 3.048 9  5 X 0 X 0 ! Zone 2: Wave absorber (right)
+0 5.0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+
+
+2D submerged bar test
+15                             <- Initial condition
+35 3 1 513 1 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                          <- alpha, beta, gamma
+2000 0.025 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 35 1e-6 1e-4 1 F 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 0.4 2.0 2.01 1 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1   <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order !1 5 2 0
+1 5 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0  5  0 3 -9 5 X 0 X 0 ! Zone 1: Wave absorber (left)  0  5  0 3 10 5 X 1 X 0 ! Zone 1: Wave maker 
+30 35 0 3 9  5 X 0 X 0 ! Zone 2: Wave absorber (right)
+1 5.0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+
+
+
+
+Guillaume setup - SWENSE type - reflexion wall - curvilinear (rotated domain)
+10                             <- Initial condition
+6 1 1 180 5 9 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+1000 0.02 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 40 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.04 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+>>>>>>> 1.20
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+1 0 1 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+-1 122 -1 7 -9 5 X 0 X 0 ! Zone 1: Absorption (EAST) 2 6 0 5 9 5 X 0 X 0 ! Zone 1: Absorption (EAST) 0 1 0 5 -9 5 X 0 X 0 ! Zone 1: Absorption (West)
+1 5.0 1 0 1 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Nonlinear standing wave (3D) (Release Version) + curvilinear
+14                               <- Initial condition
+2 1 1 32 7 10 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma, (Preconditioner stencils:) alphaprecond,betaprecond,gammaprecond
+500 2.26818e-002 2 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 0.4502 1.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1        <- StoreDataOnOff
+1           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+1 1.0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0         <- Curvilinear on/off
+
+T/50  = 2.26818e-002
+T/100 = 1.13409e-002
+T/200 = 5.67045e-003
+
+
+Linear standing wave (3D)
+13                               <- Initial condition
+2 2 1 9 9 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGridX, GhostGridY, GhostGridZ (0=off,1=on)
+3 3 3 1 1 1                    <- alpha, beta, gamma, (Preconditioner stencils:) alphaprecond,betaprecond,gammaprecond
+1000 1.903456399718e-002 2 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 2 2.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1        <- StoreDataOnOff
+0           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+1 0.0 1 1 1 1 1 <- SWENSE on/off, ramp in time, direction (1:+x ; -1:-x ; 2:+y ; -2:-y) (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - SWENSE type - linear reflexion wall
+10                             <- Initial condition
+6 1 1 180 1 9 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+1000 0.02 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 40 1e-8 1e-6 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.08 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+2 6 10   <- SG-filtering on/off, filter half width, poly order
+1 0 1 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+2 6 0 5 9 5 X 0 X 0 ! Zone 1: Absorption (EAST) 0 1 0 5 -9 5 X 0 X 0 ! Zone 1: Absorption (West)
+1 5.0 -1 1 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+Nonlinear standing wave (3D) (Release Version) + curvilinear
+1                               <- Initial condition
+2 1 1 128 20 10 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+50 2.26818e-002 2 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 0.4502 1.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+50 1        <- StoreDataOnOff
+1           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+T/50  = 2.26818e-002
+T/100 = 1.13409e-002
+T/200 = 5.67045e-003
+
+
+Guillaume setup - cylinder case (nonlinear test)
+11                             <- Initial condition
+0.049 2 1 60 150 5 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+1000 0.01 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.021804 0.13576 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+0 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) 0 59 50 99 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 0.5 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Linear standing wave (3D) Curvilinear
+8                               <- Initial condition
+2 2 1 18 18 18 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGridX, GhostGridY, GhostGridZ (0=off,1=on)
+4 4 4 1 1 1                    <- alpha, beta, gamma, (Preconditioner stencils:) alphaprecond,betaprecond,gammaprecond
+1000 1.345946927933294e-002 1 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 2 2.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+5 1        <- StoreDataOnOff
+0           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+0 2.0 1 1 1 1 1 <- SWENSE on/off, ramp in time, direction (1:+x ; -1:-x ; 2:+y ; -2:-y) (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+Guillaume setup - cylinder case (linear initial)
+11                             <- Initial condition
+0.5 9.5 1 60 200 7 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+1000 0.02 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+0 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) -1 59 150 199 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 2.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - cylinder case (linear initial)
+11                             <- Initial condition
+0.5 9.5 1 60 200 7 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+1000 0.02 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+0 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) -1 59 150 199 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 2.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - cylinder case (linear bis)
+11                             <- Initial condition
+0.5 2.5 1 60 40 9 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+1000 0.0234 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+1 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) 
+-1 62 25 42 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 2.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - cylinder case (nonlinear - test)
+11                             <- Initial condition
+0.5 5.5 1 60 60 7 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+2000 0.0117 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+1 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) 
+-1 62 40 62 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 2.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - cylinder case (non-linear ; Kriebel)
+11                             <- Initial condition
+0.5 2.5 1 60 80 5 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+1000 0.003 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-5 1e-3 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.4805 1.3847 10.2 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+0 0 1 Y 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 0  30 0 10  -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  61 90 0 10  9 3 X 0 X 0 ! Zone 3: Absorption (EAST) 0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH) 0 25 40 50 9 3 Y 0 Y 0 ! Zone 4: Wave maker (NORTH) -1 62 30 62 9 5 Y 0 Y 0 ! Zone 1: Absorption (NORTH)
+1 3.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+
+Guillaume setup - semi-circular channel ...
+11                             <- Initial condition (case 11: Lx is R1 ; Ly+Lx is R2)
+0.5 1.5 1 120 60 9 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                     <- alpha, beta, gamma
+500 0.0234 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.01 0.5 0.9327 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+1 1.0 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+-1 28 -1 60 -9 5 X 0 X 0   ! Zone 1: Absorption (WEST) : for curvilinear, give the indexes of the boundary position for now...
+87 122 -1 60 -10 5 X 1 X 0 ! Zone 3: Wave Maker (EAST) : for curvilinear, give the indexes of the boundary position for now...
+0 2.0 1 0 0 0 1       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Guillaume setup - SWENSE type
+10                             <- Initial condition
+8 5 1 100 30 7 0 0 1 1 1 1      <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                     <- alpha, beta, gamma
+500 0.0234 2 0 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.05 1.0 1.0 2.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+1 0 3 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0 1 0 5 -9 3 X 0 X 0 ! Zone 1: Wave maker (WEST)  
+5 8 0 5  9 3 X 0 X 0 ! Zone 3: Wave maker (EAST)
+0 8 0 2 -9 3 Y 0 Y 0 ! Zone 2: Wave maker (SOUTH)  0 6 4 6 9  5 Y 0 Y 0 ! Zone 4: Wave maker (NORTH)
+1 2.0 20 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+***************************************************************
+
+
+Linear standing wave (3D)
+8                               <- Initial condition
+2 2 1 9 9 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGridX, GhostGridY, GhostGridZ (0=off,1=on)
+4 4 4 1 1 1                    <- alpha, beta, gamma, (Preconditioner stencils:) alphaprecond,betaprecond,gammaprecond
+1000 1.345946927933294e-002 1 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 2 2.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+5 1        <- StoreDataOnOff
+0           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+0 2.0 1 1 1 1 1 <- SWENSE on/off, ramp in time, direction (1:+x ; -1:-x ; 2:+y ; -2:-y) (0=off,1=on)
+1          <- Curvilinear on/off
+
+***************************************************************
+
+
+Nonlinear standing wave (2D) (Release Version)
+1                             <- Initial condition
+2 1 1 257 1 9 0 0 1 1 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2 1 1 1                        <- alpha, beta, gamma
+100 0.0016 1 0.5 0               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.82                          <- gravitational acceleration constant
+1 0 23 1e-8 1e-6 1 V 1 1 2  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1  <- StoreDataOnOff
+0    <- 0=linear, 1=nonlinear computations
+0 6 10   <- SG-filtering on/off, filter half width, poly order
+0 0 1 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+
+
+
+
+Linear standing wave (3D)
+8                               <- Initial condition
+2 2 1 15 15 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGridX, GhostGridY, GhostGridZ (0=off,1=on)
+3 3 3 1 1 1                    <- alpha, beta, gamma, (Preconditioner stencils:) alphaprecond,betaprecond,gammaprecond
+1000 1.345946927933294e-002 2 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 2 2.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+5 1        <- StoreDataOnOff
+0           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+
+
+
+
+Nonlinear standing wave (3D) (Release Version)
+1                               <- Initial condition
+1 1 1 5 5 5 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2                           <- alpha, beta, gamma
+10 1.345946927933294e-002 1 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 20 1e-6 1e-4 1 F 1 1 5      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 0.4502 1.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+50          <- StoreDataOnOff
+1           <- 0=linear, 1=nonlinear computations
+0 9 6       <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+
+T/50  = 1.345946927933294e-002
+T/100 = 6.729734639666470e-003
+T/200 = 3.364867319833235e-003
+
+
+***************************************************************
+
+
+HARRY setup - Stream function wave (Release Version)
+7                             <- Initial condition
+6 6 1 200 9 9 0 0 1 1       <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3                         <- alpha, beta, gamma
+50 0.0234 1 0.5 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 14 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.1273 1.0 1.0 2.0 0 0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+50 6 10   <- SG-filtering on/off, filter half width, poly order
+1 0 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+ 0 2 0 6 10 5 X 1 X 0 ! Zone 1: Wave maker (WEST)
+ 4 6 0 6 9  5 X 1 X 0 ! Zone 3: Wave maker (EAST)
+ 0 6 0 2 10 5 Y 1 Y 0 ! Zone 2: Wave maker (SOUTH)
+ 0 6 4 6 9  5 Y 1 Y 0 ! Zone 4: Wave maker (NORTH)
+
+***************************************************************
+
+
+
+
+
+
+
+
+Whalins experiment - X (Release Version)
+3                             <- Initial condition
+35 3.048 1 257 21 6 0 0 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3                             <- alpha, beta, gamma
+1283 0.039 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+3 0 35 1e-6 1e-4 1 F 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.015 0.4572 2.0 2.0 1 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+0    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+1 5 2 0
+ 0  5  0 3.048 10 5 X 1 X 0 ! Zone 1: Wave maker
+ 30 35 0 3.048 9  5 X 0 X 0 ! Zone 2: Wave absorber
+
+***************************************************************
+
+
+
+
+
+
+Whalins experiment - Y (Release Version)
+3                             <- Initial condition
+3.048 35 1 21 257 6 0 0 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3                             <- alpha, beta, gamma
+1283 0.039 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 35 1e-6 1e-4 1 F 1 1 3  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.015 0.4572 2.0 2.0 1 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1    <- StoreDataOnOff
+1    <- 0=linear, 1=nonlinear computations
+1 5 2 
+ 0 3.048 0  5  10 5 Y 1  ! Zone 1: Wave maker
+ 0 3.048 30 35 9  5 Y 0  ! Zone 2: Wave absorber
+
+***************************************************************
+
+
+
+
+
+HARRY setup - Stream function wave (Release Version)
+7                             <- Initial condition
+6 1 1 2049 1 65 0 0 1 1       <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3                         <- alpha, beta, gamma
+101 0.0016 1 0.5 1             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 100 1e-6 1e-4 1 F 1 1 5 <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 0 4 30         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 0 0 0.5 0.5 2 4 6 9 10 9 5       <- relaxation zones on/off, transient time, x1a x1b x2a x2b x3a x3b ftype1 ftype2 ftype3 (ftype=relaxation function) param
+1    <- StoreDataOnOff
+Courant number (Cr = c*dt/dx, c from linear dispersion relation, if Cr=0 won't be used)
+
+
+
+Shallow to Deep Water with gravity wave (3D) (Release Version)
+2                             <- Initial condition
+1 1 1 65 65 9 0 0 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3                            <- alpha, beta, gamma
+100 0.005 1 0.5 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 15 1e-6 1e-4 1 V 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+0 0 0 0.5 0.5 2 4 6 9 10 9 5       <- relaxation zones on/off, transient time, x1a x1b x2a x2b x3a x3b ftype1 ftype2 ftype3 (ftype=relaxation function) param
+1    <- StoreDataOnOff
+Courant number (Cr = c*dt/dx, c from linear dispersion relation, if Cr=0 won't be used)
+
+
+
+Nonlinear standing wave (2D) (Release Version)
+1                             <- Initial condition
+2 1 1 257 1 9 0 0 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2                            <- alpha, beta, gamma
+100 0.0016 1 0.5 0               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.82                          <- gravitational acceleration constant
+3 0 23 1e-8 1e-6 1 V 1 1 2  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+0 0 0 0.5 0.5 2 4 6 9 10 9 5       <- relaxation zones on/off, transient time, x1a x1b x2a x2b x3a x3b ftype1 ftype2 ftype3 (ftype=relaxation function) param
+1    <- StoreDataOnOff
+Courant number (Cr = c*dt/dx, c from linear dispersion relation, if Cr=0 won't be used)
+
+
+
+
+
+
+
+
+
+
+
+
+
+*** OLD STUFF BELOW ****
+
+
+HARRY setup - Stream function wave (Release Version)
+7                             <- Initial condition
+6 1 1 1025 1 65 0 0 1 0       <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2                         <- alpha, beta, gamma
+101 0.0032 1 0.5 0             <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 100 1e-8 1e-6 10 V 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 0 4 30         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 0 0 0.5 0.5 2 4 6 9 10 9 5       <- relaxation zones on/off, transient time, x1a x1b x2a x2b x3a x3b ftype1 ftype2 ftype3 (ftype=relaxation function) param
+1    <- StoreDataOnOff
+Courant number (Cr = c*dt/dx, c from linear dispersion relation, if Cr=0 won't be used)
+
+
+
+
+
+
+
+Stream function wave (Release Version)
+7                             <- Initial condition
+6 1 1 257 1 33 0 0 0 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+1 1 1                            <- alpha, beta, gamma
+1 0.0234 1 1.0 0               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+3 0 23 1e-8 1e-6 10 V 1 1 10  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 0 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 0 0 0.5 0.5 2 4 6 9 10 9 5       <- relaxation zones on/off, transient time, x1a x1b x2a x2b x3a x3b ftype1 ftype2 ftype3 (ftype=relaxation function) param
+0    <- StoreDataOnOff
+Courant number (Cr = c*dt/dx, c from linear dispersion relation, if Cr=0 won't be used)
+
+
+Nonlinear standing wave (2D) (Release Version)
+1                             <- Initial condition
+1 1 1 65 1 65 0 0 0 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+2 2 2                            <- alpha, beta, gamma
+100 0.005 1 1.0 0               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 23 1e-8 1e-6 1 V 1 1 10  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.0525 0.0796 1.0 2.0 0 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+0 0 0 0.5 0.5 2 4 6 9 10 9 5       <- relaxation zones on/off, transient time, x1a x1b x2a x2b x3a x3b ftype1 ftype2 ftype3 (ftype=relaxation function) param
+0    <- StoreDataOnOff
+Courant number (Cr = c*dt/dx, c from linear dispersion relation, if Cr=0 won't be used)
+
+
+
+
+
+
+
