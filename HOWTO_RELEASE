@@ -2,3 +2,26 @@ This document describes how to make a release version of OceanWave3D.
 
 Source: https://ariejan.net/2006/11/21/svn-how-to-release-software-properly/
 
+FAQ:
+
+1) Make a new tag (new release version)
+Release versions are always created from current trunk.
+
+Example: (change user in path)
+svn copy svn://apek@svn.gbar.dtu.dk/apek/OceanWave3D/trunk svn://apek@svn.gbar.dtu.dk/apek/OceanWave3D/tags/Release-0.99.0 -m "creating first release tag"
+
+Remark: Do a SVN UPDATE in the main directory or tag directory to get the files in the local version. It is not needed though. Never commit changes to a release version(!!!)
+
+2) How to check out a release version
+A checkout of a release version is done using the bash scriptfile checkoutrelease.sh .
+
+This bash script contains the following lines of code and requires modification of the variables to be accurate.
+
+#!/bin/sh
+PRODUCT="OceanWave3D"
+USER=apek
+NUM=0.99.0
+DIR="$PRODUCT"
+svn export svn://$USER@svn.gbar.dtu.dk/$USER/OceanWave3D/tags/Release-$NUM
+tar czf $PRODUCT-$NUM.tar.gz $DIR
+
