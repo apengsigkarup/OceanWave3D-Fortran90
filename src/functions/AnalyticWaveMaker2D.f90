@@ -7,7 +7,7 @@ SUBROUTINE AnalyticWaveMaker2D(izone,i0,i1,j,x,RKtime,time,Ea,Pa)
 !
 ! By Allan P. Engsig-Karup and Harry B. Bingham.
 !
-USE GlobalVariables, ONLY: SFsol, g, dt, RandomWave, IncWaveType, half, one
+USE GlobalVariables, ONLY: SFsol, g, dt, RandomWave, IncWaveType, half, one,dt0
 USE Precision
 USE Constants
 IMPLICIT NONE
@@ -22,12 +22,12 @@ IF (IncWaveType==1)THEN
    CALL stream_func_wave_finite(nx,x,RKtime, &
         SFsol%n_four_modes,SFsol%zz,SFsol%yy,SFsol%k,g,Ea,Pa)
 ELSEIF(IncWaveType==2)THEN
-   diff=(RKtime-time)/dt
+   diff=(RKtime-time)/dt0
    If(diff<tol .or. abs(one-diff)<tol)THEN
-      itime = nint(RKtime/dt)+1
+      itime = nint(RKtime/dt0)+1
       Ea=RandomWave(izone)%eta(k:k+nx-1,itime); Pa=RandomWave(izone)%Phis(k:k+nx-1,itime)
    ELSE
-      itime=nint(time/dt)+1
+      itime=nint(time/dt0)+1
       Ea=half*( RandomWave(izone)%eta(k:k+nx-1,itime) + RandomWave(izone)%eta(k:k+nx-1,itime+1)  ) 
       Pa=half*( RandomWave(izone)%Phis(k:k+nx-1,itime) + RandomWave(izone)%Phis(k:k+nx-1,itime+1) )
    END If

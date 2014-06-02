@@ -42,7 +42,7 @@ ALLOCATE( zStencil(rankz,rankz) )
 
 ! Expansion point
 !The equidistant grid imply that derivatives for any interior
-!point are similar. Notice that vlaues are updated in if statements below
+!point are similar. Notice that values are updated in if statements below
 !
 x0 = zero
 
@@ -65,6 +65,10 @@ IF (Nx>1) THEN
         
         CALL  weights(x0,FineGrid%x(x-alpha:x+alpha,1),2*alpha,2*alpha,2*alpha,xStencil)
         Interpolation%dx = xStencil
+
+        !CALL weights(x0,FineGrid%x(x - alpha :x+alpha,1), &
+                !2*alpha,2*alpha+1,2*alpha,xStencil)
+        
 ENDIF
 
 ! Initialization of y-derivative. 
