@@ -1,4 +1,4 @@
-      SUBROUTINE waveGenerationFromPaddleSignal()
+      SUBROUTINE waveGenerationFromPaddleSignal(RKtime)
       ! 3-dimensional wave generation.
       ! Implementation through inhomogeneous Neumann boundary conditions
       ! specified in BuildLinearSystem.f90
@@ -22,7 +22,7 @@
       !
       INTEGER :: j, k,NNY,itime
       REAL(KIND=long) :: omega, dz, dy_local,FAC,flux,y0,error, &
-      tWeight,tmp
+      tWeight,tmp,RKtime
       REAL(KIND=long) :: FluxInterp(wave3DFlux%order)
       REAL(KIND=long), PARAMETER :: small = 1e-1
 
@@ -30,20 +30,20 @@
 
       ! Nearest neighbour interpolation in time !TODO: implement higher order
       ! scheme.
-      itime = floor(time/(wave3DFlux%dt))+1
+      itime = floor(RKtime/(wave3DFlux%dt))+1
 
       !itime = (time-zero)/dt0+1
 
-      IF (MOD(time,wave3DFlux%dt)/wave3DFlux%dt<=1/100) THEN
+      IF (MOD(RKtime,wave3DFlux%dt)/wave3DFlux%dt<=1/100) THEN
             tWeight = 0;
       ELSE
-            tWeight = time/wave3DFlux%dt-itime+1
+            tWeight = RKtime/wave3DFlux%dt-itime+1
       ENDIF
 
       ! Linear ramping in time
       !
-      IF (time<wave3DFlux%rampTime) THEN
-        FAC = -two/(wave3DFlux%rampTime**3)*time**3+three/(wave3DFlux%rampTime**2)*time**2
+      IF (RKtime<wave3DFlux%rampTime) THEN
+        FAC = -two/(wave3DFlux%rampTime**3)*RKtime**3+three/(wave3DFlux%rampTime**2)*RKtime**2
       ELSE
         FAC = one
       ENDIF
