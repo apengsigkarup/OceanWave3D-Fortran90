@@ -52,7 +52,6 @@ SUBROUTINE OceanWave3DT0Setup
   print*,'setup ICs...'
   CALL SetupInitialConditions
   time=time0
-  dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
   print*,'done with ICs'
   !
   ! Set up for relaxations zones and wave generation.
@@ -500,11 +499,13 @@ ENDIF
      END Do
   END IF
 
+  !botp
+  dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
+
   ! For coupling OceanWave3D with OpenFOAM we need the velocities and free
-  ! surface elevation to be availible at all times.
+  ! surface elevation to be available at all times.
   ! FIXME: Is there a better solution where fields are only allocated if needed?
   ! General problem!!
-  !botp
   ALLOCATE( &
   UOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
