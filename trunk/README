@@ -119,7 +119,7 @@ where the source files are included in a tree structure as
 4. Authors and Contact
 ------------------------
 
-Allan Peter Engsig-Karup (apek@dtu.dk, Lead developer and maintainer)
+Allan Peter Engsig-Karup (apek@dtu.dk, Lead developer/architect and maintainer)
 Harry B. Bingham (hbb@mek.dtu.dk, Lead developer and maintainer)
 
 With contributions from 
@@ -130,7 +130,7 @@ Guillaume Ducrozet (guillaume.ducrozet@ec-nantes.fr, developing contributor)
 Ole Lindberg (developing contributor)
    - Ship-wave techniques
 
-Ole Terp Paulsen (devloping contributor)
+Bo Terp Paulsen (devloping contributor)
    - Hybrid OceanWave3D and OpenFOAM coupling
 
 OceanWave3D is developed in collaboration between 
@@ -165,9 +165,9 @@ and this chapter with general details on the properties of the model and its par
   booktitle = "Designing Scientific Applications on GPUs",
   }
 
-OceanWave3D is distributed under the GNU General Public License (See file LICENSE) and a base code was developed at DTU Mechanics 2006-2008 by Allan P. Engsig-Karup and entirely rewritten at DTU Informatics 2008-2011 (current version) by Allan P. Engsig-Karup with contributions as mentioned below section 4 of this file.
+OceanWave3D is distributed under the GNU General Public License (See file LICENSE) and a base code was developed at DTU Mechanics 2006-2008 by Allan P. Engsig-Karup and entirely rewritten at DTU Informatics 2008-2011 (current version) by Allan P. Engsig-Karup with contributions as mentioned below in section 4 of this file.
 
-A GPU-accelerated massively parallel version of OceanWave3D that can execute on heterogenous archictures using the CUDA programming model has been developed in collaboration between Morten Gorm Madsen (first proof-of-concept version), Stefan Lemvig Glimberg (advanced version within GPULAB library) and Allan P. Engsig-Karup. In this version of the code the multigrid preconditioned defect correction method (PDC) appeared for the first time and it accessbile in this fortran version of the code as well. This work can be cited by the following reference
+A GPU-accelerated massively parallel version of OceanWave3D has been proto-typed that can execute on heterogenous archictures using the CUDA programming model has been developed in collaboration between Morten Gorm Madsen (first proof-of-concept version), Stefan Lemvig Glimberg (advanced version within GPULAB library) and Allan P. Engsig-Karup. In this version of the code the multigrid preconditioned defect correction method (PDC) appeared for the first time and it accessbile in this fortran version of the code as well. This work can be cited by the following reference
 
    @ARTICLE{EngsigKarupEtAl2011,
    AUTHOR = "Engsig-Karup, A. P. and Madsen, M. G. and Glimberg, S. L.",
