@@ -20,8 +20,6 @@ convert::~convert(){
 void convert::read(QString file, QProgressBar* Progressbar)
 {
     fileName = file;
-    Progressbar->setVisible(true);
-    Progressbar->setValue(0);
     // Open fstream
     fileStream.open(fileName.toLatin1().data(), std::ios::binary | std::ios::in);
 
@@ -86,11 +84,12 @@ void convert::read(QString file, QProgressBar* Progressbar)
     vz    = new double[nt*nx*ny*nz];
 
 
-
+int updateInterval = nt/200;
     for (int i=0;i<nt;i++){
+        if (i % updateInterval == 0){
+            Progressbar->setValue((i+2.0)/nt*100);
 
-        Progressbar->setValue((i+1)/nt*100);
-
+        }
         // read eta
         fileStream.read((char *)tmp_xy,n_xy);
         fileStream.read((char *)&junk,2*sizeof(junk));
@@ -370,9 +369,6 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
     //
     const double PI = 4.0*atan(1.0);
     double dx = x[1]-x[0];
-    double stencil[3];
-    stencil[0] = 1/(dx*dx);stencil[1]=-2/(dx*dx);stencil[2]=stencil[0];
-    double A = PI*pow((D/2),2);
 
     // Find nearest neighbour to x0
     //
@@ -384,26 +380,26 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
     double tmp_[nt];
     for (int i=0;i<nt;i++){
         tmp_[i] = eta[i*nx*ny+nn];
-
     }
 
     // deta/dt
     //
-    double detadt[nt];
+   double detadt[nt];
     gradient(detadt,tmp_,dt,nt);
 
     // dz/dt
     //
-    double dzdt[nz][nt];
+
+   Double2d dzdt(boost::extents[nz][nt]);
     for (int k=0;k<nz;k++){
         for (int i=0;i<nt;i++){
-            dzdt[k][i] = detadt[i]*sigma[k];
+         dzdt[k][i] = detadt[i]*sigma[k];
         }
     }
 
     // du/dt on the sigma grid
     //
-    double dudt[nz][nt];
+    Double2d dudt(boost::extents[nz][nt]);
     for (int k=0;k<nz;k++){
         for (int i=0;i<nt;i++){
             tmp_[i] = u[i*nx*ny*nz+nn*nz+k];
@@ -415,7 +411,7 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
 
     // Acceleration
     //
-    double acc[nz][nt];
+    Double2d acc(boost::extents[nz][nt]);
     for (int k=0;k<nz;k++){
         for (int i=0;i<nt;i++){
             acc[k][i] = dudt[k][i]-uz[i*nx*ny*nz+nn*nz+k]*dzdt[k][i];
@@ -440,17 +436,17 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
             Fi = rho*Cm*(PI/4)*pow(D,2)*(acc[k][i]+acc[k+1][i])/2;
 
             F[i] += (Fd+Fi)*dz;
-            std::cout << Fd << " " << index <<  std::endl;
         }
 
     }
     std::cout << "x0 = " << x[nn] << " " << nt*nx*nz<< std::endl;
-    std::ofstream debug;
-    debug.open("debug.force");
+    std::ofstream morisonForce;
+    morisonForce.open("Morison.force");
+    morisonForce << "time F" << std::endl;
     for (int i=0;i<nt;i++){
-        debug << std::setiosflags(std::ios::fixed) << std::setprecision(10) << t[i] << " " << F[i] << std::endl;
+        morisonForce << std::setiosflags(std::ios::fixed) << std::setprecision(10) << t[i] << " " << F[i] << std::endl;
     }
-    debug.close();
+    morisonForce.close();
 
 
 
@@ -458,7 +454,7 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
 
 
 void convert::ascii(){
-    std::cout << "convertign to ascii" << std::endl;
+
     std::ofstream oStream;
 
     oStream.open("Kinematics01.eta");
@@ -481,8 +477,5 @@ void convert::ascii(){
             oStream << "\n";
         }
         oStream.close();
-    }else{
-
-        std::cout << "Error open file" << std::endl;
     }
 }

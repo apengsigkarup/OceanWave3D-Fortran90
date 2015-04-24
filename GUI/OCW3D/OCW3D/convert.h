@@ -13,6 +13,8 @@
 #include "math.h"
 #include <cmath>
 #include "matrix.h"
+#include "boost/multi_array.hpp"
+typedef boost::multi_array<double, 2> Double2d;
 
 class convert
 {

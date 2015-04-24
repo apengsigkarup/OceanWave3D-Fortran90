@@ -147,7 +147,9 @@ void MainWindow::openWorkDirDialog(){
 
 void MainWindow::readKinematicFile(){
     ui->convertWarning->setVisible(false);
+    ui->readProgressBar->setVisible(true);
     convertFiles.read(ui->selectedPPfiles->text(),ui->readProgressBar);
+    ui->readProgressBar->setValue(100);
     ui->convert->setEnabled(true);
     ui->SelectOutput->setEnabled(true);
 }
@@ -171,7 +173,9 @@ void MainWindow::convertTo_setup(int output){
 
 }
 void MainWindow::convertTo(){
-ui->convertStatus->setVisible(true);
+    ui->convertStatus->setVisible(true);
+    ui->convertStatus->setText("Converting...");
+    qApp->processEvents();
     int output = ui->SelectOutput->currentIndex();
 
     if (output==1){ // save morison Force
