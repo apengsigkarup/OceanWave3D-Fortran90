@@ -89,8 +89,8 @@ ifeq ($(USER),botp-dev)
   FC       = gfortran
   LIBDIRS  = -L$(HOME)/lib/ 
   LINLIB   = -lharwell_gfortran -ltmglib_gfortran -llapack_gfortran -lblas -lskit_gfortran
-  DBFLAGS  = -pg -g -O0 -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
-  OPTFLAGS = -O3 -ffpe-trap=invalid,zero,overflow -ffree-line-length-none
+  DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
+  OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
   SHLIBFLAGS  = -shared -O2 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
 endif
 
