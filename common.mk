@@ -23,7 +23,7 @@ BUILDDIR = $(PWD)/../build
 #FC = gfortran-4.4
 #FC = gf90
 
-USER = botp-dev
+USER = hbb
 
 # First the blocks based on compiler name:  
 
@@ -73,10 +73,10 @@ ifeq ($(FC),f90)
 #  OPTFLAGS = -g -fast
 endif
 
-# Then this the blocks for specific users (this clobbers the above info.)
+# Then the blocks for specific users (this clobbers the above info.)
 ifeq ($(USER),hbb)
   # hbb home machine
-  FC=gf90	
+  FC=gfortran	
   LIBDIRS  = -L $(HOME)/lib/ 
   LINLIB   = -lharwell -lskit -llapack -lblas
   DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic

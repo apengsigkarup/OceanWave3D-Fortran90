@@ -47,13 +47,6 @@ SUBROUTINE OceanWave3DT0Setup
   !
   time=zero
   !
-  ! Set up the initial conditions and the bathymetry data
-  !
-  print*,'setup ICs...'
-  CALL SetupInitialConditions
-  time=time0
-  print*,'done with ICs'
-  !
   ! Set up for relaxations zones and wave generation.
   !
   IF (relaxONOFF>0) THEN
@@ -235,7 +228,7 @@ SUBROUTINE OceanWave3DT0Setup
 
                  CALL random_wave_signal_3D(RandomWave(i)%ispec, RandomWave(1)%eta0, n_cut,     &
                       RandomWave(1)%beta, n_fft, RandomWave(i)%nx, RandomWave(i)%ny,            &
-                      RandomWave(i)%beta0, RandomWave(i)%x0, RandomWave(i)%y0,                  &
+                      RandomWave(1)%beta0, RandomWave(1)%x0, RandomWave(1)%y0,                  &
                       FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
                                               RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),       &
                       FineGrid%y(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
@@ -243,6 +236,8 @@ SUBROUTINE OceanWave3DT0Setup
                       dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
                       g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
                       RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis, time0 )
+!hbb
+!                 write(201,*)RandomWave(i)
               END If
            END DO
         END If
@@ -259,6 +254,14 @@ SUBROUTINE OceanWave3DT0Setup
   ! botp
   ALLOCATE(Uneumann(FineGrid%Nz+GhostGridZ,FineGrid%Ny+2*GhostGridY))
   Uneumann = zero
+  !
+  ! Set up the initial conditions and the bathymetry data
+  !
+  print*,'setup ICs...'
+  CALL SetupInitialConditions
+  time=time0
+  dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
+  print*,'done with ICs'
   !
   ! Set up the Pressure Damping Zones if any.
   !
@@ -499,13 +502,11 @@ ENDIF
      END Do
   END IF
 
-  !botp
-  dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
-
   ! For coupling OceanWave3D with OpenFOAM we need the velocities and free
-  ! surface elevation to be available at all times.
+  ! surface elevation to be availible at all times.
   ! FIXME: Is there a better solution where fields are only allocated if needed?
   ! General problem!!
+  !botp
   ALLOCATE( &
   UOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
   VOF(FineGrid%Nz+GhostGridZ,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY), &
@@ -526,6 +527,7 @@ ENDIF
        '***     Software library developed in 2009 by         ***',/,&
        '***                                                   ***',/,&
        '***     Allan P. Engsig-Karup                         ***',/,&
+       '***     Guillaume Ducrozet                            ***',/,&
        '***                                                   ***',/,&
        '*** At DTU Informatics                                ***',/,&
        '***    Scientific Computing Section                   ***',/,&
@@ -534,6 +536,7 @@ ENDIF
        '***     Original software library written in 2007 by  ***',/,&
        '***                                                   ***',/,&
        '***     Allan P. Engsig-Karup                         ***',/,&
+       '***     Harry B. Bingham                              ***',/,&
        '***                                                   ***',/,&
        '*** At Department of Mechanical Engineering           ***',/,&
        '***    Coastal, Maritime and Structural Eng. Section  ***',/,&

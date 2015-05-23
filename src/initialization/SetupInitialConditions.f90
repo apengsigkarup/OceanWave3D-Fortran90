@@ -277,6 +277,7 @@ SUBROUTINE SetupInitialConditions
         CALL RelaxationModule(Wavefield%E,Wavefield%P,0.d0)
      ENDIF
      print*, 'initialisation of Linear Shoaling'
+
   CASE (7) ! Flat bottom, depth defined from SF-wave
      IF (Nx>1) THEN
         FineGrid%hx    = zero
