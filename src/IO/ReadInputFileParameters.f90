@@ -458,32 +458,35 @@ time, Order of interpolation in horizontal direction, file with wave paddle sign
 33     Continue
   ENDIF
   !
-  ! Allocate a RandomWave structure for each zone, whether we need it or not so that 
-  ! each zone has a RandomWave associated with it.  
   !
   IF (relaxONOFF==1) THEN ! GD: add this test in case of no relaxation zones defined
-      Allocate(RandomWave(relaxNo))
-      ! Put the scalar wave parameters into each structure and count the ones that will 
-      ! actually be used.  
-      nGenZones=0
-      Do i=1,relaxNo
-         RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
-         RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
-         RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
-         RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta0=beta0; 
-         RandomWave(i)%S=s0
-         If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
-            nGenZones=nGenZones+1
-            If(abs(RandomWave(i)%ispec) >= 30 .and. RelaxZones(i)%degrees /= 0) THEN
-               print *, '3D wave generation is only supported for RelaxZones%degrees=0'
-               stop
-            END If
-         END If
-      END Do
-      Print *, '  Found ',nGenZones, &
-           ' generation zones for the linear wave. (Only used for IncWaveType==2)'
-      Print *, ' '
-
+     Allocate(RandomWave(relaxNo))
+     !
+     ! For linear wave generation, allocate a RandomWave structure for each zone, so that 
+     ! each zone has a RandomWave associated with it.  
+     !
+     IF (IncWaveType==2) THEN
+        ! Put the scalar wave parameters into each structure and count the ones that will 
+        ! actually be used.  
+        nGenZones=0
+        Do i=1,relaxNo
+           RandomWave(i)%ispec=ispec; RandomWave(i)%Tp=Tp; RandomWave(i)%Hs=Hs;
+           RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
+           RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
+           RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta0=beta0; 
+           RandomWave(i)%S=s0
+           If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
+              nGenZones=nGenZones+1
+              If( abs(RandomWave(i)%ispec) >= 30 .and. RelaxZones(i)%degrees /= 0) THEN
+                 print *, '3D linear wave generation is only supported for RelaxZones%degrees=0'
+                 stop
+              END If
+           END If
+        END Do
+        Print *, '  Found ',nGenZones, &
+             ' generation zones for the linear wave. (Only used for IncWaveType==2)'
+        Print *, ' '
+     ENDIF
   ENDIF
 
   RETURN

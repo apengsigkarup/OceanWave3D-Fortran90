@@ -150,8 +150,8 @@ SUBROUTINE OceanWave3DT0Setup
            n_fft=Nsteps
         END IF
         !
-        ! Linear wave generation is only implemented for X-directed relaxation zones.  
-        ! Other areas are not yet supported.  -HBB
+        ! Linear wave generation is only implemented for X-directed wave generation,
+        ! but angle to the x-axis can be chosen arbitrarily.  -HBB
         !
         ! First compute the Fourier coefficients of the wave.  Find the first 
         ! relaxation zone for generation and base the coefficients on those 
