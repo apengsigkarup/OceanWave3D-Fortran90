@@ -1,6 +1,6 @@
 SUBROUTINE AnalyticWaveMaker2D(izone,i0,i1,j,x,RKtime,time,Ea,Pa)
 !
-! A subroutine to feed in an exact incident wave solution at the positions x(1:nx,j) and time t.
+! A subroutine to feed in an exact incident wave solution at the positions x(1:nx) and time t.
 ! time is the beginning of this time-interval while RKtime is the exact time position 
 ! of this R-K stage.  Mid-interval times are assumed to be at t0+dt/2 and are linearly 
 ! interpolated between the endpoint values.  j is the y-index of this x-grid line.  

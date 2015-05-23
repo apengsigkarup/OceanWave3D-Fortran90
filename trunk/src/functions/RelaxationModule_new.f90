@@ -13,7 +13,7 @@ IMPLICIT NONE
 ! GD: change
 REAL(KIND=long), DIMENSION(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY) :: E, P
 REAL(KIND=long) :: RKtime, time, FAC
-INTEGER :: i, j, k, j0, j1, k0, k1
+INTEGER :: i, j, k, j0, j1, k0, k1, krel
 REAL(KIND=long) :: tmpx(FineGrid%Nx+2*GhostGridX), tmpy(FineGrid%Ny+2*GhostGridY)
 
 !
@@ -51,6 +51,9 @@ DO i = 1, relaxNo
    j0=RelaxZones(i)%idx(1); j1=RelaxZones(i)%idx(2)
    k0=RelaxZones(i)%idx(3); k1=RelaxZones(i)%idx(4)
    !
+   ! The relaxation is split into four blocks depending on the values of 
+   ! XorY (relaxation direction) and XorYgen (wave generation direction)
+   !
    IF (RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X') THEN
       IF (RelaxZones(i)%WavegenONOFF==0) THEN
          ! No incident wave -> damping zone
@@ -71,19 +74,19 @@ DO i = 1, relaxNo
          END IF
       ELSE
          !
-         ! For wave generation, get the target eta and phiS and apply to the relaxation zone.  
+         ! Get the target eta and phiS and apply to the relaxation zone.  
          !
          IF (RelaxZones(i)%degrees==zero) THEN
             If ( IncWaveType==2 .and. abs(RandomWave(i)%ispec) >= 30 ) THEN
                !
                ! 3D wave generation using linear regular and irregular waves.  
-               ! ** This is only implemented for X-directed generation zones. **
                !
                Do k=k0,k1
                   !
                   ! Load this x-directed line of solutions and relax.  
                   !
-                  CALL AnalyticWaveMaker2D(i,j0,j1,k-k0+1,FineGrid%x(j0:j1,k),RKtime,time, &
+                  krel = k - k0 + 1
+                  CALL AnalyticWaveMaker2D(i,j0,j1,krel,FineGrid%x(j0:j1,k),RKtime,time, &
                        RelaxZones(i)%Ea,RelaxZones(i)%Pa)
                   E(j0:j1,k) = &
                        E(j0:j1,k)*(RelaxZones(i)%gam) &
@@ -220,15 +223,34 @@ DO i = 1, relaxNo
          END IF
       ELSE
          IF (RelaxZones(i)%degrees==zero) THEN
-            CALL AnalyticWaveMaker2D(i,j0,j1,1,tmpx(j0:j1),RKtime,time,  &
-                 RelaxZones(i)%Ea,RelaxZones(i)%Pa)
-	    DO j = k0,k1
-               k = j - k0 + 1
-               E(j0:j1,j) = E(j0:j1,j)&
-                    *(RelaxZones(i)%gam(k)) + FAC*RelaxZones(i)%Ea*(one-RelaxZones(i)%gam(k))
-               P(j0:j1,j) = P(j0:j1,j)&
-                    *(RelaxZones(i)%gam(k)) + FAC*RelaxZones(i)%Pa*(one-RelaxZones(i)%gam(k))
-            END DO
+            If ( IncWaveType==2 .and. abs(RandomWave(i)%ispec) >= 30 ) THEN
+               !
+               ! 3D wave generation using linear regular and irregular waves.  
+               !
+               Do k=k0,k1
+                  !
+                  ! Load this x-directed line of solutions and relax.  
+                  !
+                  krel = k - k0 + 1
+                  CALL AnalyticWaveMaker2D(i,j0,j1,krel,tmpx(j0:j1),RKtime,time,  &
+                       RelaxZones(i)%Ea,RelaxZones(i)%Pa)
+                  E(j0:j1,k) = E(j0:j1,k)&
+                       *(RelaxZones(i)%gam(krel)) + FAC*RelaxZones(i)%Ea*(one-RelaxZones(i)%gam(krel))
+                  P(j0:j1,k) = P(j0:j1,k)&
+                       *(RelaxZones(i)%gam(krel)) + FAC*RelaxZones(i)%Pa*(one-RelaxZones(i)%gam(krel))
+               END DO
+            ELSE
+
+               CALL AnalyticWaveMaker2D(i,j0,j1,1,tmpx(j0:j1),RKtime,time,  &
+                    RelaxZones(i)%Ea,RelaxZones(i)%Pa)
+               DO j = k0,k1
+                  k = j - k0 + 1
+                  E(j0:j1,j) = E(j0:j1,j)&
+                       *(RelaxZones(i)%gam(k)) + FAC*RelaxZones(i)%Ea*(one-RelaxZones(i)%gam(k))
+                  P(j0:j1,j) = P(j0:j1,j)&
+                       *(RelaxZones(i)%gam(k)) + FAC*RelaxZones(i)%Pa*(one-RelaxZones(i)%gam(k))
+               END DO
+            END IF
          ELSE
 	    DO j = k0,k1
                k = j - k0 + 1

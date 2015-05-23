@@ -17,6 +17,9 @@ SUBROUTINE random_wave_signal_3D(i_spec, eta0, n_cut, beta, nt, nx, ny, beta0, x
   ! When i_spec=-30, a mono-chromatic wave is generated with period Tp, 
   ! height Hs and angle BETA0.  
   !
+  !
+  ! By Harry B. Bingham
+  !
   !----------------------------------------------------------------------
   IMPLICIT none
   CHARACTER(len=30) inc_wave_file, header
@@ -174,7 +177,7 @@ SUBROUTINE random_wave_signal_3D(i_spec, eta0, n_cut, beta, nt, nx, ny, beta0, x
      !
      open(21,file='eta0_irregular',status='unknown')
      write(21,36)Hs,Tp,depth,beta0
-36      format('% Mono-chromatic wave with H=',e12.4,' T=',e12.4,' at x=',e12.4,  &
+36      format('% Mono-chromatic wave with H=',e12.4,' T=',e12.4,' at h=',e12.4,  &
              ' at heading angle ',f10.2,'.')
      do i=1,nt
         write(21,*)(i-1)*dt,eta0(i)

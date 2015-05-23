@@ -132,12 +132,15 @@ SUBROUTINE ReadInputFileParameters
   ! If time0 is not input then we either set it to zero, or if an initial condition is 
   ! being read in from a file, then the time specified there is used.  
   !
-  READ (FILEIP(1),*,err=32) Nsteps, dt, timemethod, CFL, extrapolationONOFF
+  READ (FILEIP(1),*,err=54) Nsteps, dt, timemethod, CFL, extrapolationONOFF
   If(IC >= 0) THEN
      time0=zero
   ELSE
      time0=t0IC
   END If
+  Go To 53
+54 print *, 'Error reading the time set up line: Nsteps, dt, time integration scheme, ...'
+  stop
 53 print *, ' '
   !
   ! If this is a read initial conditions run and the starting times do not agree, take the 
@@ -391,8 +394,6 @@ SUBROUTINE ReadInputFileParameters
              PDampZones(i)%BBox(3), PDampZones(i)%BBox(4), PDampZones(i)%g0Phi,         &
              PDampZones(i)%g0Eta, PDampZones(i)%type  
      END Do
-     print *, ' '
-     print *, 'Found ', NDampZones, ' pressure damping zones.'
      go to 65
   END IF
   go to 65
@@ -406,8 +407,9 @@ SUBROUTINE ReadInputFileParameters
   backspace(FILEIP(1))
 65 continue
   print *, ' '
+  print *, 'Found ', NDampZones, ' pressure damping zones.'
 
-  ! SWENSE
+  ! SWENSE line
   READ(FILEIP(1),*) swenseONOFF, swenseTransientTime, swenseDir, West_refl, East_refl, North_refl, South_refl
 
   ! CURVILINEAR
@@ -478,7 +480,8 @@ time, Order of interpolation in horizontal direction, file with wave paddle sign
             END If
          END If
       END Do
-      Print *, '  Found ',nGenZones,' generation zones for the linear wave.'
+      Print *, '  Found ',nGenZones, &
+           ' generation zones for the linear wave. (Only used for IncWaveType==2)'
       Print *, ' '
 
   ENDIF
