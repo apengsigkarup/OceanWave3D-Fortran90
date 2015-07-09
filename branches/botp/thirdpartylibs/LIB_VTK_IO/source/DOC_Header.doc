@@ -1,0 +1,32 @@
+!(doc)TITLE{LIB\_VTK\_IO}
+!(doc)SUBTITLE{VTK InPut/OutPut Fortran Library}
+!(doc)VERSION{0.2}
+!(doc)AUTHOR{Stefano Zaghi}
+!(doc)COAUTHORS{Enrico Cavallini and Renato N. Elias}
+!(doc)DATE{07-01-2008}
+
+!!\newcommand{\LIBVTKIO}{\MaiuscolettoBS{LIB\_VTK\_IO }}
+
+!(doc)header
+
+!(doc)titlepage
+
+!!\tableofcontents
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Acknowledgements.doc}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Introduction.doc}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_News_Changes.doc}
+
+!!\mainmatter
+
+!!\part{Compile and Install LIB\_VTK\_IO}
+!!\label{part:Compile and Install}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Compile_Install.doc}
+
+!(doc)INCLUDE{/home/stefano/VTK_IO/LIB_VTK_IO/source/DOC_Programming_Style.doc}
+
+!!\part{LIB\_VTK\_IO API}
+!!\label{part:LIBVTKIO API}

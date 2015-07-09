@@ -1,0 +1,19 @@
+A moderately nonlinear stream function wave in 2D with no smoothing
+0  1  1000.                         <- Initial condition (-1, read from file, 0=defined by funPressureTerm.f90, 1=NL standing wave, 2=shoaling on a smooth beach, 3=Whalin bar, ... see Initialization.f90:SetupInitialConditions); IncWaveType (0=none, 1=stream function, 2=linear irregular waves); accel_tol_fact (Optional local filtering based on free-surface acceleration to prevent breaking.  Turned off if this value does not appear)
+8. 1. 1. 150 1 9 0 0 1 1 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ (0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                   <- alpha, beta, gamma, alphaprecond, betaprecond, gammaprecond
+401 .0245 1 0.5 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, c based on the incident wave), RK4-ExtrapolationON/OFF
+9.82                          <- gravitational acceleration constant
+1 1 0 23 1e-8 1e-6 1 V 1 1 2  <- solver (0:DC, 1:GMRES), GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.08 1. 1.0 1.0 0 0. 1 6 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter (This line is not used unless IncWaveType==1)
+-20 20 1 1   <- StoreDataOnOff, formattype, (StoreDataOnOff=0 -> no output, StoreDataOnOff=+stride-> binary, StoreDataOnOff=-stride -> ascii every stride time steps.  formattype=0, binary; =1, unformatted) If formattype=20, then the line should read: StoreDataOnOff, iKinematics, formattype, nOutFiles; and nOutFiles lines should appear below defining  [xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride] for each file.      
+1 129 1 1 1 1 1 401 1  <- xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride    
+1 0    <- 0/1=linear/nonlinear computations, dummy variable
+0 6 10 0.08 0.08 0.4  <- SG-filtering on/off, filter half width, poly order
+1 0. 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(= +/- 9,10; sign gives direction) param XorY WavegenONOFF XorYgen degrees(=IC rotation) 
+0. 1. 0. 1. 9 3.5 X 1 X 0.
+1. 2. 0. 1. 10 3.5 X 1 X 0.
+1  1 <- Damping pressure zone:  PDampingOnOff=0 (off), number of zones.  For each zone include the line: x1, x2, y1, y2 (bounds of the zone), gamma0 (dynamic FSBC), Gamma0 (kinematic FSBC), i_damperType (0=friction on the velocity, 1=friction on the potential).
+6. 8. 0. 0. 1. 1. 0 
+0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off

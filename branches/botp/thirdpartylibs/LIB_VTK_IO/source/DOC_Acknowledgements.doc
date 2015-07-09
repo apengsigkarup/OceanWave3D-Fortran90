@@ -1,0 +1,10 @@
+!!\chapter{Acknowledgements}
+!!\label{cap:Acknowledgements}
+!!
+!!I am very grateful to Renato N. Elias: whitout his support \LIBVTKIO would not born. As a matter of facts \LIBVTKIO is a
+!!collection of his tips. Despite the fact that Renato does not write the code he is a \virgo{moral co-author} of the code.
+!!
+!!I thank Enrico Cavallini for his help in debugging the code. He also develop the MS Windows version
+!!of \LIBVTKIO and he is the first co-author that I found.
+!!
+!!Finally I thank the ParaView mailing list for the great support of its members.

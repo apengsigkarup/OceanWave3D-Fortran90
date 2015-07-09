@@ -1,0 +1,211 @@
+!!\section{VTK\_GEO\_XML}
+!!
+!!VTK\_GEO\_XML is an interface to 6 different functions; there are 2 functions for each 3 topologies supported.
+!!This function must be called after VTK\_INI\_XML. It saves the mesh geometry. The inputs that must be passed change
+!!depending on the topologies choiced. Not all VTK topologies have been implemented (\virgo{polydata} topologies are absent).
+!!The signatures for all implemented topologies are now reported.
+!!
+!!\subsection{VTK\_GEO\_XML STRUCTURED GRID}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Structured Grid Signature}]
+!!function VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2,NN, &
+!!                     X,Y,Z) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{structured grid} is useful for structured grid with non-uniform discretization steps.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Structured Grid Variables}]
+!!integer(I4P),     intent(IN):: nx1,nx2  ! initial and final nodes of x axis
+!!integer(I4P),     intent(IN):: ny1,ny2  ! initial and final nodes of y axis
+!!integer(I4P),     intent(IN):: nz1,nz2  ! initial and final nodes of z axis
+!!integer(I4P),     intent(IN):: NN       ! number of all nodes
+!!real(R8P or R4P), intent(IN):: X(1:NN)  ! x coordinates
+!!real(R8P or R4P), intent(IN):: Y(1:NN)  ! y coordinates
+!!real(R8P or R4P), intent(IN):: Z(1:NN)  ! z coordinates
+!!integer(I4P)::                 E_IO     ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic displacement
+!!interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be sure that all
+!!variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO\_XML structured grid variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}nx1,nx2}] contains the extent of X axis; $nx1$ is the initial node and $nx2$ is the final.
+!! \item[{\color{RoyalBlue}ny1,ny2}] contains the extent of Y axis; $ny1$ is the initial node and $ny2$ is the final.
+!! \item[{\color{RoyalBlue}nz1,nz2}] contains the extent of Z axis; $nz1$ is the initial node and $nz2$ is the final.
+!! \item[{\color{RoyalBlue}NN}] contains the global number of nodes $NN=(nx2-nx1+1)*(ny2-ny1+1)*(nz2-nz1+1)$.
+!! \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+!! \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+!! \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of all nodes. It is a vector of $[1:NN]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO\_XML structured grid calling:
+!!
+!!\begin{boxred}{VTK\_GEO\_XML Structured Grid Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4):: nx1,nx2
+!!integer(4):: ny1,ny2
+!!integer(4):: nz1,nz2
+!!integer(4):: NN
+!!real(4):: X(1:NN),Y(1:NN),Z(1:NN)
+!!...
+!!E_IO = VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2, &
+!!                   NN,                      &
+!!                   X,Y,Z)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_GEO\_XML RECTILINEAR GRID}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Rectilinear Grid Signature}]
+!!function VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2, &
+!!                     X,Y,Z) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{rectilinear grid} is useful for structured grid with non-uniform discretization steps even in
+!!generalized coordinates.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Rectilinear Grid Variables}]
+!!integer(I4P),     intent(IN):: nx1,nx2    ! initial and final nodes of x axis
+!!integer(I4P),     intent(IN):: ny1,ny2    ! initial and final nodes of y axis
+!!integer(I4P),     intent(IN):: nz1,nz2    ! initial and final nodes of z axis
+!!real(R8P or R4P), intent(IN):: X(nx1:nx2) ! x coordinates
+!!real(R8P or R4P), intent(IN):: Y(ny1:ny2) ! y coordinates
+!!real(R8P or R4P), intent(IN):: Z(nz1:nz2) ! z coordinates
+!!integer(I4P)::                 E_IO       ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be sure
+!!that all variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO\_XML rectilinear grid variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}nx1,nx2}] contains the extent of X axis; $nx1$ is the initial node and $nx2$ is the final.
+!! \item[{\color{RoyalBlue}ny1,ny2}] contains the extent of Y axis; $ny1$ is the initial node and $ny2$ is the final.
+!! \item[{\color{RoyalBlue}nz1,nz2}] contains the extent of Z axis; $nz1$ is the initial node and $nz2$ is the final.
+!! \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of X nodes. It is a vector of $[nx1:nx2]$.
+!! \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of Y nodes. It is a vector of $[ny1:ny2]$.
+!! \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of Z nodes. It is a vector of $[nz1:nz2]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO\_XML rectilinear grid calling:
+!!
+!!\begin{boxred}{VTK\_GEO\_XML Structured Grid Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4):: nx1,nx2
+!!integer(4):: ny1,ny2
+!!integer(4):: nz1,nz2
+!!real(4):: X(nx1:nx2),Y(ny1:ny2),Z(nz1:nz2)
+!!...
+!!E_IO = VTK_GEO_XML(nx1,nx2,ny1,ny2,nz1,nz2, &
+!!                   X,Y,Z)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!\subsection{VTK\_GEO\_XML UNSTRUCTURED GRID}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Unstructured Grid Signature}]
+!!function VTK_GEO_XML(Nnodi,NCelle,X,Y,Z) result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The topology \virgo{unstructured grid} is necessary for unstructured grid, the most general mesh format. This topology
+!!is also useful for scructured mesh in order to save only a non-structured clip of mesh.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Unstructured Grid Variables}]
+!!integer(I4P),     intent(IN):: NN       ! number of nodes
+!!integer(I4P),     intent(IN):: NC       ! number of cells
+!!real(R8P or R4P), intent(IN):: X(1:NN)  ! x coordinates
+!!real(R8P or R4P), intent(IN):: Y(1:NN)  ! y coordinates
+!!real(R8P or R4P), intent(IN):: Z(1:NN)  ! z coordinates
+!!integer(I4P)::                 E_IO     ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!Note that the variables \texttt{X,Y,Z} can be passed both as 8-byte real kind and 4-byte real kind; the dynamic
+!!displacement interface will call the correct function. Mixing 8-byte real kind and 4-byte real kind is not allowed: be
+!!sure that all variables are 8-byte real kind or all are 4-byte real kind.
+!!
+!!The VTK\_GEO\_XML unstructured grid variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}Nnodi}] indicates the number of all nodes.
+!! \item[{\color{RoyalBlue}NCelle}] indicates the number of all cells.
+!! \item[{\color{RoyalBlue}X}] contains the $X$ coordinates values of nodes. It is a vector of $[1:Nnodi]$.
+!! \item[{\color{RoyalBlue}Y}] contains the $Y$ coordinates values of nodes. It is a vector of $[1:Nnodi]$.
+!! \item[{\color{RoyalBlue}Z}] contains the $Z$ coordinates values of nodes. It is a vector of $[1:Nnodi]$.
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO\_XML unstructured grid calling:
+!!
+!!\begin{boxred}{VTK\_GEO\_XML Unstructured Grid Calling}
+!!\begin{verbatim}
+!!...
+!!integer(4), parameter:: Nnodi=100
+!!integer(4), parameter:: NCelle=50
+!!real(4):: X(1:Nnodi),Y(1:Nnodi),Z(1:Nnodi)
+!!...
+!!E_IO = VTK_GEO_XML('ascii',Nnodi,NCelle,X,Y,Z)
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
+!!In order to use the \virgo{unstructured grid} it is necessary to save also the \virgo{connectivity} of the grid.
+!!The connectivity must be saved with the function \MaiuscolettoBS{VTK\_CON\_XML}.
+!!
+!!\subsection{VTK\_GEO\_XML CLOSE PIECE}
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=signature,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Close Piece Signature}]
+!!function VTK_GEO_XML() result(E_IO)
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!As we said before the XML standard is more powerful than legacy. XML file can contain more than 1 mesh with its
+!!associated variables. Thus there is the necessity to close each \virgo{pieces} that compose the data-set saved in the
+!!XML file. The \MaiuscolettoBS{VTK\_GEO\_XML} called in the \virgo{close piece} format is used just to close the
+!!current piece before saving another piece or closing the file.
+!!
+!!\begin{boxred}{}
+!!\begin{lstlisting}[style=variables,title=\color{Maroon}\MaiuscolettoBS{VTK\_GEO\_XML Close Piece Variables}]
+!!integer(I4P):: E_IO ! Input/Output inquiring flag: $0$ if IO is done, $> 0$ if IO is not done
+!!\end{lstlisting}
+!!\end{boxred}
+!!
+!!The VTK\_GEO\_XML close piece variables have the following meaning:
+!!
+!!\begin{description}
+!! \item[{\color{RoyalBlue}E\_IO}] contains the inquiring integer flag for error handling.
+!!\end{description}
+!!
+!!The following is an example of VTK\_GEO\_XML close piece calling:
+!!
+!!\begin{boxred}{VTK\_GEO\_XML Unstructured Grid Calling}
+!!\begin{verbatim}
+!!...
+!!E_IO = VTK_GEO_XML()
+!!...
+!!\end{verbatim}
+!!\end{boxred}
+!!
