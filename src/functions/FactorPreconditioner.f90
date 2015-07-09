@@ -5,5 +5,11 @@ USE DataTypes
 IMPLICIT NONE
 INTEGER :: Nfs
 TYPE (SparseArray_COO) :: PreconditioningMatrix
-CALL LUfactor(PreconditioningMatrix, Nfs)
+! Original preconditioner using HSL-MA41
+!
+!CALL LUfactor(PreconditioningMatrix, Nfs) 
+
+! Alternative preconditioner using SPARSKIT
+!
+CALL LUfactor_spk(PreconditioningMatrix, Nfs)
 END SUBROUTINE FactorPreconditioner

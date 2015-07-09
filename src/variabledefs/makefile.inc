@@ -6,4 +6,5 @@ SOURCES += $(LDIR)/constants.f90
 SOURCES += $(LDIR)/datatypes.f90
 SOURCES += $(LDIR)/HSL_LU.f90
 SOURCES += $(LDIR)/OFmodule.f90
+SOURCES += $(LDIR)/SPK.f90
 SOURCES += $(LDIR)/globalvariables.f90

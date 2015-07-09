@@ -130,6 +130,7 @@ TYPE Level_def
 	TYPE (Diff_def) :: FullRankStencilsNEW ! stencil and coefficient tables
 	REAL(KIND=long), DIMENSION(:,:,:,:), POINTER :: dsigmanew ! array with coordinate index, (k,i,j,:)
 	TYPE (SparseArray_COO) :: PreconditioningMatrix
+	TYPE (SparseArray_CSR) :: PreconditioningMatrix_CSR
 	TYPE (SparseArray_CSR) :: IterationMatrix ! for use with jacobi or gauss-seidel
 	INTEGER :: mapNp ! number of points in iGhost
 	INTEGER, DIMENSION(:), ALLOCATABLE :: iGhost ! global indexes for ghost points

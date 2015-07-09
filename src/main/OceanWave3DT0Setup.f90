@@ -308,7 +308,7 @@ SUBROUTINE OceanWave3DT0Setup
 !    filename = "SparseMatrix.bin"
 !     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
 !     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
-     CALL FactorPreconditioner(FineGrid%PreconditioningMatrix, &
+     CALL FactorPreconditioner(FineGrid%PreconditioningMatrix_CSR, &
           (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ))
 
   ELSE IF (Precond==3) THEN
