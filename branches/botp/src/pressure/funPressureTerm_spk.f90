@@ -36,6 +36,8 @@ SUBROUTINE funPressureTerm_spk(t,g,Nx,Ny,FineGrid,Wavefield)
   !REAL(KIND=long), DIMENSION(:), ALLOCATABLE  :: rhs 
   TYPE (Level_def), INTENT(IN) :: FineGrid
   TYPE (Wavefield_FS), INTENT(OUT) :: Wavefield
+!for debug can be deleted
+REAL(kind=long), allocatable ::  test_rhs(:), test_lhs(:), x(:)
   !
   ! The implemented types of pressure patches are:  
   ! 
@@ -164,7 +166,7 @@ SUBROUTINE funPressureTerm_spk(t,g,Nx,Ny,FineGrid,Wavefield)
         ! Extract phi over the damping zone region
         !
         tmp(1:nd)=Wavefield%P(id0:id0+nd-1,1)  
-         
+        rhs =zero 
         ! Take Grad phi 
         !
         CALL DfDx_1D_Uneven(tmp,nd,PDampZones_csr(id)%Grad,rank,rhs)
@@ -174,7 +176,6 @@ SUBROUTINE funPressureTerm_spk(t,g,Nx,Ny,FineGrid,Wavefield)
         Do i=1,nd
            tmp(i)=PDampZones_csr(id)%gamPhi(id0+i-1)*rhs(i)
         END Do
-
         CALL DfDx_1D_Uneven(tmp,nd,PDampZones_csr(id)%Grad,rank,rhs)
         
         ! Add in the Dirichlet condition at the start of the zone and the Neumann 
@@ -185,8 +186,7 @@ SUBROUTINE funPressureTerm_spk(t,g,Nx,Ny,FineGrid,Wavefield)
         !
         ! Solve for p_d using the LU-factored Laplacian matrix.
         !
-        CALL LUSOL(PDampZones_csr(id)%Lop%nrow,rhs,rhs,PDampZones_csr(id)%Lop%alu,PDampZones_csr(id)%Lop%jlu,PDampZones_csr(id)%Lop%ju)
-
+        CALL LUSOL(nd,rhs,rhs,PDampZones_csr(id)%Lop%alu,PDampZones_csr(id)%Lop%jlu,PDampZones_csr(id)%Lop%ju)
         !JOB = 3;   ! Solution
         !CALL MA41AD(JOB, nd, PDampZones(id)%Lop%nnz, PDampZones(id)%Lop%irn, PDampZones(id)%Lop%icn,    &
         !     PDampZones(id)%Lop%val, rhs, PDampZones(id)%Lop%COLSCA, PDampZones(id)%Lop%ROWSCA,         &
