@@ -1,0 +1,143 @@
+c----------------------------------------------------------------------c
+c                                                                      c
+c            SPARSKIT  Modules  FORMATS and UNARY                      c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                                                                      c    
+c    This directory contains both the module FORMATS and UNARY         c
+c    of SPARSKIT.                                                      c
+c                                                                      c
+c----------------------------------------------------------------------c    
+c                     CONTENTS:                                        c
+c======================================================================c 
+c                                                                      c
+c    formats.f : mostly format conversion routines.                    c
+c                                                                      c
+c    unary.f   : elementary manipulation routines.                     c
+c                                                                      c
+c    chkfmt1   : a long test-suite for the conversion routines.        c
+c                                                                      c
+c    chkun.f   : a test-suite for *some* of the routines in unary.f    c
+c                                                                      c
+c    rvbr.f    : Test program for Variable Block Matrix support        c
+c                                                                      c
+c                                                                      c
+c    makefile  : makefile for the sample programs chkfmt1.f, chkun.f   c
+c                and rvbr.f produces the executables fmt.ex for format c
+c                (usage: make fmt.ex), un.ex for unary.f (usage:       c
+c                make un.ex) and vbr.ex for VBR functions (usage:      c
+c                make vbr.ex).                                         c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                                                                      c
+c       Here are the contents of formats.f and unary.f                 c
+c                                                                      c
+c----------------------------------------------------------------------c
+c======================================================================c
+c                  formats.f:        				       c
+c======================================================================c 
+c                                                                      c
+c----------------------------------------------------------------------c
+c                          S P A R S K I T                             c
+c----------------------------------------------------------------------c
+c                    FORMAT CONVERSION MODULE                          c
+c----------------------------------------------------------------------c
+c contents:                                                            c
+c----------                                                            c
+c csrdns  : converts a row-stored sparse matrix into the dense format. c
+c dnscsr  : converts a dense matrix to a sparse storage format.        c
+c coocsr  : converts coordinate to  to csr format                      c
+c coicsr  : in-place conversion of coordinate to csr format            c
+c csrcoo  : converts compressed sparse row to coordinate.              c
+c csrssr  : converts compressed sparse row to symmetric sparse row     c
+c ssrcsr  : converts symmetric sparse row to compressed sparse row     c
+c csrell  : converts compressed sparse row to ellpack format           c
+c ellcsr  : converts ellpack format to compressed sparse row format    c
+c csrmsr  : converts compressed sparse row format to modified sparse   c
+c           row format                                                 c
+c msrcsr  : converts modified sparse row format to compressed sparse   c
+c           row format.                                                c
+c csrcsc  : converts compressed sparse row format to compressed sparse c
+c           column format (transposition)                              c
+c csrlnk  : converts compressed sparse row to linked list format       c
+c lnkcsr  : converts linked list format to compressed sparse row fmt   c
+c csrdia  : converts a compressed sparse row format into a diagonal    c
+c           format.                                                    c
+c diacsr  : converts a diagonal format into a compressed sparse row    c
+c           format.                                                    c
+c bsrcsr  : converts a block-row sparse format into a compressed       c
+c           sparse row format.                                         c
+c csrbsr  : converts a compressed sparse row format into a block-row   c
+c           sparse format.                                             c
+c csrbnd  : converts a compressed sparse row format into a banded      c
+c           format (linpack style).                                    c
+c bndcsr  : converts a banded format (linpack style) into a compressed c
+c           sparse row storage.                                        c
+c csrssk  : converts the compressed sparse row format to the symmetric c
+c           skyline format                                             c
+c sskssr  : converts symmetric skyline format to symmetric  sparse row c
+c           format.                                                    c
+c csrjad  : converts the csr format into the jagged diagonal format    c
+c jadcsr  : converts the jagged-diagonal format into the csr format    c
+c csruss  : Compressed Sparse Row to Unsymmetric Sparse Skyline format c
+c usscsr  : Unsymmetric Sparse Skyline format to Compressed Sparse Row c
+c csrsss  : Compressed Sparse Row to Symmetric Sparse Skyline format   c
+c ssscsr  : Symmetric Sparse Skyline format to Compressed Sparse Row   c
+c csrvbr  : Converts compressed sparse row to var block row format     c
+c vbrcsr  : Converts var block row to compressed sparse row format     c
+c--------- miscalleneous additions not involving the csr format--------c
+c cooell  : converts coordinate to Ellpack/Itpack format               c
+c dcsort  : sorting routine used by crsjad                             c
+c csorted :  Checks if matrix in CSR format is sorted by columns       c
+c----------------------------------------------------------------------c
+c======================================================================c
+c                        unary.f:  				       c  
+c======================================================================c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                          S P A R S K I T                             c
+c----------------------------------------------------------------------c
+c                     UNARY SUBROUTINES MODULE                         c
+c----------------------------------------------------------------------c
+c contents:                                                            c
+c----------                                                            c
+c submat : extracts a submatrix from a sparse matrix.                  c
+c filter : filters elements from a matrix according to their magnitude.c
+c filterm: same as above, but for the MSR format                       c
+c csort  : sorts the elements in increasing order of columns           c
+c transp : in-place transposition routine (see also csrcsc in formats) c
+c copmat : copy of a matrix into another matrix (both stored csr)      c
+c getelm : returns a(i,j) for any (i,j) from a CSR-stored matrix.      c
+c getdia : extracts a specified diagonal from a matrix.                c
+c getl   : extracts lower triangular part                              c
+c getu   : extracts upper triangular part                              c
+c levels : gets the level scheduling structure for lower triangular    c
+c          matrices.                                                   c
+c amask  : extracts     C = A mask M                                   c
+c rperm  : permutes the rows of a matrix (B = P A)                     c
+c cperm  : permutes the columns of a matrix (B = A Q)                  c
+c dperm  : permutes both the rows and columns of a matrix (B = P A Q ) c
+c dmperm : symmetric permutation of row and column (B = P A P')        c
+c dvperm : permutes a real vector (in-place)                           c
+c ivperm : permutes an integer vector (in-place)                       c
+c retmx  : returns the max absolute value in each row of the matrix    c
+c diapos : returns the positions of the diagonal elements in A.        c
+c extbdg : extracts the main diagonal blocks of a matrix.              c
+c getbwd : returns the bandwidth information on a matrix.              c
+c blkfnd : finds the block-size of a matrix.                           c
+c blkchk : checks whether a given integer is the block size of A.      c
+c infdia : obtains information on the diagonals of A.                  c
+c amubdg : gets number of nonzeros in each row of A*B (as well as NNZ) c 
+c aplbdg : gets number of nonzeros in each row of A+B (as well as NNZ) c
+c rnrms  : computes the norms of the rows of A                         c
+c cnrms  : computes the norms of the columns of A                      c
+c rscal  : scales the rows of a matrix by their norms.                 c
+c cscal  : scales the columns of a matrix by their norms.              c
+c addblk : Adds a matrix B into a block of A.                          c
+c get1up : Collects the first elements of each row of the upper        c
+c          triangular portion of the matrix.                           c
+c xtrows : extracts given rows from a matrix in CSR format.            c
+c csrkvstr:  Finds block row partitioning of matrix in CSR format      c
+c csrkvstc:  Finds block column partitioning of matrix in CSR format   c
+c kvstmerge: Merges block partitionings, for conformal row/col pattern c
+c----------------------------------------------------------------------c

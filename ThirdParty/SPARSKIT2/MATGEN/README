@@ -1,0 +1,57 @@
+-------------------------------------------------------------
+		SPARSKIT MODULE MATGEN 
+-------------------------------------------------------------
+
+ The current directory MATGEN contains a few subroutines and
+ drivers for generating sparse matrices.
+
+      1) 5-pt and 7-pt matrices on rectangular regions discretizing
+           elliptic operators of the form: 
+
+         L u == delx( a delx u ) + dely ( b dely u) + delz ( c delz u ) + 
+                delx ( d u ) + dely (e u) + delz( f u ) + g u = h u
+
+         with Boundary conditions,
+		 alpha del u / del n + beta u = gamma
+	 on a rectangular 1-D, 2-D or 3-D grid using centered
+	 difference scheme or upwind scheme.
+ 
+         The functions a, b, ..., h are known through the
+         subroutines  afun, bfun, ..., hfun in the file
+         functns.f. The alpha is a constant on each side of the
+	 rectanglar domain. the beta and the gamma are defined
+	 by the functions betfun and gamfun (see functns.f for
+	 examples).
+
+      2) block version of the finite difference matrices (several degrees of
+         freedom per grid point. ) It only generates the matrix (without
+	 the right-hand-side), only Dirichlet Boundary conditions are used.
+
+      3) Finite element matrices for the convection-diffusion problem 
+
+                  - Div ( K(x,y) Grad u ) + C(x,y) Grad u = f
+                    u = 0 on boundary 
+
+	 (with Dirichlet boundary conditions). The matrix is returned 
+	 assembled in compressed sparse row format. See genfeu for 
+	 matrices in unassembled form. The user must provide the grid, 
+	 (coordinates x, y and connectivity matrix ijk) as well as some 
+	 information on the nodes (nodcode) and the material properties 
+	 (the function K(x,y) above) in the form of a subroutine xyk. 
+
+     4) Markov chain matrices arising from a random walk on a
+	trangular grid. Useful for testing nonsymmetric eigenvalue
+	codes. Has been suggested by G.W. Stewart in one of his
+	papers. Used by Y. Saad in several papers as a test problem 
+	for nonsymmetric eigenvalue methods.
+
+     5) Matrices from the paper by Z. Zlatev, K. Schaumburg, 
+        and J. Wasniewski. (``A testing scheme for subroutines solving
+        large linear problems.''  Computers and Chemistry, 5:91--100, 
+        1981.)
+
+----------------------------------------------------------------------
+     the items (1) and (2) are in directory FDIF,
+     the item (3) is in directory FEM
+     the items (4) and (5) are in directory MISC
+

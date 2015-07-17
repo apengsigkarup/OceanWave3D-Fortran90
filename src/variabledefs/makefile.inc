@@ -8,3 +8,4 @@ SOURCES += $(LDIR)/HSL_LU.f90
 SOURCES += $(LDIR)/OFmodule.f90
 SOURCES += $(LDIR)/SPK.f90
 SOURCES += $(LDIR)/globalvariables.f90
+SOURCES += $(LDIR)/pdamp_CSR.f90

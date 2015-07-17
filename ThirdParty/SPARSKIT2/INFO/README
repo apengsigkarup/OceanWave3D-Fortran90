@@ -1,0 +1,66 @@
+c------------------------------------------------------------------------------c
+c                          INFO MODULE                                         c
+c------------------------------------------------------------------------------c
+c  The INFO module provides some elementary information on a sparse            c
+c  matrix. Geared towards a matrix in Harwell-Boeing format.                   c
+c  There is also a short main program that will read a Harwell-Boeing          c
+c  matrix and produce the information on the standard output. See below.       c
+c                                                                              c
+c------------------------------------------------------------------------------c
+c  infofun.f contains subroutines:                                             c
+c------------------------------------------------------------------------------c
+c    bandwidth :  computes the lower, upper, maximum, and average bandwidths.  c
+c    nonz      :  computes maximum numbers of nonzero elements per column/row, c
+c                minimum numbers of nonzero elements per column/row, and       c
+c                numbers of zero columns/rows.                                 c
+c    diag_domi : computes the percentage of weakly diagonally dominant         c
+c                rows/columns.                                                 c
+c    frobnorm  : computes the Frobenius norm of A.                             c
+c    ansym     : computes the Frobenius norm of the symmetric and non-symmetricc
+c                parts of A, computes number of matching elements in symmetry  c
+c                and relative symmetry match.                                  c
+c    distaij   : computes the average distance of a(i,j) from diag and standardc
+c                deviation  for this average.                                  c
+c    skyline   : computes the number of nonzeros in the skyline storage.       c
+c    distdiag  : computes the numbers of elements in each diagonal.            c
+c    bandpart  : computes the bandwidth of the banded matrix, which contains   c
+c                'nper' percent of the original matrix.                        c
+c    n_imp_diag: computes the most important diagonals.                        c
+c    nonz_lud  : computes the number of nonzero elements in strict lower part, c
+c                strict upper part, and main diagonal.                         c
+c    avnz_col  : computes average number of nonzero elements/column and std    c
+c                deviation for this average.                                   c
+c    vbrinfo   : Print info on matrix in variable block row format             c
+c------------------------------------------------------------------------------c
+c  rinfo1.f  : contains the main program to produce an executable              c
+c  rinfoC.f  : same thing in C -- info1.ex is made by makeC  makefile          c
+c------------------------------------------------------------------------------c
+c  dinfo13.f : contains the main subroutine called by rinfo1.f                 c
+c------------------------------------------------------------------------------c
+c  makefile: contains the make file to produce info1.ex                        c
+c  makeC: contains the make file to produce info1.ex from rinfoC.c             c
+c------------------------------------------------------------------------------c
+c  saylr1 :  contains the Harwell-Boeing matrix saylr1 for testing purposes.   c
+c------------------------------------------------------------------------------c
+c  info.saylr1 : contains a sample output (see below) for the matrix saylr1.   c
+c------------------------------------------------------------------------------c
+c------------------------------------------------------------------------------c
+c                          Notes:                                              c
+c------------------------------------------------------------------------------c
+c  The makefile will actually create an executable tool called info1.ex        c
+c  which will provide some information on a Harwell/Boeing matrix.             c
+c                                                                              c
+c  Once you have made the executable info1 using the makefile,                 c
+c  you can execute for a matrix stored in the Harwell-Boeing                   c
+c  format. You will need to have a matrix in the harwell/boeing                c
+c  format and type                                                             c
+c                                                                              c
+c  info1.ex < HB_file                                                          c
+c                                                                              c
+c  This will dump the info on the standard output/                             c
+c                                                                              c
+c    for example typing info1.ex < saylr1 > info.saylr1                        c
+c                                                                              c
+c  produces the file info.saylr1.  [info.saylr1 is included in this directory  c
+c  to check whether you get the same answers].                                 c
+c------------------------------------------------------------------------------c

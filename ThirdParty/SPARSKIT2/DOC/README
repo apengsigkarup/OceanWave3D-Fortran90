@@ -1,0 +1,14 @@
+
+ This directory contains some documentation on the package. 
+
+  paper.tex is the tex-file of the documentation. 
+  paper.ps is the post-script file
+  QUICK_REF is a quick-reference file that contains all existing routines
+            listed by module. * may need updating* 
+
+  all other files are pictures used by paper.tex.
+
+ *THANKS: to Daniel Heiserer (BMW, germany) for a the recent update to
+  the files (latex, figures..) in this directory
+
+-----------------------------------------------------------------------

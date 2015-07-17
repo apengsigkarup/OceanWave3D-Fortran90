@@ -3,6 +3,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   USE Precision
   USE Constants
   USE DataTypes
+  USE pdamp_CSR
   USE GlobalVariables, ONLY: FineGrid, time, time0, g, dt, GhostGridZ, PHI, gamma, alpha, beta, &
        RHS, relaxONOFF, LASTPHI, tstep, extrapolationONOFF, LinearONOFF, filteringONOFF, &
        filterALPHA, filterNP, filtercoefficients, GhostGridX, GhostGridY,                &
@@ -45,7 +46,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   !
   ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
-  CALL funPressureTerm(time,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
+  CALL funPressureTerm_spk(time,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield)
   !
   ! Get the breaking terms if called for
@@ -126,7 +127,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   !
   ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
-  CALL funPressureTerm(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
+  CALL funPressureTerm_spk(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield_tmp)
   !
   ! Get the breaking terms if called for
@@ -197,7 +198,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   !
   ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
-  CALL funPressureTerm(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
+  CALL funPressureTerm_spk(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield_tmp)
   IF (BreakMod%i_breaking>0 .and. FineGrid%ny==1) THEN
      CALL detect_breaking(fileop(14),FineGrid%Nx+2*GhostGridX,Wavefield_tmp,0)
@@ -280,7 +281,7 @@ SUBROUTINE Runge_Kutta_4(rhsFreeSurface)
   !
   ! Get a possible applied free-surface pressure, and/or the pressure damping terms.  
   !
-  CALL funPressureTerm(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
+  CALL funPressureTerm_spk(RKtime,g,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,&
        FineGrid,Wavefield_tmp)
   IF (BreakMod%i_breaking>0 .and. FineGrid%ny==1) THEN
      CALL detect_breaking(fileop(14),FineGrid%Nx+2*GhostGridX,Wavefield_tmp,0)

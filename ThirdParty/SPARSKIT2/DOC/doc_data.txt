@@ -1,0 +1,15 @@
+InfoKey: Creator
+InfoValue: fig2dev Version 3.2 Patchlevel 3c
+InfoKey: Title
+InfoValue: dir.pdf
+InfoKey: Author
+InfoValue: q127038@caek315 (Daniel Heiserer, EK-213, +49-89-382-21187)
+InfoKey: Producer
+InfoValue: GPL Ghostscript 8.15
+InfoKey: ModDate
+InfoValue: D:20050308101430
+InfoKey: CreationDate
+InfoValue: D:20050308101430
+PdfID0: 5eca9773bba4d12b8b37b446c3226559
+PdfID1: 5eca9773bba4d12b8b37b446c3226559
+NumberOfPages: 2

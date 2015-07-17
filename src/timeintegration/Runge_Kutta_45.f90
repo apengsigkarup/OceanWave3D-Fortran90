@@ -108,10 +108,10 @@ SUBROUTINE Runge_Kutta_45(rhsFreeSurface)
 	     Wavefield%P(1+GhostGridX:FineGrid%Nx+GhostGridX,1+GhostGridY:FineGrid%Ny+GhostGridY)
 
     IF (curvilinearONOFF==1) THEN
-		CALL iterative_solution(RHS,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
+		CALL iterative_solution_spk(RHS,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
 		    BuildLinearSystemTransformedCurvilinear,PHI,FineGrid)
     ELSE
-		CALL iterative_solution(RHS,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
+		CALL iterative_solution_spk(RHS,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),&
 			BuildLinearSystem,PHI,FineGrid)
     END IF
 

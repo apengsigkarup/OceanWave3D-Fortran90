@@ -21,7 +21,7 @@ nxz   = Nr ! total number of grid points
 
 lfil = 5
 IWK  = nnz + lfil + 1 
-droptol = 0.01
+droptol = 0.005
 workspaceSize =(Nr+3)*(GMRESmaxiterations+2) + (GMRESmaxiterations+1) * GMRESmaxiterations/2
 
 ALLOCATE(alu(IWK),jlu(IWK),ju(Nr),w(workspaceSize),jw(3*Nr))

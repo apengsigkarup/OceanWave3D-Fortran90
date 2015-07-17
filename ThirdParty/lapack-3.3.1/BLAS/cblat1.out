@@ -1,0 +1,32 @@
+ Complex BLAS Test Program Results
+
+
+ Test of subprogram number  1            CDOTC 
+                                    ----- PASS -----
+
+ Test of subprogram number  2            CDOTU 
+                                    ----- PASS -----
+
+ Test of subprogram number  3            CAXPY 
+                                    ----- PASS -----
+
+ Test of subprogram number  4            CCOPY 
+                                    ----- PASS -----
+
+ Test of subprogram number  5            CSWAP 
+                                    ----- PASS -----
+
+ Test of subprogram number  6            SCNRM2
+                                    ----- PASS -----
+
+ Test of subprogram number  7            SCASUM
+                                    ----- PASS -----
+
+ Test of subprogram number  8            CSCAL 
+                                    ----- PASS -----
+
+ Test of subprogram number  9            CSSCAL
+                                    ----- PASS -----
+
+ Test of subprogram number 10            ICAMAX
+                                    ----- PASS -----

@@ -1,0 +1,144 @@
+#!/bin/sh
+#
+# SPARSKIT script for making and running all test programs.
+# Last modified: May 9, 1994.
+
+make all
+cd BLASSM
+echo Making tests in BLASSM directory
+make mvec.ex
+make tester.ex
+cd ..
+cd FORMATS
+echo Making tests in FORMATS directory
+make un.ex
+make fmt.ex
+make rvbr.ex
+cd ..
+cd INFO
+echo Making tests in INFO directory
+make info1.ex
+cd ..
+cd INOUT
+echo Making tests in INOUT directory
+make chk.ex
+make hb2ps.ex
+make hb2pic.ex
+cd ..
+cd ITSOL
+echo Making tests in ITSOL directory
+make riters.ex
+make rilut.ex
+make riter2.ex
+cd ..
+cd MATGEN/FDIF
+echo Making tests in MATGEN/FDIF directory
+make gen5.ex
+make genbl.ex
+cd ../..
+cd MATGEN/FEM
+echo Making tests in MATGEN/FEM directory
+make fem.ex
+cd ../..
+cd MATGEN/MISC
+echo Making tests in MATGEN/MISC directory
+make sobel.ex
+make zlatev.ex
+make markov.ex
+cd ../..
+cd UNSUPP/MATEXP
+echo Making tests in UNSUPP/MATEXP directory
+make exp.ex
+make phi.ex
+cd ../..
+
+# run all test programs
+
+cd BLASSM
+echo Testing BLASSM/mvec.ex ---------------------------------------
+./mvec.ex
+echo Testing BLASSM/tester.ex ---------------------------------------
+./tester.ex
+cd ..
+cd FORMATS
+echo Testing FORMATS/un.ex ---------------------------------------
+./un.ex
+cat unary.mat
+echo Testing FORMATS/fmt.ex ---------------------------------------
+./fmt.ex
+grep ERROR *.mat
+ls -s *.mat
+echo Testing FORMATS/rvbr.ex ---------------------------------------
+./rvbr.ex
+cd ..
+cd INFO
+echo Testing INFO/info1.ex ---------------------------------------
+./info1.ex < saylr1
+cd ..
+cd INOUT
+echo Testing INOUT/chk.ex ---------------------------------------
+./chk.ex
+echo Testing INOUT/hb2ps.ex ---------------------------------------
+./hb2ps.ex < ../INFO/saylr1 > saylr1.ps
+echo Testing INOUT/hb2pic.ex ---------------------------------------
+./hb2pic.ex < ../INFO/saylr1 > saylr1.pic
+cd ..
+cd ITSOL
+echo Testing ITSOL/riters.ex ---------------------------------------
+./riters.ex
+echo Testing ITSOL/rilut.ex ---------------------------------------
+./rilut.ex
+echo Testing ITSOL/riter2.ex ---------------------------------------
+./riter2.ex < ../INFO/saylr1
+cd ..
+cd MATGEN/FDIF
+echo Testing MATGEN/FDIF/gen5.ex ---------------------------------------
+./gen5.ex << \EOF
+10 10 1
+testpt.mat
+EOF
+echo Testing MATGEN/FDIF/genbl.ex ---------------------------------------
+./genbl.ex << \EOF
+10 10 1
+4
+testbl.mat
+EOF
+cd ../..
+cd MATGEN/FEM
+echo Testing MATGEN/FEM/fem.ex ---------------------------------------
+./fem.ex << \EOF
+2
+2
+EOF
+cat mat.hb
+cd ../..
+cd MATGEN/MISC
+echo Testing MATGEN/MISC/sobel.ex ---------------------------------------
+./sobel.ex << \EOF
+10
+EOF
+echo Testing MATGEN/MISC/zlatev.ex ---------------------------------------
+./zlatev.ex
+cat zlatev1.mat
+cat zlatev2.mat
+cat zlatev3.mat
+echo Testing MATGEN/MISC/markov.ex ---------------------------------------
+./markov.ex << \EOF
+10
+EOF
+cat markov.mat
+cd ../..
+cd UNSUPP/MATEXP
+echo Testing UNSUPP/MATEXP/exp.ex ---------------------------------------
+./exp.ex << \EOF
+0.1
+0.00001
+10
+EOF
+echo Testing UNSUPP/MATEXP/phi.ex ---------------------------------------
+./phi.ex << \EOF
+0.1
+0.00001
+10
+EOF
+cd ../..

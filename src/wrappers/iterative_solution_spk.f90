@@ -96,8 +96,8 @@ iterations = 0
 !      print*,'residual before precond=',workspace(ipar(8):ipar(8)+n_rows-1)
 !      print*,'solution before precond=',workspace(ipar(9):ipar(9)+n_rows-1)
 !      read*
-		CALL MultiGridSolveLinearSystem(workspace(ipar(8)),workspace(ipar(9)),FineGrid%Nx,FineGrid%Ny,&
-		        FineGrid%Nz,GhostgridX,GhostGridY,GhostGridZ,cyclet,maxit,reltol,alpha,beta,gamma)
+		!CALL MultiGridSolveLinearSystem(workspace(ipar(8)),workspace(ipar(9)),FineGrid%Nx,FineGrid%Ny,&
+		!        FineGrid%Nz,GhostgridX,GhostGridY,GhostGridZ,cyclet,maxit,reltol,alpha,beta,gamma)
 !      print*,'residual after precond=',workspace(ipar(8):ipar(8)+n_rows-1)
 !      print*,'solution after precond=',workspace(ipar(9):ipar(9)+n_rows-1)
 !      read*
