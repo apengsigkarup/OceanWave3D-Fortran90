@@ -1,0 +1,26 @@
+---------------------------------------------------------------
+
+                 SPARSKIT  Modules  FEM
+
+---------------------------------------------------------------
+
+    This directory contains the SPARSKIT FEM module,
+    a matrix generator for finite element matrices.
+
+contents:
+=========
+
+    convdif.f  == a driver to generate a matrix and some associated plots 
+    functns2.o == functions needed by the driver -- define the coefficients
+                  of the PDE
+    meshes.f   == set of sample meshes defined as inout to the driver
+    makefile   == a makefile for an executable to generate a sample mesh 
+    elmtlib2.f == a small finite element library 
+
+mat.hb is a test matrix.
+
+Two output files are provided:  mat.ps and msh.ps.  You may wish to save
+these to another name before running the test program so that you may
+compare your output to these files.
+
+-----------------------------------------------------------------------  

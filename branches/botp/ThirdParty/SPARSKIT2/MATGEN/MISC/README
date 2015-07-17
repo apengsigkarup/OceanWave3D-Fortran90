@@ -1,0 +1,15 @@
+This directory contains the last two test problems as described in
+README of the directory above this one.
+
+ zlatev.f : three different codes to generate matrices from the 
+            Zlatev et. al. paper (see above). Contributed by E. Rothman
+            (Cornell).
+
+ rzlatev.f : driver for a test program for the zlatev code.
+
+ makzlatev :  makefiles. See above for details.
+
+ markov.f  : a main program followed by a subroutine to generate
+             markov chain matrices modeling random walk on a triang.
+             grid. There is one parameter to the subroutine. 
+

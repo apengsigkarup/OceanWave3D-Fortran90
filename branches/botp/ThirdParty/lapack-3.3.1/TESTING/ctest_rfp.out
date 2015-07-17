@@ -1,0 +1,26 @@
+
+ Tests of the COMPLEX LAPACK RFP routines 
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    N   :       0     1     2     3     5     6    10    11    50
+    NRHS:       1     2    15
+    TYPE:       1     2     3     4     5     6     7     8     9
+
+ Routines pass computational tests if test ratio is less than   30.00
+
+ Relative machine underflow is taken to be    0.117549D-37
+ Relative machine overflow  is taken to be    0.340282D+39
+ Relative machine precision is taken to be    0.596046D-07
+
+ COMPLEX RFP routines passed the tests of the error exits
+
+ All tests for CPF drivers  passed the threshold (  2352 tests run)
+ All tests for CLANHF auxiliary routine passed the threshold (  432 tests run)
+ All tests for the RFP convertion routines passed (   72 tests run)
+ All tests for CTFSM auxiliary routine passed the threshold ( 7776 tests run)
+ All tests for CHFRK auxiliary routine passed the threshold ( 2592 tests run)
+
+ End of tests
+ Total time used =         1.62 seconds
+

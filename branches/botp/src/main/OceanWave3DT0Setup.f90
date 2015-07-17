@@ -266,7 +266,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! Set up the Pressure Damping Zones if any.
   !
   If (NDampZones /=0) THEN
-     Call PreprocessPDampingZones
+     CALL PreprocessPDampingZones_spk
      print *, ' '
      print *, 'Pressure damping zones are set up'
      print *, ' '

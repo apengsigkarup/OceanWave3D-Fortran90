@@ -1,0 +1,20 @@
+
+ SUBDIRECTORY MATEXP 
+ -------------------
+ routines related to matrix exponentials. 
+
+ contents:
+---------- 
+ exppro.f    computes exp( t A) v
+ rexp.f      a simple test program for exppro.f
+ phipro.f    solves y'= A y + b
+ rphi.f      a simple test program for phipro.f
+ makefile    makefile for the test problems. make exp.ex will make
+             an executable for exppro, make phi.ex will test program for
+             phipro.f
+
+
+ feedback appreciated.  BEWARE: DOCUMENTATION MAY BE INACCURATE -
+ ---------------------  VERY LITTLE TESTING DONE WITH PHIPRO.F -- 
+                        
+

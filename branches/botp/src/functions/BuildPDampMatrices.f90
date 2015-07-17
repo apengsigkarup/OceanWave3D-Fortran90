@@ -16,26 +16,26 @@ SUBROUTINE BuildPDampMatrices(Nx,Ny,PDamp,FineGrid,alpha,beta)
   INTEGER, DIMENSION(:), ALLOCATABLE :: A_colind, A_rowptr
   !
   rank = (2*alpha+1)
-  !
+  
   ! Build the 1D, derivative operators
   !
   ALLOCATE( PDamp%Grad(rank,rank,Nx) ) 
-  !CAll BuildStencil_1D_Uneven(Nx,rank,FineGrid%x(PDamp%idx(1),1),PDamp%Grad)
-  ! GD: everything is done on Nx points afterward: don't see where the PDamp%idx(1) comes from? A vector has to be specified
   CAll BuildStencil_1D_Uneven(Nx,rank,FineGrid%x(:,1),PDamp%Grad)
+
   ! 
   ! ALLOCATE TEMPORARY VECTORS FOR SPARSE OPERATOR ASSEMBLY
   dummy = Nx*Ny*rank 
   ALLOCATE( A_val(dummy), A_colind(dummy), A_rowptr(dummy) ) 
     A_val =  zero; A_colind = 0; A_rowptr = 0; nnz = 0
-  ! 
+   
   ! 
   !
   If (Ny>1) Then
      print *, 'BuildPDampMatrices:  Only implemented in 1D at this point...'
      stop
   End If
-  !
+  
+
   ! Build the Laplacian matrix over the zone.  
   ! 
   ! Left boundary points
@@ -66,6 +66,7 @@ SUBROUTINE BuildPDampMatrices(Nx,Ny,PDamp,FineGrid,alpha,beta)
         A_colind(index)=Nx-rank+isten
      End Do
   END Do
+
   ! Neumann condition for the last point
   i=Nx
   Do isten=1,rank
@@ -78,11 +79,14 @@ SUBROUTINE BuildPDampMatrices(Nx,Ny,PDamp,FineGrid,alpha,beta)
 
   ALLOCATE(PDamp%Lop%val(nnz),PDamp%Lop%irn(nnz),PDamp%Lop%icn(nnz))
 
-  PDamp%Lop%val     = A_val(1:nnz)
-  PDamp%Lop%icn = A_colind(1:nnz)
-  PDamp%Lop%irn = A_rowptr(1:nnz)
+  ! The code above assumes that we are using COO format for sparse matrices. However, for SPARSKIT we need CSR format
+  !
   PDamp%Lop%nnz     = nnz
   PDamp%Lop%nrow    = Nx*Ny
+  CALL coocsr(Nx*Ny,nnz,A_val,A_rowptr,A_colind,PDamp%LOP%val,PDamp%Lop%icn,PDamp%Lop%irn)
+  !PDamp%Lop%val     = A_val(1:nnz)
+  !PDamp%Lop%icn = A_colind(1:nnz)
+  !PDamp%Lop%irn = A_rowptr(1:nnz)
 
   DEALLOCATE( A_val )
   DEALLOCATE( A_colind )

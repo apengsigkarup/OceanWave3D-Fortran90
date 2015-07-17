@@ -1,0 +1,83 @@
+c----------------------------------------------------------------------c
+c                                                                      c
+c                BLASSM  and MATVEC MODULES                            c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                                                                      c 
+c    This directory contains the BLASSM and MATVEC modules of SPARSKIT c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                                                                      c
+c                Current contents                                      c 
+c----------------------------------------------------------------------c
+c                                                                      c 
+c    blassm.f : contains the latest version of the basc linear algerba c
+c               routines for sparse matrices.                          c
+c    								       c
+c    tester.f : is a main program to test the routines and the paths   c
+c                                                                      c
+c    matvec.f : contains the subroutines in the module matvec          c
+c                                                                      c
+c    rmatvec.f: a test program that runs all the routines in matvec    c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                                                                      c
+c    makefile : make file for tester.ex (tests blassm.f) and mvec.ex   c
+c               (tests routines in matvec.f)                           c
+c                                                                      c
+c----------------------------------------------------------------------c
+c----------------------------------------------------------------------c   
+c----------------------------------------------------------------------c
+c              current status of blassm.f                              c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                          S P A R S K I T                             c
+c----------------------------------------------------------------------c
+c        BASIC LINEAR ALGEBRA FOR SPARSE MATRICES. BLASSM MODULE       c
+c----------------------------------------------------------------------c
+c amub   :   computes     C = A*B                                      c
+c aplb   :   computes     C = A+B                                      c
+c aplsb  :   computes     C = A + s B                                  c
+c apmbt  :   Computes     C = A +/- transp(B)                          c
+c aplsbt :   Computes     C = A + s * transp(B)                        c
+c diamua :   Computes     C = Diag * A                                 c
+c amudia :   Computes     C = A* Diag                                  c
+c apldia :   Computes     C = A + Diag.                                c
+c aplsca :   Computes     A:= A + s I    (s = scalar)                  c 
+c----------------------------------------------------------------------c 
+c----------------------------------------------------------------------c
+c                                                                      c
+c              current status of matvec.f                              c
+c                                                                      c
+c----------------------------------------------------------------------c
+c                          S P A R S K I T                             c
+c----------------------------------------------------------------------c
+c          BASIC MATRIX-VECTOR OPERATIONS - MATVEC MODULE              c
+c         Matrix-vector Mulitiplications and Triang. Solves            c
+c----------------------------------------------------------------------c
+c contents:
+c----------                                                            c
+c 1) Matrix-vector products:                                           c
+c---------------------------                                           c
+c amux  : A times a vector. Compressed Sparse Row (CSR) format.        c
+c amuxms: A times a vector. Modified Compress Sparse Row format.       c
+c atmux : Transp(A) times a vector. CSR format.                        c
+c amuxe : A times a vector. Ellpack/Itpack (ELL) format.               c
+c amuxd : A times a vector. Diagonal (DIA) format.                     c
+c amuxj : A times a vector. Jagged Diagonal (JAD) format.              c
+c vbrmv : Sparse matrix-full vector product, in VBR format             c
+c                                                                      c
+c 2) Triangular system solutions:                                      c
+c-------------------------------                                       c
+c lsol  : Unit Lower Triang. solve. Compressed Sparse Row (CSR) format.c
+c ldsol : Lower Triang. solve.  Modified Sparse Row (MSR) format.      c
+c lsolc : Unit Lower Triang. solve. Comp. Sparse Column (CSC) format.  c
+c ldsolc: Lower Triang. solve. Modified Sparse Column (MSC) format.    c
+c ldsoll: Lower Triang. solve with level scheduling. MSR format.       c
+c usol  : Unit Upper Triang. solve. Compressed Sparse Row (CSR) format.c
+c udsol : Upper Triang. solve.  Modified Sparse Row (MSR) format.      c
+c usolc : Unit Upper Triang. solve. Comp. Sparse Column (CSC) format.  c
+c udsolc: Upper Triang. solve.  Modified Sparse Column (MSC) format.   c
+c----------------------------------------------------------------------c
+
+

@@ -1,0 +1,13 @@
+ .. test output of ZGGBAK .. 
+ value of largest test error                  =   0.148D+01
+ example number where ZGGBAL info is not 0    =   0
+ example number where ZGGBAK(L) info is not 0 =   0
+ example number where ZGGBAK(R) info is not 0 =   0
+ example number having largest error          =   6
+ number of examples where info is not 0       =   0
+ total number of examples tested              =  10
+
+
+ End of tests
+ Total time used =         0.00 seconds
+

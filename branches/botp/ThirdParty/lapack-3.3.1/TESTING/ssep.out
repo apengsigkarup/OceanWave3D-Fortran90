@@ -1,0 +1,82 @@
+ Tests of the Symmetric Eigenvalue Problem routines
+
+ LAPACK VERSION 3.3.1
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    20
+    N:         0     1     2     3     5    20
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+
+ Relative machine underflow is taken to be    0.117549E-37
+ Relative machine overflow  is taken to be    0.340282E+39
+ Relative machine precision is taken to be    0.596046E-07
+
+ Routines pass computational tests if test ratio is less than   50.00
+
+
+ SST routines passed the tests of the error exits (147 tests done)
+
+
+ SEP:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for SST passed the threshold ( 4662 tests run)
+
+ All tests for SST drivers  passed the threshold ( 14256 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for SST passed the threshold ( 4662 tests run)
+
+ All tests for SST drivers  passed the threshold ( 14256 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   5
+
+ SST -- Real Symmetric eigenvalue problem
+ Matrix types (see SCHKST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Symmetric Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+ 16=Positive definite, evenly spaced eigenvalues
+ 17=Positive definite, geometrically spaced eigenvlaues
+ 18=Positive definite, clustered eigenvalues
+ 19=Positive definite, small evenly spaced eigenvalues
+ 20=Positive definite, large evenly spaced eigenvalues
+ 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+
+Test performed:  see SCHKST for details.
+
+ N=   20, seed=2989,1119,3793,1781, type  9, test(36)=  82.4    
+ SST:    1 out of  4662 tests failed to pass the threshold
+
+ All tests for SST drivers  passed the threshold ( 14256 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for SST passed the threshold ( 4662 tests run)
+
+ All tests for SST drivers  passed the threshold ( 14256 tests run)
+
+
+ SEP:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for SST passed the threshold ( 4662 tests run)
+
+ All tests for SST drivers  passed the threshold ( 14256 tests run)
+
+
+ End of tests
+ Total time used =         0.88 seconds
+

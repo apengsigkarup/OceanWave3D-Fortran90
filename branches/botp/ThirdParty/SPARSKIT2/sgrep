@@ -1,0 +1,5 @@
+# Usage: sgrep pattern
+# Searches all source files for 'pattern'.
+# Regular expressions should be enclosed in quotes "".
+
+find . -name '*.f' -exec grep "$*" /dev/null {} \;

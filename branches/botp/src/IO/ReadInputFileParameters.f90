@@ -388,11 +388,12 @@ SUBROUTINE ReadInputFileParameters
      stop
   END IF
   IF (PDampingOnOff /=0) then
-     ALLOCATE(PDampZones(NDampZones))
+     !ALLOCATE(PDampZones(NDampZones))
+     ALLOCATE(PDampZones_CSR(NDampZones))
      Do i=1,NDampZones
-        READ (FILEIP(1),*,err=63) PDampZones(i)%BBox(1), PDampZones(i)%BBox(2),       &
-             PDampZones(i)%BBox(3), PDampZones(i)%BBox(4), PDampZones(i)%g0Phi,         &
-             PDampZones(i)%g0Eta, PDampZones(i)%type  
+        READ (FILEIP(1),*,err=63) PDampZones_csr(i)%BBox(1), PDampZones_csr(i)%BBox(2),       &
+             PDampZones_csr(i)%BBox(3), PDampZones_csr(i)%BBox(4), PDampZones_csr(i)%g0Phi,         &
+             PDampZones_csr(i)%g0Eta, PDampZones_csr(i)%type  
      END Do
      go to 65
   END IF
