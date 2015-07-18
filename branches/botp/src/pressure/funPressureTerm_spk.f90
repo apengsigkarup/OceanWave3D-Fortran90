@@ -31,13 +31,10 @@ SUBROUTINE funPressureTerm_spk(t,g,Nx,Ny,FineGrid,Wavefield)
   USE GlobalVariables, ONLY: PressureTermONOFF, Lz, NDampZones, PDampingOnOff, PDampZones_csr, alpha
   IMPLICIT NONE
   INTEGER :: Nx,Ny, i, j, k, nd, rank, id0, job, id, idebug
-  REAL(KIND=long) :: t, g, x0, y0, sigma, sigmay, Lx, Ly, dx, Fr, V,  rhs(Nx*Ny), & !   rhs, redefined below
-       tmp(Nx*Ny), magk
-  !REAL(KIND=long), DIMENSION(:), ALLOCATABLE  :: rhs 
+  REAL(KIND=long) :: t, g, x0, y0, sigma, sigmay, Lx, Ly, dx, Fr, V,  rhs(Nx*Ny), & 
+       tmp(Nx*Ny),magk
   TYPE (Level_def), INTENT(IN) :: FineGrid
   TYPE (Wavefield_FS), INTENT(OUT) :: Wavefield
-!for debug can be deleted
-REAL(kind=long), allocatable ::  test_rhs(:), test_lhs(:), x(:)
   !
   ! The implemented types of pressure patches are:  
   ! 
@@ -154,18 +151,19 @@ REAL(kind=long), allocatable ::  test_rhs(:), test_lhs(:), x(:)
         id0=PDampZones_csr(id)%idx(1); 
         rank=2*alpha+1
         
+        !
         ! A test case for debugging...  
-        ! idebug=0
-        ! IF (idebug==1)THEN
-        !    magk=10.*two*pi/(FineGrid%x(Nx,1)-FineGrid%x(1,1))
-        !    do i=1,Nx
-        !       Wavefield%P(i,1)=cos(magk*(FineGrid%x(i,1)-FineGrid%x(PDampZones(id)%idx(2),1)))
-        !    end do
-        ! end IF
-        ! 
+        idebug=0
+        IF (idebug==1)THEN
+           magk=10.*two*pi/(FineGrid%x(Nx,1)-FineGrid%x(1,1))
+           do i=1,Nx
+              Wavefield%P(i,1)=cos(magk*(FineGrid%x(i,1)-FineGrid%x(PDampZones_csr(id)%idx(2),1)))
+           end do
+        end IF
         ! Extract phi over the damping zone region
         !
         tmp(1:nd)=Wavefield%P(id0:id0+nd-1,1)  
+!        write(500,*)tmp
         rhs =zero 
         ! Take Grad phi 
         !
@@ -186,17 +184,10 @@ REAL(kind=long), allocatable ::  test_rhs(:), test_lhs(:), x(:)
         !
         ! Solve for p_d using the LU-factored Laplacian matrix.
         !
+        !write(501,*) rhs
         CALL LUSOL(nd,rhs,rhs,PDampZones_csr(id)%Lop%alu,PDampZones_csr(id)%Lop%jlu,PDampZones_csr(id)%Lop%ju)
-        !JOB = 3;   ! Solution
-        !CALL MA41AD(JOB, nd, PDampZones(id)%Lop%nnz, PDampZones(id)%Lop%irn, PDampZones(id)%Lop%icn,    &
-        !     PDampZones(id)%Lop%val, rhs, PDampZones(id)%Lop%COLSCA, PDampZones(id)%Lop%ROWSCA,         &
-        !     PDampZones(id)%Lop%KEEP, PDampZones(id)%Lop%IS_HSL, PDampZones(id)%Lop%MAXIS,              &
-        !     PDampZones(id)%Lop%SS, PDampZones(id)%Lop%MAXS, PDampZones(id)%Lop%CNTL,                   &
-        !     PDampZones(id)%Lop%ICNTL, PDampZones(id)%Lop%INFOHSL, PDampZones(id)%Lop%RINFO)
-
-        !if (PDampZones(id)%Lop%INFOHSL(1) .LT. 0) then ! Check for problems
-         !  print *, 'Problems with MA41, JOB = 3 (Solution), in funPressureTerm.f90'
-        !end if
+        !write(502,502) rhs
+        !502 FORMAT(' ',F7.5)
         !
         ! Apply friction damping to the elevation (kinematic FSBC). 
         !
@@ -216,15 +207,6 @@ REAL(kind=long), allocatable ::  test_rhs(:), test_lhs(:), x(:)
         Do i=1,nd
            Wavefield%Pd(id0+i-1,j)=-(rhs(i)-rhs(1))
         END Do
-        !
-        !
-        !IF(idebug==1)THEN
-        !    print *, 'In debug loop'
-        !   Do i=1,nx
-        !      write(202,*)FineGrid%x(i,1),WaveField%P(i,1),Wavefield%Pd(i,1)
-        !   end Do
-        !   stop
-        !END IF
      ELSE
         !
         ! Apply a friction damping pressure to the potential and/or elevation.
