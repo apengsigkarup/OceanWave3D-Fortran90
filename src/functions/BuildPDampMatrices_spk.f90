@@ -89,9 +89,6 @@ SUBROUTINE BuildPDampMatrices_spk(Nx,Ny,PDamp,FineGrid,alpha,beta)
     ALLOCATE( indu(PDamp%Lop%nrow)  )
 
     CALL clncsr(1,1,PDamp%Lop%nrow,PDamp%Lop%val,PDamp%Lop%icn,PDamp%Lop%irn,indu,iwk)
-  !PDamp%Lop%val     = A_val(1:nnz)
-  !PDamp%Lop%icn = A_colind(1:nnz)
-  !PDamp%Lop%irn = A_rowptr(1:nnz)
 
   DEALLOCATE( A_val )
   DEALLOCATE( A_colind )
