@@ -396,6 +396,9 @@ SUBROUTINE SetupInitialConditions
      ENDIF
      PRINT*,'      dt = ',dt
      PRINT*,'      Cr = ',SFsol%c*dt/MIN(dxmin,dymin)	
+  CASE (9) ! Berkhoff (3D)
+     CALL BottomBerkoff(FineGrid)
+     DetermineBottomGradients = 1
   CASE (10) ! GD: SWENSE, Flat bottom, depth defined from SF-wave
      IF (curvilinearONOFF == 1) THEN
         !Rotate the physical grid with a given angle...
