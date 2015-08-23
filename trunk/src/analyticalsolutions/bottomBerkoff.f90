@@ -15,9 +15,10 @@ Ny = FineGrid%Ny
 angle = 20
 k = angle/180.0_long*pi
 DO j = 1, Ny
-   y = FineGrid%y(j) - 11.0_long ! FIXME: translation relative to standard y-coordinates
+!hbb x and y are 2D arrays in the FineGrid. What about the ghost points here?
    DO i = 1 , Nx
-      x = FineGrid%x(i) - half*FineGrid%x(Nx) ! position shoal in middle relative to y-axis
+      x = FineGrid%x(i,1) - half*FineGrid%x(Nx,1) ! position shoal in middle relative to y-axis
+      y = FineGrid%y(1,j) - 11.0_long ! FIXME: translation relative to standard y-coordinates
       xr = cos(k)*x - sin(k)*y
       yr = sin(k)*x + cos(k)*y
       dxrdx = cos(k)
