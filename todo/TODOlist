@@ -13,5 +13,4 @@ TODO-list:
 - setup error in SUBROUTINE ConstructTableCrossDerivatives. It is not setup correctly for 2D cases. BuildLinearSystemMatrix relies on this routine for the XZ and YZ stencils which in 2D have rank corresponding to 3D rather than 2D. 3D should be ok.  (APEK)
 - Makefile should include a test of existence of $(builddir) directory and if not, create it. (GUDU)
 - Include Thirdparty sources as done by BOTP in his branch and create a makefile to build all libraries (make use of common.mk maybe). The make all in lapack-3.3.1 is not working on my computer (problem in the make variants). By the way, we only need libblas and liblapack. (GUDU)
-- Examples present in examples/inputfiles are not working for now. (GUDU)
-
+- Why does the logic fail in DiffStencilsZ_modif() when Nz=4, GhostGridZ=1 and alpha=2? code attempts to access z(6) (HBB)
