@@ -25,7 +25,7 @@ Fileip(4)=4
 !
 ! OUTPUT
 !FILEOP(1) = 8  ! LOG.txt
-FILEOP(1:15) = (/ (i,i=8,22) /)
+FILEOP(1:16) = (/ (i,i=8,23) /)
 ! First file is the log file.
 OPEN (UNIT=FILEOP(1),FILE='LOG.txt',STATUS='UNKNOWN')
 ! Files 2:11 are possible kinematics output files opened and written to in 
@@ -39,7 +39,8 @@ fnt(1:10) = (/ '01','02','03','04','05','06','07','08','09','10' /)
 !         called by the main line.
 ! File 15 is the file 'Pdamp.chk' written to by subroutine PreprocessPDampingZones 
 !         called by the main line. 
- 
+! File 16 is the file 'bathymetry.chk' written to by OceanWave3DT0Setup
+!         called by the main line. 
 RETURN
 
 ! ERROR HANDLING
