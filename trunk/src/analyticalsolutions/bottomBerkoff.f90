@@ -1,4 +1,4 @@
-SUBROUTINE BottomBerkoff(FineGrid)
+SUBROUTINE BottomBerkoff(FineGrid,GX,GY)
 !
 ! Define bottom profile for Berkhoff experiment (3D)
 !
@@ -9,13 +9,15 @@ USE DataTypes
 IMPLICIT NONE
 TYPE (Level_def) :: FineGrid
 REAL(KIND=long) :: y, x, xr, yr, k, angle, dxrdx, dxrdy, dyrdx, dyrdy
-INTEGER :: Nx, Ny, i, j
-Nx = FineGrid%Nx
-Ny = FineGrid%Ny
+INTEGER :: Nx, Ny, i, j, GX, GY
+
+!hbb Added the ghost points here.
+Nx = FineGrid%Nx+2*GX
+Ny = FineGrid%Ny+2*GY
 angle = 20
 k = angle/180.0_long*pi
 DO j = 1, Ny
-!hbb x and y are 2D arrays in the FineGrid. What about the ghost points here?
+!hbb x and y are 2D arrays in the FineGrid. 
    DO i = 1 , Nx
       x = FineGrid%x(i,1) - half*FineGrid%x(Nx,1) ! position shoal in middle relative to y-axis
       y = FineGrid%y(1,j) - 11.0_long ! FIXME: translation relative to standard y-coordinates
