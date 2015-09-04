@@ -789,7 +789,10 @@ SUBROUTINE SetupInitialConditions
     FineGrid%Nx,FineGrid%Ny,1,FineGrid%DiffStencils,alpha)
     CALL DiffXEven(Wavefield%P,Wavefield%Px,1,FineGrid%Nx,FineGrid%Ny,1,    &
     FineGrid%DiffStencils,alpha)
-
+  !
+  CASE (17) ! Vincent and Briggs(3D)
+     CALL BottomVincent(FineGrid,GhostGridX,GhostGridY)
+     DetermineBottomGradients = 1
   CASE DEFAULT
     PRINT * ,'Error: Specified initial conditions are not valid.'
     STOP
