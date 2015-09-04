@@ -14,7 +14,7 @@ FILEIP(1) = 7  ! Input file handle number
 CALL GETARG(1,filenameINPUT)
 IF (LEN_TRIM(filenameINPUT)==0) THEN
    ! Set standard input filename when not specified by user
-   filenameINPUT = 'OceanWave3D.inp'
+   filenameINPUT = 'OceanWave3D.inp.Vincent'
 ENDIF
 OPEN (UNIT=FILEIP(1),FILE=filenameINPUT,STATUS='UNKNOWN',ERR=100,IOSTAT=STAT)
 !
