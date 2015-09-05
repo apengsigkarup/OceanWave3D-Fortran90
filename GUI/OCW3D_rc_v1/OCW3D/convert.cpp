@@ -1,17 +1,69 @@
 #include "convert.h"
-#include "qstring.h"
 #include "math.h"
 #include "qprogressbar.h"
-//#include "mat.h"
 
 // Constructor
 convert::convert()
 {
 
+}
+// clear memory
+void convert::clearMem(){
 
+    fileName = ' ';
+    xbeg = 0;
+    xend = 0;
+    xstride = 0;
+    ybeg = 0;
+    yend = 0;
+    ystride = 0;
+    tbeg = 0;
+    tend = 0;
+    tstride = 0;
+    dt = 0;
+    nz = 0;
+    nx = 0;
+    ny = 0;
+    nt = 0;
+
+   std::vector<double> emptyVector;
+
+//    x.swap(emptyVector);
+//    y.swap(emptyVector);
+//    h.swap(emptyVector);
+//    hy.swap(emptyVector);
+//    hx.swap(emptyVector);
+//    sigma.swap(emptyVector);
+//    t.swap(emptyVector);
+//    F.swap(emptyVector);
+//    eta.swap(emptyVector);
+//    etax.swap(emptyVector);
+//    etay.swap(emptyVector);
+//    phi.swap(emptyVector);
+//    u.swap(emptyVector);
+//    v.swap(emptyVector);
+//    w.swap(emptyVector);
+//    uz.swap(emptyVector);
+//    vz.swap(emptyVector);
+   std::vector<double>().swap(x);
+   std::vector<double>().swap(y);
+   std::vector<double>().swap(h);
+   std::vector<double>().swap(hy);
+   std::vector<double>().swap(hx);
+   std::vector<double>().swap(sigma);
+   std::vector<double>().swap(t);
+   std::vector<double>().swap(F);
+   std::vector<double>().swap(eta);
+   std::vector<double>().swap(etax);
+   std::vector<double>().swap(etay);
+   std::vector<double>().swap(phi);
+   std::vector<double>().swap(u);
+   std::vector<double>().swap(v);
+   std::vector<double>().swap(w);
+   std::vector<double>().swap(uz);
+   std::vector<double>().swap(vz);
 
 }
-
 // Destructor
 convert::~convert(){
 }
@@ -44,12 +96,13 @@ void convert::read(QString file, QProgressBar* Progressbar)
 
     //    tmp = new double[nx*ny*std::max(nz,5)];
 
-    x = new double[nx*ny];
-    y = new double[nx*ny];
-    h = new double[nx*ny];
-    hx = new double[nx*ny];
-    hy = new double[nx*ny];
-    sigma = new double[nz];
+//    x = new double[nx*ny];
+    x.resize(nx*ny);
+    y.resize(nx*ny);
+    h.resize(nx*ny);
+    hx.resize(nx*ny);
+    hy.resize(nx*ny);
+    sigma.resize(nz);
 
     for (int i=0;i<nx*ny;i++){
         fileStream.read((char *)&x[i],sizeof(dt));
@@ -64,27 +117,30 @@ void convert::read(QString file, QProgressBar* Progressbar)
     fileStream.read((char *)&junk,2*sizeof(junk));
 
     // Read sigma
-    fileStream.read((char *)sigma,nz*sizeof(dt));
+    for (int k=0;k<nz;k++){
+        fileStream.read((char *)&sigma[k],sizeof(dt));
+    }
     fileStream.read((char *)&junk,2*sizeof(junk));
 
     // Initialize fields
-    t = new double[nt];
+    t.resize(nt);
     n_xy  = nx*ny*sizeof(dt);
     n_xyz = nx*ny*nz*sizeof(dt);
     tmp_xy = new double[nx*ny];
     tmp_xyz = new double[nx*ny*nz];
-    eta   = new double[nt*nx*ny];
-    etax  = new double[nt*nx*ny];
-    etay  = new double[nt*nx*ny];
-    phi   = new double[nt*nx*ny*nz];
-    u     = new double[nt*nx*ny*nz];
-    v     = new double[nt*nx*ny*nz];
-    w     = new double[nt*nx*ny*nz];
-    uz    = new double[nt*nx*ny*nz];
-    vz    = new double[nt*nx*ny*nz];
+    eta.resize(nt*nx*ny);
+    etax.resize(nt*nx*ny);
+    etay.resize(nt*nx*ny);
+    phi.resize(nt*nx*ny*nz);
+    u.resize(nt*nx*ny*nz);
+    v.resize(nt*nx*ny*nz);
+    w.resize(nt*nx*ny*nz);
+    uz.resize(nt*nx*ny*nz);
+    vz.resize(nt*nx*ny*nz);
 
 
-int updateInterval = nt/200;
+int updateInterval = nt/200>1 ? nt/200 : 1;
+
     for (int i=0;i<nt;i++){
         if (i % updateInterval == 0){
             Progressbar->setValue((i+2.0)/nt*100);
@@ -152,6 +208,7 @@ void convert::netCfd(){
 
 
 int convert::matlab(){
+#if MATLAB>0
     MATFile *pmat;
     mxArray *time_mat, *eta_mat, *x_mat,*y_mat,*u_mat,*v_mat,*w_mat,*uz_mat,*vz_mat,*sigma_mat,*h_mat;
 
@@ -347,11 +404,14 @@ int convert::matlab(){
         printf("Error closing file %s\n",file);
         return(EXIT_FAILURE);
     }
-
+    return 1;
+#else
+    return 0;
+#endif
 
 }
-
-void convert::gradient(double argout[],const double argin[],const double dt,const int n){
+void convert::gradient(std::vector<double> argout,const std::vector<double> argin,const double dt,const int n) const
+{
 
     // First and last index (one-sided)
     //
@@ -364,32 +424,59 @@ void convert::gradient(double argout[],const double argin[],const double dt,cons
 
 
 }
-void convert::force(double x0,double D,double rho,double Cd,double Cm){
+
+void convert::gradient(double argout[],const std::vector<double> argin,const double dt,const int n) const
+{
+
+    // First and last index (one-sided)
+    //
+    argout[0] = (argin[1]-argin[0])/dt;
+    argout[n-1] = (argin[n-1]-argin[n-2])/dt;
+
+    for (int j=1;j<n-2;j++){
+        argout[j] = (argin[j+1]-argin[j-1])/(2*dt);
+    }
+
+
+}
+void convert::gradient(double argout[],const double argin[],const double dt,const int n) const
+{
+
+    // First and last index (one-sided)
+    //
+    argout[0] = (argin[1]-argin[0])/dt;
+    argout[n-1] = (argin[n-1]-argin[n-2])/dt;
+
+    for (int j=1;j<n-2;j++){
+        argout[j] = (argin[j+1]-argin[j-1])/(2*dt);
+    }
+
+
+}
+
+void convert::force(int nn,double D,double rho,double Cd,double Cm){
     // Define Pi
     //
     const double PI = 4.0*atan(1.0);
-    double dx = x[1]-x[0];
 
-    // Find nearest neighbour to x0
-    //
-    int nn = round((x0-xbeg*dx)/dx)+1;
 
     // To cover-up for previous lazyness are we now making local
-    // copies of he fields we need - sorry!
+    // copies of the fields we need - sorry!
     //
-    double tmp_[nt];
+    std::vector<double> tmp_;
+    tmp_.resize(nt);
     for (int i=0;i<nt;i++){
         tmp_[i] = eta[i*nx*ny+nn];
     }
 
     // deta/dt
     //
-   double detadt[nt];
-    gradient(detadt,tmp_,dt,nt);
+    std::vector<double> detadt;
+   detadt.resize(nt);
+   gradient(detadt,tmp_,dt,nt);
 
     // dz/dt
     //
-
    Double2d dzdt(boost::extents[nz][nt]);
     for (int k=0;k<nz;k++){
         for (int i=0;i<nt;i++){
@@ -404,7 +491,7 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
         for (int i=0;i<nt;i++){
             tmp_[i] = u[i*nx*ny*nz+nn*nz+k];
         }
-        gradient(&dudt[k][1],tmp_,dt,nt); // To-do: this is super sluppy and error prone
+        gradient(&dudt[k][0],tmp_,dt,nt); // To-do: this is super sluppy and error prone
      }
 
 
@@ -418,17 +505,15 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
         }
     }
 
-
-
     // The inline force
     //
     double dz,Fd,Fi;
     int index;
-    F = new double[nt];
+    F.resize(nt);
 
     for (int i=0;i<nt;i++){
         F[i] = 0;
-        for (int k=1;k<nz-1;k++){// we ignore thte ghost point
+        for (int k=1;k<nz-1;k++){// we ignore the ghost points
             index = i*nx*ny*nz+nn*nz+k;
             dz = (sigma[k+1]-sigma[k])*(eta[i*nx*ny+nn]+h[nn]);
 
@@ -439,43 +524,93 @@ void convert::force(double x0,double D,double rho,double Cd,double Cm){
         }
 
     }
-    std::cout << "x0 = " << x[nn] << " " << nt*nx*nz<< std::endl;
+
+
+    QFileInfo fileInfo =  QFileInfo(fileName);
     std::ofstream morisonForce;
-    morisonForce.open("Morison.force");
+    morisonForce.open(fileInfo.baseName().toLatin1() + ".force");
     morisonForce << "time F" << std::endl;
-    for (int i=0;i<nt;i++){
+    QVector<double> QV_t,QV_F;
+    QV_t.resize(nt);
+    QV_F.resize(nt);
+    for (int i=1;i<nt-1;i++){
         morisonForce << std::setiosflags(std::ios::fixed) << std::setprecision(10) << t[i] << " " << F[i] << std::endl;
+        QV_t[i] = t[i];
+        QV_F[i] = F[i];
     }
     morisonForce.close();
 
+    // plot solution
+    QCustomPlot *cPlot = new QCustomPlot;
+    QWidget *plotWindow = new QWidget;
+    QHBoxLayout *plotWindow_layout = new QHBoxLayout;
+    plotWindow_layout->addWidget(cPlot);
+    plotWindow->setLayout(plotWindow_layout);
+
+    plotWindow->resize(800,400);
+
+    plotWindow->show();
+    cPlot->clearGraphs();
+
+    cPlot->addGraph();
+    cPlot->graph()->setData(QV_t,QV_F);
+    cPlot->xAxis->setLabel("Time, t s");
+    cPlot->yAxis->setLabel("Inline force, F N");
+    QVector<double>::iterator Xmin = std::min_element(QV_t.begin(), QV_t.end());
+    QVector<double>::iterator Xmax = std::max_element(QV_t.begin(), QV_t.end());
+    QVector<double>::iterator Ymin = std::min_element(QV_F.begin(), QV_F.end());
+    QVector<double>::iterator Ymax = std::max_element(QV_F.begin(), QV_F.end());
+    cPlot->xAxis->setRange(*Xmin,*Xmax);
+    cPlot->yAxis->setRange(*Ymin,*Ymax);
+    cPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    cPlot->replot();
 
 
 }
 
 
-void convert::ascii(){
+void convert::ascii(QString filepath,int location){
+QFileInfo fileInfo =  QFileInfo(filepath);
 
-    std::ofstream oStream;
 
-    oStream.open("Kinematics01.eta");
+std::ofstream oStream;
+    oStream.open(fileInfo.baseName().toLatin1() + ".eta");
     if (oStream.is_open()){
+        if (location < 0){
+            // write the header lines
+            oStream << "t x[t,1] x[t,2] x[t,3]: Second row is x-locations: Third row is water depths\n";
+//            oStream << "x = ";
+            for (int j=0;j<nx*ny;j++){oStream << x[j] << " ";}oStream << "\n";
+//            oStream << "h = ";
+            for (int j=0;j<nx*ny;j++){oStream << h[j] << " ";}oStream << "\n";
 
-        // write the header lines
-        oStream << "t x[t,1] x[t,2] x[t,3]\n";
-        oStream << " ";
-        for (int j=0;j<nx*ny;j++){oStream << x[j] << " ";}oStream << "\n";
 
+            for (int i=0;i<nt;i++){
+                oStream << t[i] << " ";
 
-        for (int i=0;i<nt;i++){
-            oStream << t[i] << " ";
+                for (int j=0;j<nx*ny;j++){
 
-            for (int j=0;j<nt;j++){
+                    oStream << eta[j+i*nx*ny] << " ";
 
-                oStream << eta[j+i*nx*ny] << " ";
-
+                }
+                oStream << "\n";
             }
-            oStream << "\n";
+        } else{
+
+            // write the header lines
+            oStream << "t x[t] \n ";
+            oStream << "x = " << x[location] << "\n";
+            oStream << "h = " << h[location] << "\n";
+
+
+            for (int i=0;i<nt;i++){
+                oStream << t[i] << " " << eta[location+i*nx*ny] << "\n";
+            }
+
+
         }
         oStream.close();
     }
 }
+
+
