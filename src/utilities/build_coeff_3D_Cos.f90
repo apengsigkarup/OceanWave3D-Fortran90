@@ -2,7 +2,7 @@
 !
 ! This subroutine returns Z(w) and kvec, the Fourier transform of
 ! the wave elevation, zeta(t) and a direction beta(w) for each frequency.  
-! The coefficients are based on a JONSWAP spectrum with a Cosine spreading 
+! The coefficients are based on a JONSWAP spectrum with a cos^(2s0) spreading 
 ! around the heading angle beta0. 
 !
    IMPLICIT none
@@ -35,90 +35,71 @@
    fp=1/Tp
 
    ncta=n/2              !!  number of angles
-   open(unit=1106,file='delt',status='unknown')
 
-   write(1106,*) n,delt,Tp
-   close(1106)
-
-!  m0
+   !  m0
    mr0=0.0
- DO i = 1,n  
-    freq=i*df
-    sf= jonswap_spectrum(freq, Hs, Tp)
-    mr0=mr0+sf*df
- END DO
+   DO i = 1,n  
+      freq=i*df
+      sf= jonswap_spectrum(freq, Hs, Tp)
+      mr0=mr0+sf*df
+   END DO
 
    amp=sqrt(2.0*mr0/real(n/2.0))
 
-    open(1108,file='amp',status='unknown')
-     write(1108,*) mr0,amp
-    close(1108)
-! Initialize
+   ! Initialize
    beta(:)=beta0
-   
-! Take care of zero and Nyquist frequencies.
+
+   ! Take care of zero and Nyquist frequencies.
    eta (1) = zero; 
    eta (2) = zero
 
 
-!    get the angle from spreading
+   !    get the angle from spreading
+   
+   CALL spreading(beta,pi,s0,beta0,seed2,ncta)
 
-        CALL spreading(beta,pi,s0,beta0,seed2,ncta)
-
-          do i=1,n
-
-         beta(i)=beta(i)*rad2deg
-         end do
-
-
-! Build the Fourier coefficients using the chosen Spectrum and a random
-! phase.  Each frequency has one heading angle which is also based on this 
-! random number and the accumulated PDF of the spectrum.  
-
-   open(1110,file='angle.dat')
- open(1111,file='angle1.dat')
    do i=1,n
 
-      write(1110,*)beta(i)
+      beta(i)=beta(i)*rad2deg
    end do
-   close(1110)
 
+   
+   ! Build the Fourier coefficients using the chosen Spectrum and a random
+   ! phase.  Each frequency has one heading angle which is also based on this 
+   ! random number and the accumulated PDF of the spectrum.  
+   
+   
    DO  i = 2, n / 2
       freq = (i - 1) * df
       psi=ran1_b(seed2)
-!
-! Choose here whether the Fourier amplitudes should be exactly on the spectrum
-! or Gaussianly distributed around the spectral value.
-!
+      !
+      ! Choose here whether the Fourier amplitudes should be exactly on the spectrum
+      ! or Gaussianly distributed around the spectral value.
+      !
       mag=one
-!      mag=gasdev(seed)  ! This will give a Guassian distribution of magnitude.
-!
+      !      mag=gasdev(seed)  ! This will give a Guassian distribution of magnitude.
+      !
       phase=mag*cmplx(cos(twopi*psi),sin(twopi*psi))
 
-! Get the wave spectrum value and the direction at this frequency.
+      ! Get the wave spectrum value and the direction at this frequency.
 
       spec= jonswap_spectrum(freq, Hs, Tp)
 
-   !   sigma=0.2_long*(freq/fp)**2.5_long
-  !    erf1=Erf(pi/(two*sqrt(two*sigma)))
-  !    erf2=InvErf((two*psi-one)*erf1)
-
-  !    beta(i)=beta0+rad2deg*sqrt(2*sigma)*erf2
-
+      !
+      ! Write the spectral coefficients for inspection. 
+      !      
       write(78,*)freq,1/freq,spec,beta(i)
       !
       ! Load the Fourier coefficients for this frequency
       !
       ! Real part
       eta (2*i-1) = REAL(sqrt (two * spec) * cst * phase)
-      ! eta (2*i-1)=REAL(amp*phase)    !eta (2*i-1) = REAL(sqrt (two * spec) * cst * phase)
+
       ! Imaginary part
       eta (2*i)= AIMAG(sqrt (two * spec) * cst * phase)
-      ! eta (2*i)=AIMAG(amp*phase)     !  eta (2*i)= AIMAG(sqrt (two * spec) * cst * phase)
-   write(1111,*) eta(i)
+
    END DO
    close(78)
-    close(1111)
 
    RETURN
  END SUBROUTINE BUILD_COEFF_3D_COS

@@ -139,10 +139,6 @@ SUBROUTINE OceanWave3DT0Setup
 78         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Cos^(2S) spreading at heading angle ',e10.4,/, &
                 ' deg. to the x-axis. S=',e10.4,', T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
 
-          open(unit=1107,file='S',status='unknown')
-           write(1107,*) RandomWave(1)%S0,RandomWave(1)%ispec
-          close(1107)
-        !!!!!
 
         ELSE
            PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1,2 for 2D waves; or -30,30,31,33,34 for 3D waves.'
