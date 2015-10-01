@@ -474,7 +474,7 @@ time, Order of interpolation in horizontal direction, file with wave paddle sign
            RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
            RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
            RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta0=beta0; 
-           RandomWave(i)%S=s0
+           RandomWave(i)%S0=s0
            If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
               nGenZones=nGenZones+1
               If( abs(RandomWave(i)%ispec) >= 30 .and. RelaxZones(i)%degrees /= 0) THEN
