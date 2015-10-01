@@ -12,7 +12,7 @@ INSTALLDIR = $(HOME)/bin
 LIBINSTALLDIR = $(HOME)/lib
 
 # Build directory where object files are stored 
-BUILDDIR = $(PWD)/../build
+BUILDDIR = $(PWD)/build
 
 # The build environment is set either by the choice of a compiler 
 # flag, or by creating a block for a specific $USER.  

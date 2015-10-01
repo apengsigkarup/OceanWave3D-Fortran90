@@ -130,8 +130,22 @@ SUBROUTINE OceanWave3DT0Setup
                 RandomWave(1)%seed2
 77         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
                 ' deg. to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
+
+         ! 3D random waves with a cos^2s0 spreading
+
+        ELSEIF(RandomWave(1)%ispec==34)THEN
+           WRITE(6,78)RandomWave(1)%beta0, RandomWave(1)%S0, RandomWave(1)%Tp, RandomWave(1)%Hs, &
+                RandomWave(1)%seed,RandomWave(1)%seed2
+78         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Cos^(2S) spreading at heading angle ',e10.4,/, &
+                ' deg. to the x-axis. S=',e10.4,', T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
+
+          open(unit=1107,file='S',status='unknown')
+           write(1107,*) RandomWave(1)%S0,RandomWave(1)%ispec
+          close(1107)
+        !!!!!
+
         ELSE
-           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1,2 for 2D waves; or -30,30,31,33 for 3D waves.'
+           PRINT *, 'ERROR:  RandomWave%ispec must be -1,0,1,2 for 2D waves; or -30,30,31,33,34 for 3D waves.'
            STOP
         END IF
         !
@@ -174,7 +188,7 @@ SUBROUTINE OceanWave3DT0Setup
         Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
              dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
              RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
-             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S, n_cut )
+             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, n_cut )
         !
         ! Count the total number of grid points in each generation zone and allocate space
         ! for eta and phiS and compute the elevation and surface potential time-histories.  
