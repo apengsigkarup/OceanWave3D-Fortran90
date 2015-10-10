@@ -1,0 +1,59 @@
+**************************************************************
+****           OCW3D - A GUI for OceanWave3D              ****
+**************************************************************
+
+Table of Contents
+------------------
+1. Requirements
+2. Installation
+3. Authors and Contact
+A. Acknowledgment and License
+
+1. Requirements
+-----------------
+OCW3D requires the following third-party software libraries:
+ * A C++ compiler (e.g. gcc, visual-c++ etc.)
+ * Software libraries
+	- qt (including qmake)
+	- xterm
+	- gnuplot
+	- boost
+
+2. Installation
+-----------------
+
+For building the binary executable, proceed as follows:
+
+Unix-based clients:
+ $> qmake 
+ $> make release
+ $> ./release/OCW3D
+
+ For non-standard settings edit OCW3D.pro 
+
+
+Windows based clients:
+OCW3D has been compiled on Windows using both Visual studio and qt-creator. However, the Windows version do not have full functionality. 
+For more information please contact bo.paulsen@deltares.nl
+
+
+3. Authors and Contact
+------------------------
+
+Bo Terp Paulsen (bo.paulsen@deltares.nl, developer and maintainer)
+
+A. Acknowledgment and License
+------------------------------
+
+Please acknowledge this software referred to as "OceanWave3D" in your work and any of the publications below by using the following references:
+
+  @ARTICLE{EngsigKarupEtAl08,
+  AUTHOR    = "Engsig-Karup, A.P. and Bingham, H.B. and Lindberg, O.",
+  TITLE     = "An efficient flexible-order model for {3D} nonlinear water waves",
+  YEAR      = "2009",
+  JOURNAL   = "Journal of Computational Physics",
+  VOLUME    = "228",
+  PAGES     = "2100-2118"
+  }
+
+
