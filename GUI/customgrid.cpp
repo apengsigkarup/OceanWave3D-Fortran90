@@ -145,15 +145,16 @@ if (x<=xData.first()){
     h = zData.last();
 } else {
     for (int i=0;i<zData.size()-1;i++){
+
         if ((xData[i+1]>x)&(xData[i]<x)){
             h = (zData[i+1]-zData[i])/(xData[i+1]-xData[i])*(x-xData[i])+zData[i];
         } else if (xData[i+1]==x){
-            h = xData[i+1];
+            h = zData[i+1];
 
         }
-
     }
 }
+
     return h;
 }
 

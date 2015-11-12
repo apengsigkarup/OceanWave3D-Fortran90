@@ -93,7 +93,7 @@ void MainWindow::openFile(){
     ui->nz->setValue(tmp_list[5].toInt());
 
     double dx = tmp_list[0].toDouble()/(tmp_list[3].toDouble()-1);
-    double dy = tmp_list[1].toDouble()/(tmp_list[2].toDouble()-1);
+    double dy = tmp_list[1].toDouble()/(tmp_list[4].toDouble()-1);
     ui->geometryType->setCurrentIndex(0);
     tmp_list[8].toInt()>0 ? ui->sz->setChecked(true):ui->sz->setChecked(false);
     if (tmp_list.length()>12){
@@ -296,6 +296,8 @@ void MainWindow::openFile(){
         ui->yAbsorbStart->setValue(tmp_list[2].toDouble());
         ui->yAbsorbEnd->setValue(tmp_list[3].toDouble());
 
+    } else {
+        ui->pressureDampingOrRelax->setCurrentIndex(1);
     }
     tmp_line.clear();
     tmp_list.clear();
@@ -329,7 +331,7 @@ void MainWindow::openFile(){
         }
 
     }
-    if ((ui->waveType->currentIndex()==2) & (ui->waveType->currentIndex()==3) )
+    if ((ui->waveType->currentIndex()==2) | (ui->waveType->currentIndex()==3) )
     {
         ui->Hs->setValue(tmp_list[2].toDouble());
         ui->Tp->setValue(tmp_list[1].toDouble());
@@ -546,7 +548,7 @@ void MainWindow::writeInputFile()
         outStream << xAbsorb[0] << " " << xAbsorb[1] << " " << yAbsorb[0] << " " << yAbsorb[1] << " 1 1 0\n";
     } else if ((ui->waveType->currentIndex()==5) & (ui->pressureDampingOrRelax->currentIndex()==1)){ // Only absorbing relaxation zone
         outStream << "1 " << rampTime << " 1 X 0 \n";
-        outStream << xAbsorb[0] << " " << xAbsorb[1] << " " << yAbsorb[0] << " " << yAbsorb[1] << " 1 9 3.5 X 0 X 0 \n";
+        outStream << xAbsorb[0] << " " << xAbsorb[1] << " " << yAbsorb[0] << " " << yAbsorb[1] << " 9 3.5 X 0 X 0 \n";
         outStream << "0 0\n";
     } else if ((ui->waveType->currentIndex()!=5) & (ui->pressureDampingOrRelax->currentIndex()==0)) {
         outStream << "1 " << rampTime << " 1 X 0 \n";
