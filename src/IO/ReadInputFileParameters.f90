@@ -444,25 +444,23 @@ SUBROUTINE ReadInputFileParameters
 	! To have a clean interface without too many goto statement,we first check what type we are trying to read
 	
 		READ(FILEIP(1),*,IOSTAT=ios) ispec
-		
+		Backspace(FILEIP(1)) 
+		print *, 'dsfasdfasdf ', ispec
 		IF (ispec==0 .or. ispec==1) THEN !Normal PM or JONSWAP spectrum
-			Backspace(FILEIP(1)) 
 	        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
 					kh_max,  seed,  seed2,  x0,  y0
 					gamma_jonswap = 3.3
 	
-		ELSEIF (ispec == 2) THEN!  2D irregular waves with input file
+		ELSEIF (ispec == 2) THEN ! 2D irregular waves with input file
 			READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
 					kh_max,  seed,  seed2,  x0,  y0, &
 					inc_wave_file
-					
+					print *, x0, y0, inc_wave_file
 		ELSEIF (ispec == 3) THEN ! 2D irregular waves with non-standard gamma value
-			Backspace(FILEIP(1)) 
 			READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
 	                    kh_max,  seed,  seed2,  x0,  y0, gamma_jonswap
 	                  
 		ELSEIF (ispec>=30) THEN ! multi-directional irregular waves
-			Backspace(FILEIP(1))  
 			READ(FILEIP(1),*,ERR=37,END=37,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
 	            kh_max,  seed,  seed2,  x0,  y0, &
 	            inc_wave_file, beta0, s0
