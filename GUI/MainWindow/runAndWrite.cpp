@@ -319,17 +319,19 @@ void MainWindow::openFile(){
     // irregular wave parameters
     //
     if (ui->waveType->currentIndex()==2){
-        tmp_line = inputFile.readLine();
+
+        tmp_line = inputFile.readLine();tmp_line.remove(QRegExp("[\\n\\t\\r]"));
         tmp_list = tmp_line.split(" ");
 
         if (tmp_list[0].toInt() == 0) {
-            ui->waveType->setCurrentIndex(3);
+            ui->waveType->setCurrentIndex(3); // PM
         } else if (tmp_list[0].toInt() == 1) {
-            ui->waveType->setCurrentIndex(2);
+            ui->waveType->setCurrentIndex(2); // jonswap old syntax
         } else if (tmp_list[0].toInt() == 2) {
             ui->waveType->setCurrentIndex(4);
+        } else if (tmp_list[0].toInt() == 3) {
+            ui->waveType->setCurrentIndex(2); // jonswap new syntax
         }
-
     }
     if ((ui->waveType->currentIndex()==2) | (ui->waveType->currentIndex()==3) )
     {
@@ -337,7 +339,13 @@ void MainWindow::openFile(){
         ui->Tp->setValue(tmp_list[1].toDouble());
         ui->h->setValue(tmp_list[3].toDouble());
         ui->maxkh->setValue(tmp_list[4].toDouble());
-        ui->seed->setValue(tmp_list[5].toInt());
+        ui->seed->setValue(-1*tmp_list[5].toInt());
+
+        if (tmp_list[0].toInt() == 1){
+            ui->gamma_jonswap->setValue(3.3); // JONSWAP old syntax
+        } else {
+            ui->gamma_jonswap->setValue(tmp_list[9].toDouble()); // JONSWAP with variable gamma
+        }
 
         tmp_line.clear();
         tmp_list.clear();
@@ -348,7 +356,7 @@ void MainWindow::openFile(){
         ui->Tp->setValue(tmp_list[1].toDouble());
         ui->h->setValue(tmp_list[3].toDouble());
         ui->maxkh->setValue(tmp_list[4].toDouble());
-        ui->seed->setValue(tmp_list[5].toInt());
+        ui->seed->setValue(-1*tmp_list[5].toInt());
         ui->irr_x0->setValue(tmp_list[7].toDouble());
         ui->irr_y0->setValue(tmp_list[8].toDouble());
         QFileInfo waveFile(tmp_list[9].toLatin1());
@@ -432,15 +440,15 @@ void MainWindow::writeInputFile()
         if (LorT==0) {SF_L =SF_T;}
     }
     if ((ui->waveType->currentIndex()==2) | (ui->waveType->currentIndex()==3)){ //JONSWAP or PM
-        irrFilename = 'dummyFile';
+        irrFilename = QString(' ');
         Hs = ui->Hs->value();
         Tp = ui->Tp->value();
         h = ui->h->value();
-        gamma = ui->gamma->value();
+        gamma_jonswap = ui->gamma_jonswap->value();
         seed = ui->seed->value();
         khmax = ui->maxkh->value();
         waveTheory=2;
-        ui->waveType->currentIndex()==2 ? i_spec=1 : i_spec=0;
+        ui->waveType->currentIndex()==2 ? i_spec=3 : i_spec=0;
     }
     if (ui->waveType->currentIndex()==5){
         waveTheory=3;
@@ -451,7 +459,7 @@ void MainWindow::writeInputFile()
         Hs = ui->Hs->value();
         Tp = ui->Tp->value();
         h = ui->h->value();
-        gamma = ui->gamma->value();
+//        gamma = ui->gamma->value();
         seed = ui->seed->value();
         khmax = 2*M_PI/dx*h;
         waveTheory=2;
@@ -565,7 +573,14 @@ void MainWindow::writeInputFile()
     outStream << "0 0 0 0 0 0 0\n"; // SWENSE
     outStream << "0 \n";
     // Irregualr waves`
-    if (waveTheory==2){outStream << i_spec << " " << Tp << " " << Hs << " " << depth << " " << khmax << " " << seed << " " << seed << " " << ui->irr_x0->value() << " " << ui->irr_y0->value() << " " << irrFilename << " 3D-off1 0\n";}
+    if (waveTheory==2){
+        if (i_spec==2){ // Irregular wave with input file
+            outStream << i_spec << " " << Tp << " " << Hs << " " << depth << " " << khmax << " " << -1*seed << " " << -1*seed << " " << ui->irr_x0->value() << " " << ui->irr_y0->value() << " " << irrFilename << " \n";
+        }
+        else if (i_spec==3) { // irregular wave with defined gamma vlaue
+            outStream << i_spec << " " << Tp << " " << Hs << " " << depth << " " << khmax << " " << -1*seed << " " << -1*seed << " " << ui->irr_x0->value() << " " << ui->irr_y0->value() << " " << gamma_jonswap << " \n";
+        }
+    }
     if (waveTheory==3){ outStream << ui->rampTime_waveFile->value() << " " << 1 <<  " " << ui->selectedWaveFile->text(); }
             //
     myfile.close();

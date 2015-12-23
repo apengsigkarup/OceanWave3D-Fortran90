@@ -499,7 +499,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_11">
        <attribute name="title">
@@ -1647,6 +1647,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
          <property name="maximum">
           <double>10000.000000000000000</double>
          </property>
@@ -2254,6 +2257,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
          <property name="maximum">
           <double>9999.000000000000000</double>
          </property>
@@ -2784,7 +2790,7 @@
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>90</y>
+          <y>110</y>
           <width>711</width>
           <height>80</height>
          </rect>
@@ -3025,6 +3031,38 @@
          </property>
          <property name="maximum">
           <number>5</number>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="gamma_jonswap">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>30</y>
+           <width>62</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="maximum">
+          <double>10.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+         <property name="value">
+          <double>3.300000000000000</double>
+         </property>
+        </widget>
+        <widget class="QLabel" name="gamma_jonswap_label">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>10</y>
+           <width>54</width>
+           <height>15</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>gamma</string>
          </property>
         </widget>
        </widget>

@@ -1,4 +1,4 @@
- SUBROUTINE build_coeff (ETA, N, Hs, Tp, DELT, SEED, seed2, i_spec)
+ SUBROUTINE build_coeff (ETA, N, Hs, Tp, DELT, SEED, seed2, i_spec,gamma)
 !
 ! This subroutine returns Z(w), the Fourier transform of
 ! the wave elevation, zeta(t).  The coefficients are based on
@@ -11,7 +11,7 @@
    REAL(kind=long) :: Hs, Tp, pi, delt, df, cst, freq, spec,           &
         pm_spectrum, jonswap_spectrum, zero=0._long,          &
         one=1._long, two=2._long, four=4._long, half=.5_long,          &
-        twopi, ran1, psi, mag
+        twopi, ran1, psi, mag, gamma
    REAL(kind=long) :: ETA(n) ! GD : modif so that types are compatible... n has to be a power of 2
    COMPLEX(kind=long) :: phase
    EXTERNAL gasdev, ran1_b, pm_spectrum, jonswap_spectrum
@@ -49,7 +49,7 @@
       IF(i_spec==0)THEN
          spec= pm_spectrum(freq, Hs, Tp)
       ELSE
-         spec= jonswap_spectrum(freq, Hs, Tp)
+         spec= jonswap_spectrum(freq, Hs, Tp,gamma)
       ENDIF
 
       write(78,*)freq,1/freq,spec

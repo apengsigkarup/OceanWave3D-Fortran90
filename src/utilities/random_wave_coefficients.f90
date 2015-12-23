@@ -1,5 +1,6 @@
 SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
-     grav, inc_wave_file, kh_max, seed, seed2, eta0, beta, s0, n_cut)
+     grav, inc_wave_file, kh_max, seed, seed2, eta0, beta, s0, &
+     n_cut,gamma_jonswap)
   !-----------------------------------------------------------------------
   !
   ! Build the coefficients for a pseudo-random 3D wave with direction BETA0 to the 
@@ -18,7 +19,7 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
   CHARACTER(len=30) inc_wave_file, header
   integer, parameter :: long=selected_real_kind(12,99)
   integer i, i_spec, seed, seed2, nt, n_cut
-  real(kind=long) :: Tp, Hs, dt, depth, grav, kh_max, dx, s0
+  real(kind=long) :: Tp, Hs, dt, depth, grav, kh_max, dx, s0, gamma_jonswap
   real(kind=long) :: eta0(nt), beta(nt)
 
   ! Local variables
@@ -54,9 +55,9 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
   IF(i_spec==0 .or. i_spec==30)THEN 
      ! A long-crested P-M spectrum
      CALL build_coeff(eta0, nt, Hs, Tp, dt, seed, seed2, 0)
-  ELSEIf(i_spec==1 .or. i_spec==31)THEN
+  ELSEIf(i_spec==1 .or. i_spec==31 .or. i_spec==3)THEN
      ! A long-crested JONSWAP spectrum
-     CALL build_coeff(eta0, nt, Hs, Tp, dt, seed, seed2, 1)
+     CALL build_coeff(eta0, nt, Hs, Tp, dt, seed, seed2, 1,gamma_jonswap)
   ELSEIF(i_spec==33)THEN
      ! A JONSWAP spectrum with a normal spreading
      CALL build_coeff_3D(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0)

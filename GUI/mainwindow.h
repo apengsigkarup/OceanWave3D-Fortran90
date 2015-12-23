@@ -100,6 +100,7 @@ private:
     double Tp;
     double h;
     double gamma;
+    double gamma_jonswap;
     double khmax;
     int SF_n;
     int LorT;

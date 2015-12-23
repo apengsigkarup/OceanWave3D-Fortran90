@@ -1,4 +1,4 @@
- FUNCTION JONSWAP_spectrum(FREQ, Hs, Tp)
+ FUNCTION JONSWAP_spectrum(FREQ, Hs, Tp,gamma)
 !
 ! This function returns the value of the JONSWAP spectrum
 ! for the frequency FREQ, significant wave height Hs, and peak period
@@ -11,7 +11,6 @@
         two=2._long, half=.5_long, five=5._long, grav=9.82_long
    pi = acos (-one)
    f_p=one/Tp
-   gamma=3.3_long
    alpha=3.32285_long * Hs**2 * f_p**4
    A=alpha*grav**2/(two*pi)**4
    B=five/four * f_p**4

@@ -8,7 +8,7 @@ void MainWindow::on_waveTheoryChanged()
 
 void MainWindow::on_waveTheoryChanged(int waveTheory)
 {
-    if (waveTheory==1) {
+    if (waveTheory==1) { // stream function waves
         ui->widget_SF->setVisible(true);ui->LorP_ComboBox->setVisible(true);
 
         if (ui->LorP_ComboBox->currentIndex()==0){
@@ -23,18 +23,22 @@ void MainWindow::on_waveTheoryChanged(int waveTheory)
         ui->widget_waveFile->setVisible(false);
         ui->waveGeneration_widget->setEnabled(true);
         ui->widget_customSpectrum->setVisible(false);
-    } else if (waveTheory==2){
+    } else if (waveTheory==2){ // JONSWAP
         ui->widget_SF->setVisible(false);ui->LorP_ComboBox->setVisible(false);
         ui->widget_JONSWAP->setVisible(true);
         ui->widget_waveFile->setVisible(false);
         ui->waveGeneration_widget->setEnabled(true);
         ui->widget_customSpectrum->setVisible(false);
+        ui->gamma_jonswap->setVisible(true);
+        ui->gamma_jonswap_label->setVisible(true);
     } else if (waveTheory==3){
         ui->widget_JONSWAP->setVisible(true);
         ui->widget_SF->setVisible(false);
         ui->widget_waveFile->setVisible(false);
         ui->waveGeneration_widget->setEnabled(true);
         ui->widget_customSpectrum->setVisible(false);
+        ui->gamma_jonswap->setVisible(false);
+        ui->gamma_jonswap_label->setVisible(false);
     } else if (waveTheory==4) {
         ui->widget_customSpectrum->setVisible(true);
         ui->widget_waveFile->setVisible(false);
