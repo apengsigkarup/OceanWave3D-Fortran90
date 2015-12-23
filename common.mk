@@ -5,7 +5,7 @@
 
 # Program name
 PROGNAME = OceanWave3D
-LIBNAME  = libOceanWave3D.so
+LIBNAME  = libOceanWave3D_botp.so
 
 # Installation directory
 INSTALLDIR = $(HOME)/bin
@@ -23,7 +23,7 @@ BUILDDIR = $(PWD)/build
 #FC = gfortran-4.4
 #FC = gf90
 
-USER = hbb
+USER = botp-dev
 
 # First the blocks based on compiler name:  
 

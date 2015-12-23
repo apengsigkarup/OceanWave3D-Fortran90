@@ -445,7 +445,6 @@ SUBROUTINE ReadInputFileParameters
 	
 		READ(FILEIP(1),*,IOSTAT=ios) ispec
 		Backspace(FILEIP(1)) 
-		print *, 'dsfasdfasdf ', ispec
 		IF (ispec==0 .or. ispec==1) THEN !Normal PM or JONSWAP spectrum
 	        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
 					kh_max,  seed,  seed2,  x0,  y0
