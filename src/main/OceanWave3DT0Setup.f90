@@ -102,10 +102,10 @@ SUBROUTINE OceanWave3DT0Setup
            WRITE(6,71)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2
 71         FORMAT(' The incident wave is a 2D P-M spectrum with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
-        ELSEIF(RandomWave(1)%ispec==1)THEN
-           WRITE(6,72)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2
+        ELSEIF(RandomWave(1)%ispec==1 .or. RandomWave(1)%ispec==3)THEN
+           WRITE(6,72)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%gamma,RandomWave(1)%seed,RandomWave(1)%seed2
 72         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
-                'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
+                'T_p=',  e10.4,', H_s=',e10.4,' and gamma=',e10.4, ' and seed values are:',/,2i10,//)
         ELSEIF(RandomWave(1)%ispec==2)THEN
            WRITE(6,73)RandomWave(1)%inc_wave_file
 73         FORMAT(' The incident wave will be read from file ',a30,/)
@@ -184,7 +184,7 @@ SUBROUTINE OceanWave3DT0Setup
         Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
              dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
              RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
-             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, n_cut )
+             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, n_cut,RandomWave(i)%gamma )
         !
         ! Count the total number of grid points in each generation zone and allocate space
         ! for eta and phiS and compute the elevation and surface potential time-histories.  
