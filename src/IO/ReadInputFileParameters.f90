@@ -12,7 +12,7 @@ SUBROUTINE ReadInputFileParameters
   IMPLICIT NONE
   INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones
   REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, seed, seed2, x0, &
-       y0, beta0, s0
+       y0, beta0, s0, gamma_jonswap
   CHARACTER(len=30):: inc_wave_file
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
@@ -425,38 +425,62 @@ SUBROUTINE ReadInputFileParameters
 ! Linear mono-chromatic or random wave generation parameters.  
 ! 
 
-  IF (IncWaveType==3) THEN 
-      ! Wave generation with flux condition on western boundary
-      READ(FILEIP(1),*,ERR=34,END=34) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
-      Go To 35
-34     Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need: Ramp &
-time, Order of interpolation in horizontal direction, file with wave paddle signal.'
-35    continue
-  ELSE
-      READ(FILEIP(1),*,ERR=31,END=31) ispec,  Tp,  Hs,  h0,   &
-            kh_max,  seed,  seed2,  x0,  y0, &
-            inc_wave_file, beta0, s0
-      Go To 33
-31    Backspace(FILEIP(1)) 
-      READ(FILEIP(1),*,ERR=32,END=32) ispec,  Tp,  Hs,  h0,   &
-            kh_max,  seed,  seed2,  x0,  y0, &
-            inc_wave_file
-      If( abs(ispec)<30 ) Then
-          beta0=0
-          s0=1.0
-      ELSE
-         Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle and a spreading factor.'
-         STOP
-      END If
-      Go To 33
+	IF (IncWaveType==3) THEN 
+		! Wave generation with flux condition on western boundary
+		READ(FILEIP(1),*,IOSTAT=ios) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
+		IF (ios>0) THEN
+     		Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need: Ramp &
+				time, Order of interpolation in horizontal direction, file with wave paddle signal.'
+			stop
+		END IF
 
-32    IF(IncWaveType==2)THEN
-         Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
-         Stop
-      END IF
+	ELSEIF (IncWaveType == 2) THEN ! irregular waves
+	! For irregular waves we have four options: 
+	! 0) PM, 
+	! 1) Normal JONSWAP with gamma = 3.3, 
+	! 2) based on input files and 
+	! 3) JONSWAP with variable gamma value
+	!
+	! To have a clean interface without too many goto statement,we first check what type we are trying to read
+	
+		READ(FILEIP(1),*,IOSTAT=ios) ispec
+		Backspace(FILEIP(1)) 
+		IF (ispec==0 .or. ispec==1) THEN !Normal PM or JONSWAP spectrum
+	        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
+					kh_max,  seed,  seed2,  x0,  y0
+					gamma_jonswap = 3.3
+	
+		ELSEIF (ispec == 2) THEN ! 2D irregular waves with input file
+			READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
+					kh_max,  seed,  seed2,  x0,  y0, &
+					inc_wave_file
+					print *, x0, y0, inc_wave_file
+		ELSEIF (ispec == 3) THEN ! 2D irregular waves with non-standard gamma value
+			READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
+	                    kh_max,  seed,  seed2,  x0,  y0, gamma_jonswap
+	                  
+		ELSEIF (ispec>=30) THEN ! multi-directional irregular waves
+			READ(FILEIP(1),*,ERR=37,END=37,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
+	            kh_max,  seed,  seed2,  x0,  y0, &
+	            inc_wave_file, beta0, s0
+	            
+	    END IF
+		
+		IF( abs(ispec)<30 ) THEN
+				beta0=0
+				s0=1.0
+		END IF
+	
+37	    IF(ios>0)THEN
+			IF (abs(ispec)<30) THEN
+				Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
+			ELSE
+					Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle and a spreading factor.'
+			END IF
+			STOP
+		END IF
+	END IF
 
-33     Continue
-  ENDIF
   !
   !
   IF (relaxONOFF==1) THEN ! GD: add this test in case of no relaxation zones defined
@@ -474,7 +498,8 @@ time, Order of interpolation in horizontal direction, file with wave paddle sign
            RandomWave(i)%h0=h0; RandomWave(i)%x0=x0; RandomWave(i)%y0=y0;
            RandomWave(i)%seed=seed; RandomWave(i)%seed2=seed2; RandomWave(i)%kh_max=kh_max;
            RandomWave(i)%inc_wave_file=inc_wave_file; RandomWave(i)%beta0=beta0; 
-           RandomWave(i)%S=s0
+           RandomWave(i)%S0=s0
+           RandomWave(i)%gamma = gamma_jonswap
            If(RelaxZones(i)%XorYgen=='X' .AND. RelaxZones(i)%WavegenONOFF==1) THEN
               nGenZones=nGenZones+1
               If( abs(RandomWave(i)%ispec) >= 30 .and. RelaxZones(i)%degrees /= 0) THEN
