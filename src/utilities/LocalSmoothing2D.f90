@@ -7,7 +7,7 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
   ! filter [.25 .5 .25].  The feature is turned off by switching the threshold 
   ! factor to something larger than 100.  
   !
-  ! **  This still needs to be extended to 3D. **  -hbb
+  ! **  This is the 2D version. **  
   !
   USE GlobalVariables
   IMPLICIT NONE
@@ -20,7 +20,7 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
   REAL(KIND=long), POINTER :: et(:,:), ph(:,:), x(:,:), WHist(:,:,:), etax(:,:), hx(:,:), z(:), &
        h(:,:), EtatHist(:,:,:)
   REAL(KIND=long) :: etatem(nx,ny), Phitem(nx,ny), etatt(nx,ny), alpha_s(nx,ny), Wt(nx,ny), dWdt(nx,ny)
-  REAL(KIND=long) :: Utem(Nz,Nx,Ny), V(Nz,Nx,Ny), Wtem(Nz,Nx,Ny), Wz(Nz,Nx,Ny), Wx(Nz,Nx,Ny), d(Nx,Ny)
+  REAL(KIND=long) :: Utem(Nz,Nx,Ny), Wtem(Nz,Nx,Ny), Wz(Nz,Nx,Ny), Wx(Nz,Nx,Ny), d(Nx,Ny)
   !SIGS added line above
   ! Initial set up of the output file
   !
@@ -29,7 +29,7 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
      OPEN(fop,file='local.smoothing',status='unknown')
      WRITE(fop,10)accel_tol_fact
 10   FORMAT('# Points where Lagrangian -dw/dt exceeded',e10.2, &
-          ' times g and local smoothing was applied:  t, x, dw/dt')
+          ' times g and local smoothing was applied:  t, x, y, dw/dt')
   END IF
   !
   ! Do nothing for a factor larger than 100
@@ -137,10 +137,10 @@ SUBROUTINE LocalSmoothing2D(nx,ny,nz,itime,fop)
         !
         WRITE(fop,11)
         DO i=1,N_smoothed
-           WRITE(fop,12)(itime-1)*dt,x(i_smoothed(i),1),Wt(i_smoothed(i),1)
+           WRITE(fop,12)(itime-1)*dt,x(i_smoothed(i),1),0.0,Wt(i_smoothed(i),1)
         END DO
 11      FORMAT()
-12      FORMAT(3e16.4)
+12      FORMAT(4e16.4)
      END IF
 
   END IF

@@ -27,6 +27,9 @@ SUBROUTINE OceanWave3DTakeATimeStep
   IF(FineGrid%ny==1)THEN
      CALL LocalSmoothing2D( FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
           FineGrid%Nz+GhostGridZ,tstep,fileop(12) )
+  ELSE
+     CALL LocalSmoothing3D( FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
+          FineGrid%Nz+GhostGridZ,tstep,fileop(12) )
   END IF
   !
   ! Check for wave breaking at this step and if found update 

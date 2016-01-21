@@ -462,7 +462,7 @@ SUBROUTINE ReadInputFileParameters
 		ELSEIF (ispec>=30) THEN ! multi-directional irregular waves
 			READ(FILEIP(1),*,ERR=37,END=37,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
 	            kh_max,  seed,  seed2,  x0,  y0, &
-	            inc_wave_file, beta0, s0
+	            inc_wave_file, beta0, s0, gamma_jonswap
 	            
 	    END IF
 		
@@ -475,7 +475,7 @@ SUBROUTINE ReadInputFileParameters
 			IF (abs(ispec)<30) THEN
 				Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
 			ELSE
-					Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle and a spreading factor.'
+					Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle, a spreading factor and a JONSWAP gamma factor.'
 			END IF
 			STOP
 		END IF

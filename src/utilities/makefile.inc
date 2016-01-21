@@ -16,6 +16,7 @@ SOURCES += $(LDIR)/eqns.f
 SOURCES += $(LDIR)/fdwvnum.f90
 SOURCES += $(LDIR)/init.f
 SOURCES += $(LDIR)/LocalSmoothing2D.f90
+SOURCES += $(LDIR)/LocalSmoothing3D.f90
 SOURCES += $(LDIR)/lubksb.f90
 SOURCES += $(LDIR)/ludcmp.f90
 SOURCES += $(LDIR)/ran1.f90

@@ -60,7 +60,7 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
      CALL build_coeff(eta0, nt, Hs, Tp, dt, seed, seed2, 1,gamma_jonswap)
   ELSEIF(i_spec==33)THEN
      ! A JONSWAP spectrum with a normal spreading
-     CALL build_coeff_3D(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0)
+     CALL build_coeff_3D(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0, gamma_jonswap)
   ELSEIF(i_spec==34)THEN
      ! A JONSWAP spectrum with a cos^s spreading
      CALL build_coeff_3D_Cos(eta0, beta, nt, Hs, Tp, dt, seed, seed2, beta0, s0)
