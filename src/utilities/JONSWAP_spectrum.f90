@@ -1,4 +1,4 @@
- FUNCTION JONSWAP_spectrum(FREQ, Hs, Tp,gamma)
+ FUNCTION JONSWAP_spectrum(FREQ, Hs, Tp, gamma)
 !
 ! This function returns the value of the JONSWAP spectrum
 ! for the frequency FREQ, significant wave height Hs, and peak period
@@ -15,7 +15,7 @@
    A=alpha*grav**2/(two*pi)**4
    B=five/four * f_p**4
 
-   IF (freq.le.zero) then
+   IF (freq.le.zero) then 
       jonswap_spectrum = zero
    ELSEIF(freq<=f_p)THEN
       sigma=.07_long

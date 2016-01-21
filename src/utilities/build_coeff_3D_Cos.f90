@@ -1,4 +1,4 @@
- SUBROUTINE build_coeff_3D_Cos (ETA, beta, N, Hs, Tp, DELT, SEED, seed2, beta0, s0)
+ SUBROUTINE build_coeff_3D_Cos (ETA, beta, N, Hs, Tp, DELT, SEED, seed2, beta0, s0, gamma)
 !
 ! This subroutine returns Z(w) and kvec, the Fourier transform of
 ! the wave elevation, zeta(t) and a direction beta(w) for each frequency.  
@@ -8,7 +8,7 @@
    IMPLICIT none
    integer, parameter :: long=selected_real_kind(12,99)
    INTEGER SEED, seed2, n, ncta
-   REAL(kind=long) :: Hs, Tp, delt, beta0, s0
+   REAL(kind=long) :: Hs, Tp, delt, beta0, s0, gamma
    REAL(kind=long) :: ETA(n), beta(n)
    ! Locals
    Integer i
@@ -40,7 +40,7 @@
    mr0=0.0
    DO i = 1,n  
       freq=i*df
-      sf= jonswap_spectrum(freq, Hs, Tp)
+      sf= jonswap_spectrum(freq, Hs, Tp, gamma)
       mr0=mr0+sf*df
    END DO
 
@@ -83,7 +83,7 @@
 
       ! Get the wave spectrum value and the direction at this frequency.
 
-      spec= jonswap_spectrum(freq, Hs, Tp)
+      spec= jonswap_spectrum(freq, Hs, Tp, gamma)
 
       !
       ! Write the spectral coefficients for inspection. 
