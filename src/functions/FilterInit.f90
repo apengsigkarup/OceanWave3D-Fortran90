@@ -1,7 +1,7 @@
 SUBROUTINE FilterInit(filtercoefficients,filtercoefficients2)
 
 USE Precision
-USE GlobalVariables, ONLY: tmpfilter,filterNP,filterALPHA,filterORDER,sigma_filt
+USE GlobalVariables, ONLY: tmpfilter,filterNP,filterALPHA,filterORDER,sigma_filt,fileop
 USE Constants
 !
 ! Set up the filtering coefficients.  The variables tmpfilter, filtercoefficients 
@@ -214,6 +214,8 @@ DEALLOCATE(tmpfilter)
 if(abs(sigma_filt(1))<1.e-12)then
    print *, 'FilterInit:  Boundary filtering is turned off.'
    print *, ' ' 
+   write(fileop(1),*) 'FilterInit:  Boundary filtering is turned off.'
+   write(fileop(1),*) ' ' 
    filtercoefficients2=zero
    do i=1,max(filterALPHA,6)
       filtercoefficients2(i,i)=one
@@ -222,6 +224,9 @@ else
    print *, 'FilterInit:  Boundary filtering is turned on with values:'
    print *, sigma_filt
    print *, ' ' 
+   write(fileop(1),*) 'FilterInit:  Boundary filtering is turned on with values:'
+   write(fileop(1),*) sigma_filt
+   write(fileop(1),*) ' ' 
 
 end if
 

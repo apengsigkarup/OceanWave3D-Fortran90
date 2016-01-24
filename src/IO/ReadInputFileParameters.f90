@@ -18,6 +18,8 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
   WRITE (*,FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
   WRITE (*,FMT='(A,A/)') '   Header title.................... : ', HEAD(1)
+  WRITE (fileop(1),FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
+  WRITE (fileop(1),FMT='(A,A/)') '   Header title.................... : ', HEAD(1)
 
   READ (FILEIP(1),*) IC
   BACKSPACE(FILEIP(1))
@@ -30,6 +32,11 @@ SUBROUTINE ReadInputFileParameters
   WRITE(*,FMT='(A,F8.4)') '   Local filtering downward vertical acceleration limit is: ', &
        accel_tol_fact
   WRITE(*,FMT='(A//)') ' * g m/s^2.  Theoretically breaking should occur between 0.5 and 1.'
+  WRITE(fileop(1),FMT='(A/)') '   PARAMETER INPUT'
+  WRITE(fileop(1),FMT='(A,I3/)') '   Initial Condition (IC), Predefined : ',IC
+  WRITE(fileop(1),FMT='(A,F8.4)') '   Local filtering downward vertical acceleration limit is: ', &
+       accel_tol_fact
+  WRITE(fileop(1),FMT='(A//)') ' * g m/s^2.  Theoretically breaking should occur between 0.5 and 1.'
 
   GO TO 24
 
@@ -47,36 +54,47 @@ SUBROUTINE ReadInputFileParameters
      READ (FILEIP(1),*) Lx, Ly, Lz, FineGrid%Nx, FineGrid%Ny, FineGrid%Nz, GridX, GridY, GridZ, GhostGridX, &
           GhostGridY, GhostGridZ, fname_bottom
      WRITE(*,FMT='(A,A,A)') '   Bathymetry: ',fname_bottom,' (file)'
+     WRITE(fileop(1),FMT='(A,A,A)') '   Bathymetry: ',fname_bottom,' (file)'
   ELSE
      WRITE(*,FMT='(A)') '   Bathymetry                         : Predefined (in setup for IC)'
+     WRITE(fileop(1),FMT='(A)') '   Bathymetry                         : Predefined (in setup for IC)'
   END IF
   !
   WRITE (*,900) '   (Nx,Ny,Nz)=(',FineGrid%Nx,',',FineGrid%Ny,',',FineGrid%Nz,')'
   IF (FineGrid%Nx>1) THEN
      dx = Lx/(FineGrid%Nx-one)
      WRITE (*,903) '   Size of dx: ',dx
+     WRITE (fileop(1),903) '   Size of dx: ',dx
   ELSE
      WRITE (*,FMT='(/A)') '   The problem is without an x-dimension.'
+     WRITE (fileop(1),FMT='(/A)') '   The problem is without an x-dimension.'
      GhostGridX=0
   ENDIF
   IF (FineGrid%Ny>1) THEN
      dy = Ly/(FineGrid%Ny-one)
      WRITE (*,903) '   Size of dy: ',dy
+     WRITE (fileop(1),903) '   Size of dy: ',dy
   ELSE
      WRITE (*,FMT='(/A)') '   The problem is without a y-dimension.'
+     WRITE (fileop(1),FMT='(/A)') '   The problem is without a y-dimension.'
      GhostGridY=0
   ENDIF
   IF (GridZ==0) THEN
      WRITE (*,FMT='(/A)') '   Even node-distribution in Z'
+     WRITE (fileop(1),FMT='(/A)') '   Even node-distribution in Z'
   ELSEIF (GridZ==1) THEN
      WRITE (*,FMT='(/A)') '   Uneven node-distribution in Z'
+     WRITE (fileop(1),FMT='(/A)') '   Uneven node-distribution in Z'
   ENDIF
   IF (GhostGridZ==1) THEN
      WRITE (*,FMT='(A/)') '   Ghost point layer included below bottom.'
+     WRITE (fileop(1),FMT='(A/)') '   Ghost point layer included below bottom.'
   ELSE IF (GhostGridZ==0) THEN
      WRITE (*,FMT='(A/)') '   Kinematic condition will be imposed directly.'
+     WRITE (fileop(1),FMT='(A/)') '   Kinematic condition will be imposed directly.'
   ELSE
      WRITE (*,FMT='(A/)') '   Error: GhostGrid not 0 or 1.'; STOP
+     WRITE (fileop(1),FMT='(A/)') '   Error: GhostGrid not 0 or 1.'; STOP
   ENDIF
 
   IF(IC<0)THEN
@@ -85,6 +103,9 @@ SUBROUTINE ReadInputFileParameters
      PRINT *,'INPUT:  Initial conditions will be read from OceanWave3D.init with header'
      PRINT *, head(3)
      print *,' '
+     WRITE(FILEOP(1),*)'INPUT:  Initial conditions will be read from OceanWave3D.init with header'
+     WRITE(FILEOP(1),*) head(3)
+     write(fileop(1),*)' '
      READ(fileip(3),*)xtankIC,ytankIC,nxIC,nyIC,t0IC
      IF ((nxIC-FineGrid%Nx .ne. 0) .or. (nyIC-FineGrid%Ny .ne. 0)) THEN
         PRINT *, 'Your input and initial conditions grids must agree.'
@@ -108,6 +129,8 @@ SUBROUTINE ReadInputFileParameters
   ENDIF
   WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)=(',alpha,',',beta,',',gamma,')'
   WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)=(',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
+  WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)=(',alpha,',',beta,',',gamma,')'
+  WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)=(',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
   IF (2*alpha+1>FineGrid%Nx .AND. FineGrid%Nx>1) THEN
      GOTO 101
   ENDIF
@@ -152,28 +175,39 @@ SUBROUTINE ReadInputFileParameters
      print *, '**  Your run starting time from OceanWave3D.inp does not agree with the '
      print *,'   one from OceanWave3D.init.  The init value will be used. **'
      print *, ' '
+     write(fileop(1),*) ' '
+     write(fileop(1),*) '**  Your run starting time from OceanWave3D.inp does not agree with the '
+     write(fileop(1),*)'   one from OceanWave3D.init.  The init value will be used. **'
+     write(fileop(1),*) ' '
   END IF
 
   print *, 'Starting time for this run is ',time0
   WRITE (*,902) '   Number of time steps chosen: ', Nsteps
+  write(fileop(1),*), 'Starting time for this run is ',time0
+  WRITE (fileop(1),902) '   Number of time steps chosen: ', Nsteps
   IF (CFL/=zero) THEN
      ! GD: FIXME for 2D-3D case with propagation along y...
      IF(FineGrid%Nx==1) THEN
         dt = CFL*dy !/c
         WRITE (*,903) '   CFL constant given by user (dt=CFL*dy)', CFL
+        WRITE (fileop(1),903) '   CFL constant given by user (dt=CFL*dy)', CFL
      ELSE
         dt = CFL*dx !/c
         WRITE (*,903) '   CFL constant given by user (dt=CFL*dx)', CFL
+        WRITE (fileop(1),903) '   CFL constant given by user (dt=CFL*dx)', CFL
      ENDIF
   ENDIF
   WRITE (*,903) '   Size of time increment: ', dt
+  WRITE (fileop(1),903) '   Size of time increment: ', dt
 
   SELECT CASE (timemethod)
   CASE (1) ! Classical RK4
      RKSTAGES = 4
      WRITE (*,*) '   Time-integration method: Classical Runge-Kutta fourth order'
+     WRITE (fileop(1),*) '   Time-integration method: Classical Runge-Kutta fourth order'
      IF (extrapolationONOFF==1) THEN
         WRITE (*,*) '    - Optimization of RK scheme using extrapolation on seperate RK stages will be employed.'
+        WRITE (fileop(1),*) '    - Optimization of RK scheme using extrapolation on seperate RK stages will be employed.'
      ENDIF
   CASE (2) ! Carpenter & Kennedy low-storage RK45
      !
@@ -181,6 +215,7 @@ SUBROUTINE ReadInputFileParameters
 
      RKSTAGES = 5
      WRITE (*,*) '   Time-integration method: Low-storage five-stage Runge-Kutta fourth order (Carpenter & Kennedy)'
+     WRITE (fileop(1),*) '   Time-integration method: Low-storage five-stage Runge-Kutta fourth order (Carpenter & Kennedy)'
   CASE DEFAULT
      WRITE (*,*) 'Error: Chosen time integration method not valid.'
      STOP
@@ -191,6 +226,7 @@ SUBROUTINE ReadInputFileParameters
 139  BACKSPACE(fileip(1))
   READ (FILEIP(1),*,err=139) g
   Print *, '  ** No input value for rho, using 1000.'
+  write(fileop(1),*) '  ** No input value for rho, using 1000.'
   rho=1000.
 140 continue
 
@@ -204,30 +240,38 @@ SUBROUTINE ReadInputFileParameters
 142  SELECT CASE (solver)
       CASE(0)
          WRITE(*,*) '   Defect correction (DC) method is chosen.'
+         WRITE(fileop(1),*) '   Defect correction (DC) method is chosen.'
       CASE DEFAULT
          WRITE(*,*) '   GMRES method is chosen.'
+         WRITE(fileop(1),*) '   GMRES method is chosen.'
   END SELECT
   IF (Precond==1) THEN
   SELECT CASE (solver)
       CASE(0)
          WRITE(*,*) '   Strategy: DC + LU (order ',2*alphaprecond,')'
+         WRITE(fileop(1),*) '   Strategy: DC + LU (order ',2*alphaprecond,')'
       CASE DEFAULT
          WRITE(*,*) '   Strategy: GMRES + LU (order ',2*alphaprecond,')'
+         WRITE(fileop(1),*) '   Strategy: GMRES + LU (order ',2*alphaprecond,')'
   END SELECT
   ELSE IF (Precond==3) THEN
   SELECT CASE (solver)
       CASE(0)
          WRITE(*,*) '   Strategy: DC + MG-RB-',cyclet,'(',nu(1),',',nu(2),')'
+         WRITE(fileop(1),*) '   Strategy: DC + MG-RB-',cyclet,'(',nu(1),',',nu(2),')'
       CASE DEFAULT
          WRITE(*,*) '   Strategy: GMRES + MG-RB-',cyclet,'(',nu(1),',',nu(2),')'
+         WRITE(fileop(1),*) '   Strategy: GMRES + MG-RB-',cyclet,'(',nu(1),',',nu(2),')'
   END SELECT
   END IF
   WRITE(*,*) '   Tolerance levels user-defined. RelTol = ',reltol,' and AbsTol = ',abstol
+  WRITE(fileop(1),*) '   Tolerance levels user-defined. RelTol = ',reltol,' and AbsTol = ',abstol
   IF (Precond==3 .AND. GhostGridZ/=1 ) THEN
      GOTO 104
   ENDIF
 
   WRITE (*,*) ''
+  WRITE (fileop(1),*) ''
 
   ! STREAM FUNCTION SOLUTION PARAMETERS
   READ (FILEIP(1),*) SFsol%HH, SFsol%h, SFsol%L, SFsol%T, SFsol%i_wavel_or_per, SFsol%e_or_s_vel, &
@@ -250,6 +294,8 @@ SUBROUTINE ReadInputFileParameters
      END IF
      print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.bin".'
      print *, ' '
+     write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.bin".'
+     write(fileop(1),*) ' '
      Do i=1,nOutFiles
         READ (FILEIP(1),*,err=110)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
              Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
@@ -285,18 +331,24 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) LinearONOFF, PressureTermONOFF
   IF (LinearONOFF==0) THEN
      WRITE(*,'(A/)') '   Linear model is employed.'
+     WRITE(fileop(1),'(A/)') '   Linear model is employed.'
   ELSE
      WRITE(*,'(A/)') '   Fully nonlinear model is employed.'
+     WRITE(fileop(1),'(A/)') '   Fully nonlinear model is employed.'
   ENDIF
   !
   IF(PressureTermOnOff==0)THEN
      WRITE(*,'(A/)') ' No free-surface pressure term is being applied.  '
+     WRITE(fileop(1),'(A/)') ' No free-surface pressure term is being applied.  '
   ELSEIF(PressureTermOnOff==1)THEN
      WRITE(*,'(A/)') '   A 2D Gaussian surface pressure is being applied.  (See "funPressureTerm.f90".)'
+     WRITE(fileop(1),'(A/)') '   A 2D Gaussian surface pressure is being applied.  (See "funPressureTerm.f90".)'
   ELSEIF(PressureTermOnOff==2)THEN
      WRITE(*,'(A/)') '   A 3D Gaussian surface pressure is being applied.  (See "funPressureTerm.f90".)'
+     WRITE(fileop(1),'(A/)') '   A 3D Gaussian surface pressure is being applied.  (See "funPressureTerm.f90".)'
   ELSEIF(PressureTermOnOff==3)THEN
      WRITE(*,'(A/)') '   A 3D tanh surface pressure is being applied.  (See "funPressureTerm.f90".)'
+     WRITE(fileop(1),'(A/)') '   A 3D tanh surface pressure is being applied.  (See "funPressureTerm.f90".)'
   ELSE
      Print *, 'No pressure field defined for PressureTermOnOff=',PressureTermOnOff
      stop
@@ -305,10 +357,12 @@ SUBROUTINE ReadInputFileParameters
   IF(TimeMethod /= 1)THEN
      IF(IncWaveType>1 )THEN
         Print *, 'Only RK-4 is implemented with this incident wave-type, TimeMethod -> 1.'
+        write(fileop(1),*) 'Only RK-4 is implemented with this incident wave-type, TimeMethod -> 1.'
         TimeMethod=1; RKstages=4;
      END IF
      IF(PressureTermOnOff /= 0)THEN
         Print *, 'Only RK-4 is implemented with an applied free-surface pressure. TimeMethod -> 1.'
+        write(fileop(1),*) 'Only RK-4 is implemented with an applied free-surface pressure. TimeMethod -> 1.'
         TimeMethod=1; RKstages=4;
      END IF
   END IF
@@ -318,6 +372,7 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) filteringONOFF, filterALPHA, filterORDER, sigma_filt(1), sigma_filt(2), sigma_filt(3)
   IF (filteringONOFF>0) THEN
      WRITE(*,*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed after every ',filteringONOFF,' time step.' 
+     WRITE(fileop(1),*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed after every ',filteringONOFF,' time step.' 
      filterNP = filterALPHA*2+1
      ALLOCATE(filtercoefficients(filterNP),tmpfilter(max(filterNP,13)))
      filtercoefficients = zero; tmpfilter = zero
@@ -327,6 +382,8 @@ SUBROUTINE ReadInputFileParameters
      IF (filterALPHA>6)Then
         WRITE(*,*)'** WARNING:  Off-centered filtering coefficients are only implemented for filterALPHA<=6.'
         WRITE(*,*)'**           Some points may be left unfiltered. '
+        WRITE(fileop(1),*)'** WARNING:  Off-centered filtering coefficients are only implemented for filterALPHA<=6.'
+        WRITE(fileop(1),*)'**           Some points may be left unfiltered. '
      end IF
 
   ENDIF
@@ -339,16 +396,23 @@ SUBROUTINE ReadInputFileParameters
   If (BreakMod%i_breaking /= 0)Then
      print*, ' '
      Print*, 'Breaking model has been turned on.'
-     print*, ' '
+     print *, ' '
+     write(fileop(1),*) ' '
+     write(fileop(1),*) 'Breaking model has been turned on.'
+     write(fileop(1),*) ' '
      IF (BreakMod%i_breaking==2) Then
         BreakMod%i_break_time=2*nsteps
         print *, '  Breaking geometry will be computed, but no model is being applied.'
+        write(fileop(1),*) '  Breaking geometry will be computed, but no model is being applied.'
      END IF
   end If
   GoTo 42
 41 print*, ' '
   Print*, 'No breaking model line found, the feature is off.'
   print*, ' '
+  write(fileop(1),*) ' '
+  write(fileop(1),*) 'No breaking model line found, the feature is off.'
+  write(fileop(1),*) ' '
   BreakMod%i_breaking=0
   BACKSPACE(fileip(1))
 42 continue
@@ -357,6 +421,7 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) relaxONOFF, relaxTransientTime, relaxNo, relaxXorY, relaxDegrees
   IF (relaxONOFF==1) THEN
      WRITE(*,*) '    Total relaxation zones defined: ',relaxNo
+     WRITE(fileop(1),*) '    Total relaxation zones defined: ',relaxNo
      ALLOCATE( RelaxZones(relaxNo) )
      ! 
      DO i=1,relaxNo
@@ -404,10 +469,14 @@ SUBROUTINE ReadInputFileParameters
 64 continue
   print *, ' '
   print *, 'No Pressure damping line found, the feature is off.'
+  write(fileop(1),*) ' '
+  write(fileop(1),*) 'No Pressure damping line found, the feature is off.'
   backspace(FILEIP(1))
 65 continue
   print *, ' '
   print *, 'Found ', NDampZones, ' pressure damping zones.'
+  write(fileop(1),*) ' '
+  write(fileop(1),*) 'Found ', NDampZones, ' pressure damping zones.'
 
   ! SWENSE line
   READ(FILEIP(1),*) swenseONOFF, swenseTransientTime, swenseDir, West_refl, East_refl, North_refl, South_refl
@@ -417,8 +486,10 @@ SUBROUTINE ReadInputFileParameters
   IF (curvilinearONOFF==1 .AND. FineGrid%Nx>1 .AND. FineGrid%Ny>1) THEN
      ! NOTE: It is only possible to run the curvilinear model for 3D cases, i.e. 2D cases excluded
      WRITE(*,'(A/)') '   Curvilinear model employed.'
+     WRITE(fileop(1),'(A/)') '   Curvilinear model employed.'
   ELSE
      WRITE(*,'(A/)') '   Standard Cartesian model employed.'
+     WRITE(fileop(1),'(A/)') '   Standard Cartesian model employed.'
      curvilinearONOFF = 0    ! Make sure it is the standard model which is employed (also for curvilinear 2D choices)
   END IF
 !
@@ -511,6 +582,9 @@ SUBROUTINE ReadInputFileParameters
         Print *, '  Found ',nGenZones, &
              ' generation zones for the linear wave. (Only used for IncWaveType==2)'
         Print *, ' '
+        write(fileop(1),*) '  Found ',nGenZones, &
+             ' generation zones for the linear wave. (Only used for IncWaveType==2)'
+        write(fileop(1),*) ' '
      ENDIF
   ENDIF
 

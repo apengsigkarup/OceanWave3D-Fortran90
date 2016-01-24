@@ -13,10 +13,14 @@ SUBROUTINE OceanWave3DT0Setup
   TYPE (Diff_def)        :: FullRankStencils
   INTEGER i, j, k, n_cut, NxT, NyT
 
-  ! OUTPUT HEADER TO SCREEN
-  WRITE (6,2010)
-
+  ! 
+  ! Set up the input/output file structure, open the log file and output the 
+  ! header to the screen and the log file
+  !
   CALL Initialize
+  WRITE (6,2010)
+  WRITE (fileop(1),2010)
+  ! Read in the run parameters 
   CALL ReadInputFileParameters
 
   !CALL SetupCompDomain
@@ -40,7 +44,8 @@ SUBROUTINE OceanWave3DT0Setup
   !
   ! Allocate space for the solution variables and wavefield.
   !
-  print*,'do initialization...'
+  print *,'Initializing variables and arrays.'
+  write(fileop(1),*)'Initializing variables and arrays.'
   CALL InitializeVariables
   !
   ! We start at time=0 here but if this is a hot start, time0 will be read in SetupInitialConditions.
@@ -51,7 +56,8 @@ SUBROUTINE OceanWave3DT0Setup
   !
   IF (relaxONOFF>0) THEN
      CALL PreprocessRelaxationZones
-     PRINT*,'  Relaxation zones have been setup.'
+     PRINT *,'  Relaxation zones have been setup.'
+     WRITE(FILEOP(1),*)'  Relaxation zones have been setup.'
      IF(IncWaveType==2)THEN
         ! SFsol%T and SFsol%L are used to determine dt based on the Cr number, so they are
         ! re-set here for other wave generation types.  -HBB
@@ -72,19 +78,27 @@ SUBROUTINE OceanWave3DT0Setup
         dsigmamin = FineGrid%z(FineGrid%Nz)-FineGrid%z(FineGrid%Nz-1)
         c = SFsol%L / SFsol%T
         dt = CFL*MIN(dxmin,dymin)/c
-        PRINT*,''
-        PRINT*,'  Time step size modified based on the incident wave. dt = ',dt
-        PRINT*,'  Courant number based on min. (dx,dy) and c=',c,', Cr = ',c*dt/MIN(dxmin,dymin)
-        PRINT*,'  Discrete anisotropy, ds_min/dx_min = ',dsigmamin/dxmin
+        PRINT *,''
+        PRINT *,'  Time step size modified based on the incident wave. dt = ',dt
+        PRINT *,'  Courant number based on min. (dx,dy) and c=',c,', Cr = ',c*dt/MIN(dxmin,dymin)
+        PRINT *,'  Discrete anisotropy, ds_min/dx_min = ',dsigmamin/dxmin
+        WRITE(FILEOP(1),*)''
+        WRITE(FILEOP(1),*)'  Time step size modified based on the incident wave. dt = ',dt
+        WRITE(FILEOP(1),*)'  Courant number based on min. (dx,dy) and c=',c,', Cr = ',c*dt/MIN(dxmin,dymin)
+        WRITE(FILEOP(1),*)'  Discrete anisotropy, ds_min/dx_min = ',dsigmamin/dxmin
      END IF
      IF (IncWaveType==1 ) THEN
         CALL stream_func_set_up(g,SFsol%h,SFsol%T,SFsol%i_wavel_or_per,SFsol%L,  &
              SFsol%k,SFsol%HH,SFsol%i_euler_or_stokes,SFsol%e_or_s_vel,SFsol%i_deep_or_finite,  &
              SFsol%n_h_steps,SFsol%n_four_modes,SFsol%nwrk,SFsol%yy,SFsol%zz)
-        PRINT*,'     SF solution: k=',SFsol%k,',h=',SFsol%h,',H=',SFsol%HH,',T=',SFsol%T,',L=',SFsol%L
-        PRINT*,'                  kh=',SFsol%k*SFsol%h,',c=',SFsol%L/SFsol%T
+        PRINT *,'     SF solution: k=',SFsol%k,',h=',SFsol%h,',H=',SFsol%HH,',T=',SFsol%T,',L=',SFsol%L
+        PRINT *,'                  kh=',SFsol%k*SFsol%h,',c=',SFsol%L/SFsol%T
+        WRITE(FILEOP(1),*)'     SF solution: k=',SFsol%k,',h=',SFsol%h,',H=',SFsol%HH,',T=',SFsol%T,',L=',SFsol%L
+        WRITE(FILEOP(1),*)'                  kh=',SFsol%k*SFsol%h,',c=',SFsol%L/SFsol%T
 
         WRITE(6,62)two*pi/SFsol%k,SFsol%T,SFsol%zz(2)/SFsol%k,                  &
+             SFsol%zz(5)*sqrt(g/SFsol%k), SFsol%zz(6)*sqrt(g/SFsol%k)
+        WRITE(fileop(1),62)two*pi/SFsol%k,SFsol%T,SFsol%zz(2)/SFsol%k,                  &
              SFsol%zz(5)*sqrt(g/SFsol%k), SFsol%zz(6)*sqrt(g/SFsol%k)
 62      FORMAT(' The incident wave is a stream function wave with L=',  &
              e12.6,/,'  T=',e12.6,' H=',e12.6,' u_E=',e12.6,' and u_S=',     &
@@ -94,27 +108,35 @@ SUBROUTINE OceanWave3DT0Setup
         ! A linear regular or irregular wave
         !
         print *, ' '
+        write(fileop(1),*) ' '
         IF(RandomWave(1)%ispec==-1)THEN
            WRITE(6,70)RandomWave(1)%Tp,RandomWave(1)%Hs
+           WRITE(fileop(1),70)RandomWave(1)%Tp,RandomWave(1)%Hs
 70         FORMAT(' The incident wave is a linear mono-chromatic wave with',/,&
                 ' T=', e10.4,' and H=',e10.4,'.',//)
         ELSEIF(RandomWave(1)%ispec==0)THEN
            WRITE(6,71)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2
+           WRITE(fileop(1),71)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2
 71         FORMAT(' The incident wave is a 2D P-M spectrum with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,//)
         ELSEIF(RandomWave(1)%ispec==1 .or. RandomWave(1)%ispec==3)THEN
            WRITE(6,72)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%gamma,RandomWave(1)%seed,RandomWave(1)%seed2
+           WRITE(fileop(1),72)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%gamma,RandomWave(1)%seed,RandomWave(1)%seed2
 72         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
                 'T_p=',  e10.4,', H_s=',e10.4,' and gamma=',e10.4, ' and seed values are:',/,2i10,//)
         ELSEIF(RandomWave(1)%ispec==2)THEN
            WRITE(6,73)RandomWave(1)%inc_wave_file
+           WRITE(fileop(1),73)RandomWave(1)%inc_wave_file
 73         FORMAT(' The incident wave will be read from file ',a30,/)
         ELSEIF(RandomWave(1)%ispec==-30)THEN
            WRITE(6,74)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%beta0
+           WRITE(fileop(1),74)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%beta0
 74         FORMAT(' The incident wave is a linear, long-crested mono-chromatic wave with',/,&
                 ' T=', e10.4,' and H=',e10.4,' at angle ',f10.2,' deg. to the x-axis.',//)
         ELSEIF(RandomWave(1)%ispec==30)THEN
            WRITE(6,75)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
+                RandomWave(1)%beta0
+           WRITE(fileop(1),75)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
                 RandomWave(1)%beta0
 75         FORMAT(' The incident wave is a 2D P-M spectrum with',/,&
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/, &
@@ -122,11 +144,15 @@ SUBROUTINE OceanWave3DT0Setup
         ELSEIF(RandomWave(1)%ispec==31)THEN
            WRITE(6,76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
                 RandomWave(1)%beta0
+           WRITE(fileop(1),76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
+                RandomWave(1)%beta0
 76         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
                 'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/,  &
                 ' at angle ',f10.2,' deg. to the x-axis.',// )
         ELSEIF(RandomWave(1)%ispec==33)THEN
            WRITE(6,77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
+                RandomWave(1)%seed2
+           WRITE(fileop(1),77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
                 RandomWave(1)%seed2
 77         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
                 ' deg. to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
@@ -135,9 +161,11 @@ SUBROUTINE OceanWave3DT0Setup
 
         ELSEIF(RandomWave(1)%ispec==34)THEN
            WRITE(6,78)RandomWave(1)%beta0, RandomWave(1)%S0, RandomWave(1)%Tp, RandomWave(1)%Hs, &
-                RandomWave(1)%seed,RandomWave(1)%seed2
+                RandomWave(1)%seed,RandomWave(1)%seed2,RandomWave(1)%gamma
+           WRITE(fileop(1),78)RandomWave(1)%beta0, RandomWave(1)%S0, RandomWave(1)%Tp, RandomWave(1)%Hs, &
+                RandomWave(1)%seed,RandomWave(1)%seed2,RandomWave(1)%gamma
 78         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Cos^(2S) spreading at heading angle ',e10.4,/, &
-                ' deg. to the x-axis. S=',e10.4,', T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
+                ' deg. to the x-axis. S=',e10.4,', T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,' gamma=',e10.4//)
 
 
         ELSE
@@ -202,6 +230,11 @@ SUBROUTINE OceanWave3DT0Setup
                       RandomWave(i)%y0,      &
                       ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',&
                       n_wavem, ' grid points.'
+                 write(fileop(1),*) 'Zone ',i,':'
+                 write(fileop(1),*) 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',&
+                      RandomWave(i)%y0,      &
+                      ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',&
+                      n_wavem, ' grid points.'
                  RandomWave(i)%nf=FineGrid%nx+2*GhostGridX
                  !
                  ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
@@ -230,6 +263,11 @@ SUBROUTINE OceanWave3DT0Setup
                  !
                  print *, 'Zone ',i,':'
                  print *, 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',   &
+                      RandomWave(i)%y0,      &
+                      ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',   &
+                      RandomWave(i)%nx, ' by ',RandomWave(i)%ny,' grid points.'
+                 write(fileop(1),*) 'Zone ',i,':'
+                 write(fileop(1),*) 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',   &
                       RandomWave(i)%y0,      &
                       ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',   &
                       RandomWave(i)%nx, ' by ',RandomWave(i)%ny,' grid points.'
@@ -267,11 +305,13 @@ SUBROUTINE OceanWave3DT0Setup
   !
   ! Set up the initial conditions and the bathymetry data
   !
-  print*,'setup ICs...'
+  print *,'setup ICs...'
+  write(fileop(1),*)'setup ICs...'
   CALL SetupInitialConditions
   time=time0
   dt0 = dt ! botp,Used in AnalyticWaveMaker2D.f90 since OpenFoam changes the timestep
-  print*,'done with ICs'
+  print *,'done with ICs'
+  write(fileop(1),*)'done with ICs'
   !
   ! Set up the Pressure Damping Zones if any.
   !
@@ -280,6 +320,9 @@ SUBROUTINE OceanWave3DT0Setup
      print *, ' '
      print *, 'Pressure damping zones are set up'
      print *, ' '
+     write(fileop(1),*) ' '
+     write(fileop(1),*) 'Pressure damping zones are set up'
+     write(fileop(1),*) ' '
   END If
   IF (.FALSE.) THEN
      !
@@ -289,9 +332,10 @@ SUBROUTINE OceanWave3DT0Setup
   END IF
   !
   IF (DetermineBottomGradients==1) THEN
-     PRINT*,'Warning: determining bottom gradients numerically, this is only implemented for rectangular grids. (HBB)'
+     PRINT *,'Warning: determining bottom gradients numerically, this is only implemented for rectangular grids. (HBB)'
+     WRITE(FILEOP(1),*)'Warning: determining bottom gradients numerically, this is only implemented for rectangular grids. (HBB)'
      ! Determine the bottom gradients numerically
-     CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
+     CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma,fileop(1))
      NxT=FineGrid%Nx+2*GhostGridX; NyT=FineGrid%NY+2*GhostGridY
      IF (FineGrid%Nx==1) THEN
         FineGrid%hx = zero; FineGrid%hxx = zero;
@@ -326,14 +370,15 @@ SUBROUTINE OceanWave3DT0Setup
      ! DETERMINE LOW-ORDER FINITE DIFFERENCE STENCILS
      ! FIXME: make it possible to choose the order of the preconditioner in the input file
      WRITE(*,FMT='(A,I2,A)') '   Preconditioner: DIRECT LU (',2*alphaprecond,' order, linear)'
+     WRITE(fileop(1),FMT='(A,I2,A)') '   Preconditioner: DIRECT LU (',2*alphaprecond,' order, linear)'
 
      CALL PreparePreconditioner(FineGrid%PreconditioningMatrix,FineGrid,GhostGridX, GhostGridY, GhostGridZ, &
-          alphaprecond, betaprecond, gammaprecond, Precond, CurvilinearONOFF)
+          alphaprecond, betaprecond, gammaprecond, Precond, CurvilinearONOFF,fileop(1))
      !    filename = "SparseMatrix.bin"
      !     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
      !     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
      CALL FactorPreconditioner(FineGrid%PreconditioningMatrix, &
-          (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ))
+          (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),fileop(1))
 
   ELSE IF (Precond==3) THEN
 
@@ -346,9 +391,10 @@ SUBROUTINE OceanWave3DT0Setup
   !
   ! DETERMINE HIGH-ORDER FINITE DIFFERENCE STENCILS
   ! Now, determine fullrank stencils for the x- , y- and z- directions;
-  print*,'Determine finite difference stencils for the system matrix...'
+  print *,'Determine finite difference stencils for the system matrix...'
+  write(fileop(1),*)'Determine finite difference stencils for the system matrix...'
   IF (curvilinearONOFF==0) THEN
-     CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
+     CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma,fileop(1))
      ! GD: Determine the cross derivatives coefficients
      CALL ConstructTableCrossDerivatives(FineGrid, FineGrid%DiffStencils, gamma, GhostGridX, GhostGridY, GhostGridZ, 0)
   ELSE
@@ -380,8 +426,9 @@ SUBROUTINE OceanWave3DT0Setup
           GhostGridX, GhostGridY, GhostGridZ)
   END IF
   print*,'...done!'
+  write(fileop(1),*)'...done!'
   !
-  ! GD: Test to define correct initial spatail derivaties...
+  ! GD: Test to define correct initial spatial derivaties...
   CALL DifferentiationsFreeSurfacePlane(Wavefield,GhostGridX,GhostGridY,FineGrid,alpha,beta)
 
 

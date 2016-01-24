@@ -1,4 +1,4 @@
-SUBROUTINE PreProcessDiffStencils(FineGrid,DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma)
+SUBROUTINE PreProcessDiffStencils(FineGrid,DiffStencils,GhostGridX,GhostGridY,GhostGridZ,alpha,beta,gamma,fileop)
 ! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
@@ -6,7 +6,7 @@ USE DataTypes
 IMPLICIT NONE
 TYPE (Diff_def), INTENT(OUT) :: DiffStencils
 TYPE (Level_def), INTENT(IN) :: FineGrid
-INTEGER :: GhostGridX,GhostGridY,GhostGridZ,STAT
+INTEGER :: GhostGridX,GhostGridY,GhostGridZ,STAT, fileop
 INTEGER :: rank, Nx, Ny, Nz, order, Nzp, Diff, alpha, beta, gamma, i
 REAL(KIND=long), DIMENSION(:), ALLOCATABLE :: Stencil
 INTEGER, DIMENSION(:), ALLOCATABLE :: idx
@@ -40,6 +40,7 @@ ENDIF
 DiffStencils%StencilY=zero
 
 print*,'Building stencils...'
+write(fileop,*)'Building stencils...'
 DO order = 1,2
     IF (Nx>1) THEN
 !    print*,'FineGrid%x=',FineGrid%x

@@ -12,11 +12,13 @@ SUBROUTINE SetupInitialConditions
   Nz = FineGrid%Nz
   DetermineBottomGradients = 0
   print*,'IC chosen is case ',IC
+  write(fileop(1),*)'IC chosen is case ',IC
   SELECT CASE (IC)
 
   CASE (-1, 0) ! Initial condition determined by PressureTermOnOff and funPressureTerm.f90 or read from the init file 'OceanWave3D.init'.  
      IF (IC==-1)THEN
         print *, 'Reading the initial conditions. ** Not implemented curvilinear! **'
+        write(fileop(1),*) 'Reading the initial conditions. ** Not implemented curvilinear! **'
         
         DO j=1+GhostGridY,FineGrid%Ny+GhostGridY
            Do i=1+GhostGridX,FineGrid%Nx+GhostGridX
@@ -27,10 +29,13 @@ SUBROUTINE SetupInitialConditions
      ELSE
         IF(PressureTermOnOff==0)THEN
            print*, 'Initial condition is still water.'
+           write(fileop(1),*) 'Initial condition is still water.'
         ELSEIF(PressureTermOnOff==1)THEN
            print *, 'Initial condition determined by PressureTermOnOff is a 2D stationary Gaussian hump'
+           write(fileop(1),*) 'Initial condition determined by PressureTermOnOff is a 2D stationary Gaussian hump'
         ELSEIF(PressureTermOnOff==2)THEN
            print *, 'Initial condition determined by PressureTermOnOff is a 3D moving Gaussian hump'
+           write(fileop(1),*) 'Initial condition determined by PressureTermOnOff is a 3D moving Gaussian hump'
         END IF
         Call funInitialFreeSurfaceElevation(g,FineGrid%Nx+2*GhostGridX,&
              FineGrid%Ny+2*GhostGridY,FineGrid,WaveField)
@@ -43,10 +48,15 @@ SUBROUTINE SetupInitialConditions
         PRINT *,fname_bottom,' with header:'
         PRINT *, head(4)
         PRINT *, ' '
+        WRITE(FILEOP(1),*) 'SetUpInitialConditions:  Reading the bottom contours from file:'
+        WRITE(FILEOP(1),*)fname_bottom,' with header:'
+        WRITE(FILEOP(1),*) head(4)
+        WRITE(FILEOP(1),*) ' '
         READ(fileip(4),*)  DetermineBottomGradients ! Read the gradient  flag
 
         IF(DetermineBottomGradients==1)THEN
            Print *, ' Reading h and computing derivatives of h numerically.'
+           write(fileop(1),*) ' Reading h and computing derivatives of h numerically.'
            ! Read in h(x,y)
            do j=1,ny
               DO i=1,nx
@@ -57,6 +67,8 @@ SUBROUTINE SetupInitialConditions
            ! Read h(x,y),h_x,h_xx,h_y,h_yy
            Print *, ' Reading h,h_x,h_xx,h_y,h_yy.'
            print *, ' '
+           write(fileop(1),*) ' Reading h,h_x,h_xx,h_y,h_yy.'
+           write(fileop(1),*) ' '
            !
            Do j=1+GhostGridY,ny+GhostGridY
               DO i=1+GhostGridX,nx+GhostGridX
@@ -95,6 +107,7 @@ SUBROUTINE SetupInitialConditions
 
   CASE (1) ! Mildly nonlinear standing wave, deep water (Agnon & Glozman (1996))
      print *, 'Mildly nonlinear standing wave (deep water) in a rectangular domain.'
+     write(fileop(1),*) 'Mildly nonlinear standing wave (deep water) in a rectangular domain.'
      IF (Nx>1) THEN
         FineGrid%h = two; FineGrid%hx=zero; FineGrid%hxx=zero
         CALL nonlinearstandingwave1D(pi,FineGrid%h(1,1),FineGrid%x,tmp2D,Wavefield%W,Wavefield%E, &
@@ -276,7 +289,8 @@ SUBROUTINE SetupInitialConditions
      IF (relaxONOFF==1) THEN
         CALL RelaxationModule(Wavefield%E,Wavefield%P,0.d0)
      ENDIF
-     print*, 'initialisation of Linear Shoaling'
+     print *, 'initialisation of Linear Shoaling'
+     write(fileop(1),*) 'initialisation of Linear Shoaling'
 
   CASE (7) ! Flat bottom, depth defined from SF-wave
      IF (Nx>1) THEN
@@ -394,8 +408,10 @@ SUBROUTINE SetupInitialConditions
      ELSE
         dymin = two*dx
      ENDIF
-     PRINT*,'      dt = ',dt
-     PRINT*,'      Cr = ',SFsol%c*dt/MIN(dxmin,dymin)	
+     PRINT *,'      dt = ',dt
+     PRINT *,'      Cr = ',SFsol%c*dt/MIN(dxmin,dymin)	
+     WRITE(FILEOP(1),*)'      dt = ',dt
+     WRITE(FILEOP(1),*)'      Cr = ',SFsol%c*dt/MIN(dxmin,dymin)	
   CASE (9) ! Berkhoff (3D)
      CALL BottomBerkoff(FineGrid,GhostGridX,GhostGridY)
      DetermineBottomGradients = 1
@@ -601,6 +617,11 @@ SUBROUTINE SetupInitialConditions
      print*,'      T  = ',SFsol%T
      print*,'      c  = ',SFsol%c
      print*,'      h  = ',SFsol%h
+     write(fileop(1),*)'  Linear standing wave parameters:'
+     write(fileop(1),*)'      kh = ',SFsol%k*SFsol%h
+     write(fileop(1),*)'      T  = ',SFsol%T
+     write(fileop(1),*)'      c  = ',SFsol%c
+     write(fileop(1),*)'      h  = ',SFsol%h
      IF (FineGrid%Nx>1) THEN
         dxmin = dx
      ELSE
@@ -613,6 +634,8 @@ SUBROUTINE SetupInitialConditions
      ENDIF
      PRINT*,'      dt = ',dt
      PRINT*,'      Cr = ',SFsol%c*dt/MIN(dxmin,dymin)	
+     WRITE(FILEOP(1),*)'      dt = ',dt
+     WRITE(FILEOP(1),*)'      Cr = ',SFsol%c*dt/MIN(dxmin,dymin)	
   CASE (14) ! Mildly nonlinear standing wave, deep water (Agnon & Glozman (1996)) with SWENSE
      IF (Nx>1) THEN
         FineGrid%h = two; FineGrid%hx=zero; FineGrid%hxx=zero
@@ -698,6 +721,10 @@ SUBROUTINE SetupInitialConditions
       PRINT *,fname_bottom,' with header:'
       PRINT *, head(4)
       PRINT *, ' '
+      WRITE(FILEOP(1),*) 'SetUpInitialConditions:  Reading the bottom contours from file:'
+      WRITE(FILEOP(1),*)fname_bottom,' with header:'
+      WRITE(FILEOP(1),*) head(4)
+      WRITE(FILEOP(1),*) ' '
       READ(fileip(4),*)  DetermineBottomGradients ! Read the gradient flag
       
       !-------------------------------------------------------------------------
@@ -705,6 +732,8 @@ SUBROUTINE SetupInitialConditions
       !-------------------------------------------------------------------------
       Print *, ' Reading h,h_x,h_xx,h_y,h_yy.'
       print *, ' '
+      write(fileop(1),*) ' Reading h,h_x,h_xx,h_y,h_yy.'
+      write(fileop(1),*) ' '
       Do j=1+GhostGridY,ny+GhostGridY
         DO i=1+GhostGridX,nx+GhostGridX
           READ(fileip(4),*) FineGrid%h(i,j),    &

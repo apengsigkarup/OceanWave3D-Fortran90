@@ -44,6 +44,8 @@ fnt(1:10) = (/ '01','02','03','04','05','06','07','08','09','10' /)
 RETURN
 
 ! ERROR HANDLING
-100 PRINT *,'Error: Problem with specified input file.'; STOP
+100 PRINT *,'Error: Problem with specified input file.'; 
+WRITE(fileop(1),*),'Error: Problem with specified input file.'
+STOP
 
 END SUBROUTINE Initialize

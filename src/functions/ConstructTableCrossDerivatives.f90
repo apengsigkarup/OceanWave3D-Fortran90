@@ -6,7 +6,7 @@ USE DataTypes
 IMPLICIT NONE
 TYPE (Level_def), INTENT(IN) :: CompGrid
 TYPE (Diff_def)  :: DiffStencils
-INTEGER :: GhostGridX, GhostGridY, GhostGridZ, Precond
+INTEGER :: GhostGridX, GhostGridY, GhostGridZ, Precond, fileop
 INTEGER :: alpha, beta, kappa, i, j, k, diffa, diffb, diffg, rank,ranka,rankb, Nxg, Nyg, Nzg
 INTEGER, DIMENSION((CompGrid%Nz+GhostGridZ),(CompGrid%Nx+2*GhostGridX),(CompGrid%Ny+2*GhostGridY)) :: L
 !

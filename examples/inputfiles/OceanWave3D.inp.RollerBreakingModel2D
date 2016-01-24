@@ -1,0 +1,21 @@
+A very nonlinear stream function wave in 2D with SG smoothing and the roller breaking model turned on.  
+0  1                           <- Initial condition (0=defined by funPressureTerm.f90, 1=NL standing wave, 2=shoaling on a smooth beach, 3=Whalin bar, ... see Initialization.f90:SetupInitialConditions); IncWaveType (0=none, 1=stream function, 2=linear regular or irregular waves); accel_tol_fact (Optional local filtering based on free-surface acceleration to prevent breaking.  Turned off if this value does not appear)
+8. 1. .5 257 1 9 0 0 1 1 1 1          <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ (0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                   <- alpha, beta, gamma, alphaprecond, betaprecond, gammaprecond
+1025 .015 1 0. 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, c based on the incident wave), RK4-ExtrapolationON/OFF
+9.82   1015.                <- gravitational acceleration constant, fluid density
+1 0 23 1e-8 1e-6 1 V 1 1 2  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.10 1. 1.0 1.0 0 0. 1 6 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter (This line is not used unless IncWaveType==1)
+-40 20 1 1   <- StoreDataOnOff, formattype, (StoreDataOnOff=0 -> no output, StoreDataOnOff=+stride-> binary, StoreDataOnOff=-stride -> ascii every stride time steps.  formattype=0, binary; =1, unformatted) If formattype=20, then the line should read: StoreDataOnOff, iKinematics, formattype, nOutFiles; and nOutFiles lines should appear below defining  [xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride] for each file.      
+1 257 1 1 1 1 1 1025 1  <- xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride    
+1 0    <- 0/1=linear/nonlinear computations, dummy variable
+1 6 10 0.08 0.08 0.4  <- SG-filtering on/off, filter half width, poly order
+1 .8 32. 20. 1.5 1.3 1.0   <- i_breaking, T_1/2 (0.->wavemaker period), phi_b, phi_0, f_delta, f_cel, gamma_break.
+1 0. 3 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(= +/- 9,10; sign gives direction) param XorY WavegenONOFF XorYgen degrees(=IC rotation)
+0. 1. 0. 1. 9 3.5 X 1 X 0.
+1. 2. 0. 1. 10 3.5 X 1 X 0.
+6. 8. 0. 1. 9 3.5 X 0 X 0.
+0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+-1  .625 .1542 .4 20. -1 34 2. 0. run06.el <- i_spec, T_p, H_s, depth, kh_max, seed, seed2, x0, inc_wave_file.  For a random wave, the spectrum:  -1=monochromatic, 0=P-M, 1=JONSWAP, 2=Read from a file
+

@@ -1,9 +1,9 @@
-SUBROUTINE FactorPreconditioner(PreconditioningMatrix, Nfs)
+SUBROUTINE FactorPreconditioner(PreconditioningMatrix, Nfs, fileop)
 ! By Allan P. Engsig-Karup.
 USE Precision
 USE DataTypes
 IMPLICIT NONE
-INTEGER :: Nfs
+INTEGER :: Nfs, fileop
 TYPE (SparseArray_COO) :: PreconditioningMatrix
-CALL LUfactor(PreconditioningMatrix, Nfs)
+CALL LUfactor(PreconditioningMatrix, Nfs, fileop)
 END SUBROUTINE FactorPreconditioner

@@ -22,6 +22,7 @@ DO i = 1, FineGrid%Nx
 	END DO
 END DO
 WRITE(*,*) 'Relaxation zone setup:'
+WRITE(fileop(1),*) 'Relaxation zone setup:'
 DO i = 1, relaxNo
 	RelaxZones(i)%dir = SIGN(1,RelaxZones(i)%ftype)
 	! Define indexmaps
@@ -95,6 +96,8 @@ DO i = 1, relaxNo
 	ENDIF
     ! OUTPUT SETUP
 	WRITE(*,789) '  Zone ',i,': idx=(',RelaxZones(i)%idx(1),',',RelaxZones(i)%idx(2),',',RelaxZones(i)%idx(3),',',&
+	    RelaxZones(i)%idx(4),')'
+	WRITE(fileop(1),789) '  Zone ',i,': idx=(',RelaxZones(i)%idx(1),',',RelaxZones(i)%idx(2),',',RelaxZones(i)%idx(3),',',&
 	    RelaxZones(i)%idx(4),')'
    	789 FORMAT(A,I2,A,I6,A,I6,A,I6,A,I6,A)
     !stop

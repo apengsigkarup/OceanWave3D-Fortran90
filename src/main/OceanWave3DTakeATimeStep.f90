@@ -1,4 +1,7 @@
 SUBROUTINE OceanWave3DTakeATimeStep
+!
+! Take one time step to move the solution from tstep to tstep+1
+!
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
@@ -53,30 +56,44 @@ SUBROUTINE OceanWave3DTakeATimeStep
        WRITE (6,2007) TOTALITER
        WRITE (6,2008) TOTALITERFS
        WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+       WRITE (fileop(1),2007) TOTALITER
+       WRITE (fileop(1),2008) TOTALITERFS
+       WRITE (fileop(1),2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
      ELSE
        WRITE (6,2001) TOTALITER
        WRITE (6,2002) TOTALITERFS
        WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+       WRITE (fileop(1),2001) TOTALITER
+       WRITE (fileop(1),2002) TOTALITERFS
+       WRITE (fileop(1),2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
      ENDIF
      WRITE (6,2005) MINITER, MAXITER
+     WRITE (fileop(1),2005) MINITER, MAXITER
      IF (tstep>2) THEN
         IF (solver==0) THEN
           WRITE (6,2010) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+          WRITE (fileop(1),2010) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
         ELSE
           WRITE (6,2004) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
+          WRITE (fileop(1),2004) REAL(TOTALITER-TOTALITERFS,long)/(RKSTAGES*REAL(tstep-2,long))
         ENDIF
         WRITE (6,2006) MINITERNOFS, MAXITERNOFS
+        WRITE (fileop(1),2006) MINITERNOFS, MAXITERNOFS
      ENDIF
   else
      ! Print the simulation time to the screen every 10 time steps.
      IF(MOD(tstep,10)==0)THEN
         print *, 'time step number ',tstep,' t=',time
+        write(fileop(1),*) 'time step number ',tstep,' t=',time
         IF (solver==0) THEN
           WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+          WRITE (fileop(1),2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
         ELSE
           WRITE (6,2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
+          WRITE (fileop(1),2003) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
         END IF
         WRITE (6,2005) MINITER, MAXITER
+        WRITE (fileop(1),2005) MINITER, MAXITER
      endif
   endif
  ! IF(MOD(tstep,10)==0)THEN
@@ -105,6 +122,8 @@ SUBROUTINE OceanWave3DTakeATimeStep
         ! Write the file OceanWave3D.end, which can be used as initial conditions for a hot start
         WRITE(*,FMT='(A)') 'Writing OceanWave3D.end file, for possible restart.'
         WRITE(*,FMT='(A)') 'Change the file name to OceanWave3D.init and change IC to -1 for a hot start.'
+        WRITE(fileop(1),FMT='(A)') 'Writing OceanWave3D.end file, for possible restart.'
+        WRITE(fileop(1),FMT='(A)') 'Change the file name to OceanWave3D.init and change IC to -1 for a hot start.'
         CLOSE(fileip(3))
         OPEN(fileip(3), file = 'OceanWave3D.end', status = 'unknown')
         WRITE(fileip(3),*) 'Initial conditions outputted from a previous simulation.' ! Header
@@ -126,6 +145,8 @@ SUBROUTINE OceanWave3DTakeATimeStep
         ! Write the file OceanWave3D.end, which can be used as initial conditions for a hot start
         WRITE(*,FMT='(A)') 'Writing OceanWave3D.end file, for possible restart.'
         WRITE(*,FMT='(A)') 'Change the file name to OceanWave3D.init and change IC to -1 for a hot start.'
+        WRITE(fileop(1),FMT='(A)') 'Writing OceanWave3D.end file, for possible restart.'
+        WRITE(fileop(1),FMT='(A)') 'Change the file name to OceanWave3D.init and change IC to -1 for a hot start.'
         CLOSE(fileip(3))
         OPEN(fileip(3), file = 'OceanWave3D.end', status = 'unknown')
         WRITE(fileip(3),*) 'Initial conditions outputted from a previous simulation.' ! Header

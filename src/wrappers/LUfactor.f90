@@ -1,4 +1,4 @@
-SUBROUTINE LUfactor(SparseMatrix, Nr)
+SUBROUTINE LUfactor(SparseMatrix, Nr, fileop)
 !
 ! LU factor matrix given in sparse format.
 !
@@ -9,7 +9,7 @@ USE DataTypes
 USE HSL_LU
 IMPLICIT NONE
 TYPE (SparseArray_COO) :: SparseMatrix
-INTEGER :: Nr, Nxz, nnz, STAT
+INTEGER :: Nr, Nxz, nnz, STAT, fileop
 
 nnz   = SIZE(SparseMatrix%val)
 nxz   = Nr ! total number of grid points
@@ -53,9 +53,11 @@ IF (INFOHSL(1) .GT. 0) THEN ! Warning
 END IF
 
 WRITE (*,'(/A)') '  Factorization of preconditioner:'
+WRITE (fileop,'(/A)') '  Factorization of preconditioner:'
 
 MAXS = INFOHSL(8) ! Minimum size allowable from analysis
 PRINT *, '     Real workspace for LU factors:  MAXS = ', MAXS
+write(fileop,*) '     Real workspace for LU factors:  MAXS = ', MAXS
 ALLOCATE ( SS(MAXS), STAT=STAT)
 CALL CheckError(STAT,5)
 
@@ -72,6 +74,9 @@ END IF
 WRITE (*,'(A,I6)') '     Size of real space used to store the LU factors = ', INFOHSL(9)
 WRITE (*,'(A,I6)') '     Size of integer space used to store the LU factors = ', INFOHSL(10)
 WRITE (*,'(A,I6/)') '     Number of off-diagonal pivots = ', INFOHSL(12)
+WRITE (fileop,'(A,I6)') '     Size of real space used to store the LU factors = ', INFOHSL(9)
+WRITE (fileop,'(A,I6)') '     Size of integer space used to store the LU factors = ', INFOHSL(10)
+WRITE (fileop,'(A,I6/)') '     Number of off-diagonal pivots = ', INFOHSL(12)
 
 JOB = 3 ! Solution
 

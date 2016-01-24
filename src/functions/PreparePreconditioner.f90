@@ -1,12 +1,12 @@
 SUBROUTINE PreparePreconditioner(PreconditioningMatrix,FineGrid,GhostGridX, GhostGridY, GhostGridZ, &
-		alpha, beta, gamma, Precond, CurvilinearONOFF)
+		alpha, beta, gamma, Precond, CurvilinearONOFF,fileop)
 ! By Allan P. Engsig-Karup.
 USE Precision
 USE Constants
 USE DataTypes
 IMPLICIT NONE
 INTEGER :: GhostGridX, GhostGridY, GhostGridZ, alpha, beta, gamma, kappa, Precond, CurvilinearONOFF, iERR
-INTEGER :: Nxg,Nyg,Nzg,Nx,Ny,Nz
+INTEGER :: Nxg,Nyg,Nzg,Nx,Ny,Nz,fileop
 TYPE (Level_def)       :: FineGrid
 TYPE (SparseArray_COO) :: PreconditioningMatrix
 TYPE (Wavefield_FS)    :: tmp_wavefield
@@ -23,7 +23,7 @@ SELECT CASE (Precond)
 	CASE (1) ! Linear LU-preconditining
 		IF (CurvilinearONOFF==1) THEN
 		    ! FDM stencils - vertical stencils needed for precond. matrix generation
-	        CALL PreProcessDiffStencilsZ(FineGrid,FineGrid%DiffStencils,GhostGridZ,gamma)
+	        CALL PreProcessDiffStencilsZ(FineGrid,FineGrid%DiffStencils,GhostGridZ,gamma,fileop)
 
 			! determine curvilinear transformation weights for the 2D plane
 			CALL DetermineCurvilinearTransform2D(FineGrid,alpha,beta,gamma,GhostGridX,GhostGridY,GhostGridZ)
@@ -78,7 +78,7 @@ SELECT CASE (Precond)
 			ALLOCATE( FineGrid%dsigmanew(Nzg,Nxg,Nyg,5),STAT=iERR )
             CALL CheckError(iERR,10)
             
-		    CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ, alpha,beta,gamma)
+		    CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ, alpha,beta,gamma,fileop)
 !            print*,'alpha=',alpha
 !            print*,'beta=',beta
 !            print*,'gamma=',gamma
@@ -114,6 +114,7 @@ SELECT CASE (Precond)
 !	filename = "dsigma.bin"
 !CALL StoreRealArray(FineGrid%dsigma,(FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),5,filename)
 		PRINT*,'  Preconditioning matrix generated.'
+		WRITE(FILEOP,*)'  Preconditioning matrix generated.'
 	CASE (3) ! Multigrid
 	CASE DEFAULT
 		PRINT *,'Error: No default precondtioning strategy. (PreparePreconditioner)'

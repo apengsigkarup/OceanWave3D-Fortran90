@@ -20,12 +20,14 @@ PROGRAM OceanWave3D
   ! Step through time and solve the problem 
   !
   print *, '  Starting to time step.'
+  write(fileop(1),*) '  Starting to time step.'
   DO tstep=1,Nsteps-1 
      CALL OceanWave3DTakeATimeStep 
   END DO  
   !
   CALL SYSTEM_CLOCK(count_1, count_rate, count_max)
   WRITE (6,2030) ((count_1-CPUinitial)*one)/count_rate,Nsteps,FineGrid%Nx*FineGrid%Ny*(FineGrid%Nz+GhostGridZ)
+  WRITE (fileop(1),2030) ((count_1-CPUinitial)*one)/count_rate,Nsteps,FineGrid%Nx*FineGrid%Ny*(FineGrid%Nz+GhostGridZ)
   !
   !
   ! Upon completion, write the file OceanWave3D.end, which can be used as initial conditions for a continued run
