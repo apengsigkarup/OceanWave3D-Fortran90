@@ -293,8 +293,10 @@ SUBROUTINE OceanWave3DT0Setup
   ENDIF
   IF(IncWaveType==3) THEN
      ! Wave generation by flux condition on western wall, botp
+     WRITE(6,79)
+     WRITE(fileop(1),79)
+79   FORMAT(/,' The incident wave is a flux boundary condition applied at the Western boundary.',/) 
      CALL setupWavePaddle()
-
   ENDIF
   ! Uneumann is in all cases added to the western boundary. Only if
   ! IncWaveType==3 is it non-zero. 
