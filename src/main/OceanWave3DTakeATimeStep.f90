@@ -7,6 +7,7 @@ SUBROUTINE OceanWave3DTakeATimeStep
   IMPLICIT NONE
 
   INTEGER i, j, k
+  REAL(kind=long) :: maxEta, maxh
 
 
   TOTALITEROLD = TOTALITER
@@ -16,6 +17,7 @@ SUBROUTINE OceanWave3DTakeATimeStep
   ! Print the simulation time to the screen every 10 time steps.
   IF(MOD(tstep,10)==0)THEN
      WRITE(6,2000) tstep, time
+     WRITE(fileop(1),2000) tstep, time
   END IF
   !
   ! Use the free-surface conditions to step forward in time and get new
@@ -44,6 +46,26 @@ SUBROUTINE OceanWave3DTakeATimeStep
      ! This is only implemented in 2D.  
      CALL detect_breaking(fileop(14),FineGrid%Nx+2*GhostGridX,Wavefield,1)
   end IF
+  !
+  ! Check for an unstable solution and abort if found 
+  !
+  maxEta=maxval(abs(wavefield%E)); maxh=maxval(finegrid%h)
+  IF ( maxEta .gt. 10.*maxh) Then
+     write(6,*)' ********************************************************.' 
+     write(6,*)' The solution looks to be going unstable, aborting here.' 
+     write(6,*)' eta_max =',maxEta,' > 10 h_max =',10*maxh
+     write(6,*)' ********************************************************.' 
+     write(fileop(1),*)' ********************************************************.' 
+     write(fileop(1),*)' The solution looks to be going unstable, aborting here.' 
+     write(fileop(1),*)' eta_max =',maxEta,' > 10 h_max =',10*maxh
+     write(fileop(1),*)' ********************************************************.' 
+     ! CLOSE OPEN FILES
+     CALL CloseIOFiles
+     !
+     ! DEALLOCATE
+     CALL CloseVariables
+     stop
+  END IF
 
   time = time + dt
 

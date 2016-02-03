@@ -23,7 +23,6 @@
 
 ! Take care of zero and Nyquist frequencies.
 
-   !eta (1) = czero
    eta (1) = zero
    eta (2) = zero
    open(unit=78,file='spectrum',status='unknown')

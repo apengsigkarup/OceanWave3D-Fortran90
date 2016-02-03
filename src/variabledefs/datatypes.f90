@@ -156,7 +156,7 @@ TYPE wave3DFluxStruct
 	REAL(KIND=long) :: dt, rampTime
 	INTEGER :: n2, order
     CHARACTER(len=30)  inc_wave_file
-    REAL(KIND=long), allocatable :: flux(:,:), y(:), time(:)
+    REAL(KIND=long), allocatable :: flux(:,:), y(:), time(:), etax(:,:)
 END TYPE wave3DFluxStruct
 ! DEFINE a Structure for the wave breaking model parameters
 

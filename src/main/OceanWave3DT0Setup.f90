@@ -4,6 +4,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! begins.  
   !
   ! By Allan P. Engsig-Karup.
+  !
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
@@ -209,10 +210,11 @@ SUBROUTINE OceanWave3DT0Setup
         !
         Allocate( RandomWave(1)%eta0(n_fft), RandomWave(1)%beta(n_fft) )
         ! 
-        Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0, &
-             dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,              &
-             RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,  &
-             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, n_cut,RandomWave(i)%gamma )
+        Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0,     &
+             dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,               &
+             RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,         &
+             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, &
+             n_cut,RandomWave(i)%gamma )
         !
         ! Count the total number of grid points in each generation zone and allocate space
         ! for eta and phiS and compute the elevation and surface potential time-histories.  
@@ -231,8 +233,8 @@ SUBROUTINE OceanWave3DT0Setup
                       ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',&
                       n_wavem, ' grid points.'
                  write(fileop(1),*) 'Zone ',i,':'
-                 write(fileop(1),*) 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',&
-                      RandomWave(i)%y0,      &
+                 write(fileop(1),*) 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,& 
+                      ',',RandomWave(i)%y0,      &
                       ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',&
                       n_wavem, ' grid points.'
                  RandomWave(i)%nf=FineGrid%nx+2*GhostGridX
@@ -267,8 +269,8 @@ SUBROUTINE OceanWave3DT0Setup
                       ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',   &
                       RandomWave(i)%nx, ' by ',RandomWave(i)%ny,' grid points.'
                  write(fileop(1),*) 'Zone ',i,':'
-                 write(fileop(1),*) 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,',',   &
-                      RandomWave(i)%y0,      &
+                 write(fileop(1),*) 'The generated wave is centered at (x,y)=(',RandomWave(i)%x0,&
+                      ',', RandomWave(i)%y0,      &
                       ') in a depth of',RandomWave(i)%h0,' This generation zone contains ',   &
                       RandomWave(i)%nx, ' by ',RandomWave(i)%ny,' grid points.'
                  !
@@ -298,7 +300,7 @@ SUBROUTINE OceanWave3DT0Setup
 79   FORMAT(/,' The incident wave is a flux boundary condition applied at the Western boundary.',/) 
      CALL setupWavePaddle()
   ENDIF
-  ! Uneumann is in all cases added to the western boundary. Only if
+  ! Uneumann is in all cases added to the western boundary RHS. Only if
   ! IncWaveType==3 is it non-zero. 
   ! FIXME: Is there a better solution where this field is only loaded if needed?
   ! botp

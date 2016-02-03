@@ -1,5 +1,10 @@
 SUBROUTINE BuildLinearSystem(Nx,Ny,Nz,PHI,output,GridStruct,alpha,beta,gamma)
 ! By Allan P. Engsig-Karup.
+!
+! Form: output = A PHI
+!
+! where A is the system matrix and phi the current guess
+!
 USE Precision
 USE Constants
 USE DataTypes
@@ -150,7 +155,7 @@ ENDIF
       !But keep this loop from 1 to Nz for SWENSE (use of Gidx3...)
 		Gidx  = k + (i-1)*Nz + (j-1)*Nx*Nz
 		Gidx2  = k + (i-1+1)*Nz + (j-1)*Nx*Nz
-		output(Gidx) = dpdx(Gidx2) + Uneumann(k,j)
+		output(Gidx) = dpdx(Gidx2) !+ Uneumann(k,j) 
         ! GD: SWENSE addition comes here
         IF (swenseONOFF/=0) THEN
             output(Gidx) = output(Gidx) + Wavefield%Px_I_bp(Gidx3)

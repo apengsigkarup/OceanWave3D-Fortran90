@@ -493,7 +493,7 @@ SUBROUTINE ReadInputFileParameters
      curvilinearONOFF = 0    ! Make sure it is the standard model which is employed (also for curvilinear 2D choices)
   END IF
 !
-! Linear mono-chromatic or random wave generation parameters.  
+! Linear mono-chromatic, random wave or flux boundary generation parameters.  
 ! 
 
 	IF (IncWaveType==3) THEN 

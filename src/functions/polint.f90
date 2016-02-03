@@ -38,7 +38,10 @@
               hp=xa(i+m)-x
               w=c(i+1)-d(i)
               den=ho-hp
-              IF(den.eq.0.)print*, 'failure in polint'; stop
+              IF(den.eq.0.)then
+                 print*, 'failure in polint'
+                 stop
+              end if
               !This error can occur only if two input xa’s are (to within roundoff) identical.
               den=w/den
               d(i)=hp*den ! Here the c’s and d’s are updated.
