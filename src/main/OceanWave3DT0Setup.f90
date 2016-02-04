@@ -143,20 +143,21 @@ SUBROUTINE OceanWave3DT0Setup
                 ' T_p=', e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/, &
                 ' at angle ',f10.2,' deg. to the x-axis.',// )
         ELSEIF(RandomWave(1)%ispec==31)THEN
-           WRITE(6,76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
-                RandomWave(1)%beta0
-           WRITE(fileop(1),76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed,RandomWave(1)%seed2,&
-                RandomWave(1)%beta0
+           WRITE(6,76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%gamma,RandomWave(1)%seed, & 
+                RandomWave(1)%seed2,RandomWave(1)%beta0
+           WRITE(fileop(1),76)RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%gamma,            &
+                RandomWave(1)%seed,RandomWave(1)%seed2,RandomWave(1)%beta0
 76         FORMAT(' The incident wave is a 2D JONSWAP spectrum with ',/, &
-                'T_p=',  e10.4,' and H_s=',e10.4,', seed values are:',/,2i10,/,  &
+                'T_p=',  e10.4,', H_s=',e10.4,' and gamma=',e10.4,', seed values are:',/,2i10,/,  &
                 ' at angle ',f10.2,' deg. to the x-axis.',// )
         ELSEIF(RandomWave(1)%ispec==33)THEN
-           WRITE(6,77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
-                RandomWave(1)%seed2
-           WRITE(fileop(1),77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%seed, &
-                RandomWave(1)%seed2
+           WRITE(6,77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,RandomWave(1)%gamma,  &
+                RandomWave(1)%seed,RandomWave(1)%seed2
+           WRITE(fileop(1),77)RandomWave(1)%beta0,RandomWave(1)%Tp,RandomWave(1)%Hs,              &
+                RandomWave(1)%gamma,RandomWave(1)%seed,RandomWave(1)%seed2
 77         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Normal spreading at heading angle ',e10.4,/, &
-                ' deg. to the x-axis. T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,//)
+                ' deg. to the x-axis. T_p=',  e10.4,' H_s=',e10.4,' and gamma=',e10.4,  &
+                ', seed values are:',/,2i10,//)
 
          ! 3D random waves with a cos^2s0 spreading
 
@@ -166,7 +167,7 @@ SUBROUTINE OceanWave3DT0Setup
            WRITE(fileop(1),78)RandomWave(1)%beta0, RandomWave(1)%S0, RandomWave(1)%Tp, RandomWave(1)%Hs, &
                 RandomWave(1)%seed,RandomWave(1)%seed2,RandomWave(1)%gamma
 78         FORMAT(' The incident wave is a 3D JONSWAP spectrum with Cos^(2S) spreading at heading angle ',e10.4,/, &
-                ' deg. to the x-axis. S=',e10.4,', T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,' gamma=',e10.4//)
+                ' deg. to the x-axis. S=',e10.4,', T_p=',  e10.4,' H_s=',e10.4,', seed values are:',/,2i10,', gamma=',e10.4//)
 
 
         ELSE
@@ -210,11 +211,11 @@ SUBROUTINE OceanWave3DT0Setup
         !
         Allocate( RandomWave(1)%eta0(n_fft), RandomWave(1)%beta(n_fft) )
         ! 
-        Call random_wave_coefficients( RandomWave(i)%ispec, n_fft, RandomWave(i)%beta0,     &
-             dt, dx, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0, g,               &
-             RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed,         &
-             RandomWave(i)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, &
-             n_cut,RandomWave(i)%gamma )
+        Call random_wave_coefficients( RandomWave(1)%ispec, n_fft, RandomWave(1)%beta0,     &
+             dt, dx, RandomWave(1)%Tp, RandomWave(1)%Hs, RandomWave(1)%h0, g,               &
+             RandomWave(1)%inc_wave_file, RandomWave(1)%kh_max, RandomWave(1)%seed,         &
+             RandomWave(1)%seed2, RandomWave(1)%eta0, RandomWave(1)%beta, RandomWave(1)%S0, &
+             n_cut,RandomWave(1)%gamma )
         !
         ! Count the total number of grid points in each generation zone and allocate space
         ! for eta and phiS and compute the elevation and surface potential time-histories.  
@@ -241,11 +242,11 @@ SUBROUTINE OceanWave3DT0Setup
                  !
                  ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
 
-                 CALL random_wave_signal(RandomWave(i)%ispec, n_fft, n_wavem, RandomWave(i)%x0, &
+                 CALL random_wave_signal(RandomWave(1)%ispec, n_fft, n_wavem, RandomWave(1)%x0, &
                       FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),1),                  &
-                      dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
-                      g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
-                      RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis,               &
+                      dt, RandomWave(1)%Tp, RandomWave(1)%Hs, RandomWave(1)%h0,                 &
+                      g, RandomWave(1)%inc_wave_file, RandomWave(1)%kh_max, RandomWave(1)%seed, &
+                      RandomWave(1)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis,               &
                       RandomWave(1)%eta0, n_cut, time0 )
               END If
            END DO
@@ -276,16 +277,16 @@ SUBROUTINE OceanWave3DT0Setup
                  !
                  ALLOCATE(RandomWave(i)%eta(n_wavem,n_fft), RandomWave(i)%Phis(n_wavem,n_fft) )
 
-                 CALL random_wave_signal_3D(RandomWave(i)%ispec, RandomWave(1)%eta0, n_cut,     &
+                 CALL random_wave_signal_3D(RandomWave(1)%ispec, RandomWave(1)%eta0, n_cut,     &
                       RandomWave(1)%beta, n_fft, RandomWave(i)%nx, RandomWave(i)%ny,            &
                       RandomWave(1)%beta0, RandomWave(1)%x0, RandomWave(1)%y0,                  &
                       FineGrid%x(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
                       RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),       &
                       FineGrid%y(RelaxZones(i)%idx(1):RelaxZones(i)%idx(2),                     &
                       RelaxZones(i)%idx(3):RelaxZones(i)%idx(4)),       &
-                      dt, RandomWave(i)%Tp, RandomWave(i)%Hs, RandomWave(i)%h0,                 &
-                      g, RandomWave(i)%inc_wave_file, RandomWave(i)%kh_max, RandomWave(i)%seed, &
-                      RandomWave(i)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis, time0 )
+                      dt, RandomWave(1)%Tp, RandomWave(1)%Hs, RandomWave(1)%h0,                 &
+                      g, RandomWave(1)%inc_wave_file, RandomWave(1)%kh_max, RandomWave(1)%seed, &
+                      RandomWave(1)%seed2, RandomWave(i)%eta, RandomWave(i)%Phis, time0 )
                  !hbb
                  !                 write(201,*)RandomWave(i)
               END If

@@ -496,61 +496,61 @@ SUBROUTINE ReadInputFileParameters
 ! Linear mono-chromatic, random wave or flux boundary generation parameters.  
 ! 
 
-	IF (IncWaveType==3) THEN 
-		! Wave generation with flux condition on western boundary
-		READ(FILEIP(1),*,IOSTAT=ios) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
-		IF (ios>0) THEN
-     		Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need: Ramp &
-				time, Order of interpolation in horizontal direction, file with wave paddle signal.'
-			stop
-		END IF
+  IF (IncWaveType==3) THEN 
+     ! Wave generation with flux condition on western boundary
+     READ(FILEIP(1),*,IOSTAT=ios) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
+     IF (ios>0) THEN
+        Print *, 'ReadInputFileParameters:  For IncWaveType==3 we need: Ramp &
+             time, Order of interpolation in horizontal direction, file with wave paddle signal.'
+        stop
+     END IF
 
-	ELSEIF (IncWaveType == 2) THEN ! irregular waves
-	! For irregular waves we have four options: 
-	! 0) PM, 
-	! 1) Normal JONSWAP with gamma = 3.3, 
-	! 2) based on input files and 
-	! 3) JONSWAP with variable gamma value
-	!
-	! To have a clean interface without too many goto statement,we first check what type we are trying to read
-	
-		READ(FILEIP(1),*,IOSTAT=ios) ispec
-		Backspace(FILEIP(1)) 
-		IF (ispec==0 .or. ispec==1) THEN !Normal PM or JONSWAP spectrum
-	        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
-					kh_max,  seed,  seed2,  x0,  y0
-					gamma_jonswap = 3.3
-	
-		ELSEIF (ispec == 2) THEN ! 2D irregular waves with input file
-			READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
-					kh_max,  seed,  seed2,  x0,  y0, &
-					inc_wave_file
-					print *, x0, y0, inc_wave_file
-		ELSEIF (ispec == 3) THEN ! 2D irregular waves with non-standard gamma value
-			READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
-	                    kh_max,  seed,  seed2,  x0,  y0, gamma_jonswap
-	                  
-		ELSEIF (ispec>=30) THEN ! multi-directional irregular waves
-			READ(FILEIP(1),*,ERR=37,END=37,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
-	            kh_max,  seed,  seed2,  x0,  y0, &
-	            inc_wave_file, beta0, s0, gamma_jonswap
-	            
-	    END IF
-		
-		IF( abs(ispec)<30 ) THEN
-				beta0=0
-				s0=1.0
-		END IF
-	
-37	    IF(ios>0)THEN
-			IF (abs(ispec)<30) THEN
-				Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
-			ELSE
-					Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle, a spreading factor and a JONSWAP gamma factor.'
-			END IF
-			STOP
-		END IF
-	END IF
+  ELSEIF (IncWaveType == 2) THEN ! irregular waves
+     ! For irregular waves we have four options: 
+     ! 0) PM, 
+     ! 1) Normal JONSWAP with gamma = 3.3, 
+     ! 2) based on input files and 
+     ! 3) JONSWAP with variable gamma value
+     !
+     ! To have a clean interface without too many goto statement,we first check what type we are trying to read
+
+     READ(FILEIP(1),*,IOSTAT=ios) ispec
+     Backspace(FILEIP(1)) 
+     IF (ispec==0 .or. ispec==1) THEN !Normal PM or JONSWAP spectrum
+        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
+             kh_max,  seed,  seed2,  x0,  y0
+        gamma_jonswap = 3.3
+
+     ELSEIF (ispec == 2) THEN ! 2D irregular waves with input file
+        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
+             kh_max,  seed,  seed2,  x0,  y0, &
+             inc_wave_file
+        print *, x0, y0, inc_wave_file
+     ELSEIF (ispec == 3) THEN ! 2D irregular waves with non-standard gamma value
+        READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
+             kh_max,  seed,  seed2,  x0,  y0, gamma_jonswap
+
+     ELSEIF (ispec>=30) THEN ! multi-directional irregular waves
+        READ(FILEIP(1),*,ERR=37,END=37,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
+             kh_max,  seed,  seed2,  x0,  y0, &
+             inc_wave_file, beta0, s0, gamma_jonswap
+
+     END IF
+
+     IF( abs(ispec)<30 ) THEN
+        beta0=0
+        s0=1.0
+     END IF
+
+37   IF(ios>0)THEN
+        IF (abs(ispec)<30) THEN
+           Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
+        ELSE
+           Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle, a spreading factor and a JONSWAP gamma factor.'
+        END IF
+        STOP
+     END IF
+  END IF
 
   !
   !

@@ -8,7 +8,7 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
   ! is DEPTH.  The wave can be based on a long-crested P-M (i_spec=30) or 
   ! JONSWAP (ispec=31) spectrum at angle BETA0 to the x-axis, or it can be 
   ! a JONSWAP with NORMAL directional spreading about the angle BETA0 (i_spec=33).  
-  ! The coefficients are returned in COEF ready to be moved around in space and 
+  ! The coefficients are returned in ETA0 ready to be moved around in space and 
   ! FFT'ed by the subroutine random_wave_signal_3D.f90. 
   ! 
   ! When i_spec=-30, a mono-chromatic wave is generated with period Tp, 
