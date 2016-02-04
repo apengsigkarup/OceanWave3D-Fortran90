@@ -10,8 +10,8 @@ SUBROUTINE ReadInputFileParameters
   USE GlobalVariables
   USE MGLevels
   IMPLICIT NONE
-  INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones
-  REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, seed, seed2, x0, &
+  INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones, seed, seed2 
+  REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, x0, &
        y0, beta0, s0, gamma_jonswap
   CHARACTER(len=30):: inc_wave_file
 
@@ -550,6 +550,21 @@ SUBROUTINE ReadInputFileParameters
         END IF
         STOP
      END IF
+     !
+     ! Check that the seed values are negative and if not make them negative
+     !
+     IF (seed >=0) THEN
+        seed = - seed
+        write(6,38)seed
+        write(fileop(1),38)seed
+38      format(/,'**WARNING**: Seed values must be negative, changed seed to ',i10,/)
+     end IF
+     IF (seed2 >=0) THEN
+        seed2 = - seed2
+        write(6,39)seed2
+        write(fileop(1),39)seed2
+39      format(/,'**WARNING**: Seed values must be negative, changed seed2 to ',i10,/)
+     end IF
   END IF
 
   !
