@@ -9,7 +9,7 @@ USE Precision
 USE Constants
 USE DataTypes
 USE GlobalVariables, ONLY: GhostGridX, GhostGridY, GhostGridZ, &
-	swenseONOFF, Wavefield, Uneumann,IncWaveType ! FIXME: Wavefield is a problem here?? due to Multigrid algorithm
+	swenseONOFF, Wavefield, IncWaveType ! FIXME: Wavefield is a problem here?? due to Multigrid algorithm
 IMPLICIT NONE
 TYPE (Level_def), INTENT(IN) :: GridStruct
 INTEGER::Gidx, Gidx2, Nx, Ny, Nz, i, j, k, alpha, beta, gamma
@@ -155,7 +155,7 @@ ENDIF
       !But keep this loop from 1 to Nz for SWENSE (use of Gidx3...)
 		Gidx  = k + (i-1)*Nz + (j-1)*Nx*Nz
 		Gidx2  = k + (i-1+1)*Nz + (j-1)*Nx*Nz
-		output(Gidx) = dpdx(Gidx2) !+ Uneumann(k,j) 
+		output(Gidx) = dpdx(Gidx2) 
         ! GD: SWENSE addition comes here
         IF (swenseONOFF/=0) THEN
             output(Gidx) = output(Gidx) + Wavefield%Px_I_bp(Gidx3)

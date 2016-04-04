@@ -147,7 +147,10 @@ SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
         ! Solve the equation L^2 p_d = Div(gamma Grad Phi) over the 
         ! pressure damping region to get p_d there.
         !  
-        nd=PDampZones(id)%nx; id0=PDampZones(id)%idx(1); rank=2*alpha+1
+        nd=PDampZones(id)%nx; 
+        id0=PDampZones(id)%idx(1); 
+        rank=2*alpha+1
+
         !
         ! A test case for debugging...  
         idebug=0
@@ -161,35 +164,28 @@ SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
         ! Extract phi over the damping zone region
         !
         tmp(1:nd)=Wavefield%P(id0:id0+nd-1,1)  
-        ! 
+         
         ! Take Grad phi 
         !
         CALL DfDx_1D_Uneven(tmp,nd,PDampZones(id)%Grad,rank,rhs)
-        !
+        
         ! Multiply by gamma and take the divergence
         !
         Do i=1,nd
            tmp(i)=PDampZones(id)%gamPhi(id0+i-1)*rhs(i)
         END Do
         CALL DfDx_1D_Uneven(tmp,nd,PDampZones(id)%Grad,rank,rhs)
-        !
+        
         ! Add in the Dirichlet condition at the start of the zone and the Neumann 
         ! condition at the end.
         !
-        rhs(1) = Wavefield%P(id0,1); rhs(nd)=zero 
+        rhs(1) = Wavefield%P(id0,1); 
+        rhs(nd)=zero 
         !
         ! Solve for p_d using the LU-factored Laplacian matrix.
         !
-        JOB = 3;   ! Solution
-        CALL MA41AD(JOB, nd, PDampZones(id)%Lop%nnz, PDampZones(id)%Lop%irn, PDampZones(id)%Lop%icn,    &
-             PDampZones(id)%Lop%val, rhs, PDampZones(id)%Lop%COLSCA, PDampZones(id)%Lop%ROWSCA,         &
-             PDampZones(id)%Lop%KEEP, PDampZones(id)%Lop%IS_HSL, PDampZones(id)%Lop%MAXIS,              &
-             PDampZones(id)%Lop%SS, PDampZones(id)%Lop%MAXS, PDampZones(id)%Lop%CNTL,                   &
-             PDampZones(id)%Lop%ICNTL, PDampZones(id)%Lop%INFOHSL, PDampZones(id)%Lop%RINFO)
 
-        if (PDampZones(id)%Lop%INFOHSL(1) .LT. 0) then ! Check for problems
-           print *, 'Problems with MA41, JOB = 3 (Solution), in funPressureTerm.f90'
-        end if
+        CALL LUSOL(nd,rhs,rhs,PDampZones(id)%Lop%alu,PDampZones(id)%Lop%jlu,PDampZones(id)%Lop%ju)
         !
         ! Apply friction damping to the elevation (kinematic FSBC). 
         !
@@ -209,14 +205,6 @@ SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
         Do i=1,nd
            Wavefield%Pd(id0+i-1,j)=-(rhs(i)-rhs(1))
         END Do
-        !
-        !
-        IF(idebug==1)THEN
-           Do i=1,nx
-              write(202,*)FineGrid%x(i,1),WaveField%P(i,1),Wavefield%Pd(i,1)
-           end Do
-           stop
-        END IF
      ELSE
         !
         ! Apply a friction damping pressure to the potential and/or elevation.

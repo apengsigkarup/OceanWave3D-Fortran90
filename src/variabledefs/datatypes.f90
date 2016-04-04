@@ -55,6 +55,14 @@ TYPE SparseArray_COO
 	INTEGER :: nrow ! rank of matrix
 END TYPE SparseArray_COO
 
+TYPE SparseArray_CSR_pdamp
+	REAL(KIND=long),DIMENSION(:), ALLOCATABLE :: val(:) ! Array values
+	REAL(KIND=long), DIMENSION(:), ALLOCATABLE :: alu(:),w(:)
+    INTEGER, ALLOCATABLE, DIMENSION(:) :: jlu,ju,jw 
+	INTEGER, allocatable :: irn(:), icn(:)! Row and Column pointers
+	INTEGER :: nnz ! number of nonzero elements
+	INTEGER :: nrow ! rank of matrix
+END TYPE SparseArray_CSR_pdamp
 TYPE SparseArray_COO_HBB
 ! Sparse storage using: Coordinate (COO) format
 ! Used by the harwell library routines.  This version without pointers 
@@ -130,6 +138,7 @@ TYPE Level_def
 	TYPE (Diff_def) :: FullRankStencilsNEW ! stencil and coefficient tables
 	REAL(KIND=long), DIMENSION(:,:,:,:), POINTER :: dsigmanew ! array with coordinate index, (k,i,j,:)
 	TYPE (SparseArray_COO) :: PreconditioningMatrix
+	TYPE (SparseArray_CSR) :: PreconditioningMatrix_CSR
 	TYPE (SparseArray_CSR) :: IterationMatrix ! for use with jacobi or gauss-seidel
 	INTEGER :: mapNp ! number of points in iGhost
 	INTEGER, DIMENSION(:), ALLOCATABLE :: iGhost ! global indexes for ghost points
@@ -195,6 +204,8 @@ END TYPE RelaxZone
 ! Friction damping on either phi or grad phi:  -gamPhi*phi or L^-1(Div gamPhi*Grad phi) 
 ! are added to the dynamic free-surface boundary condition. 
 !
+
+! DELETE the following /botp
 TYPE PDampZone
 	REAL(KIND=long)                :: BBox(4)        ! Bounding box [xmin xmax ymin ymax]
 	REAL(KIND=long)                :: g0Phi, g0Eta   
@@ -205,6 +216,18 @@ TYPE PDampZone
         TYPE(SparseArray_COO_HBB) :: Lop                 ! The 2D Laplacian operator in the damping zone
         REAL(kind=long), allocatable :: Grad(:,:,:)      ! The 2D gradient operator in the damping zone
 END TYPE PDampZone
+
+TYPE PDampZone_CSR
+	REAL(KIND=long)                :: BBox(4)        ! Bounding box [xmin xmax ymin ymax]
+	REAL(KIND=long)                :: g0Phi, g0Eta   
+	INTEGER                        :: idx(4)         ! index list start stop [xmin xmax ymin ymax]
+	INTEGER                        :: nx, ny         ! number of points in the zone
+	INTEGER                        :: ierr
+	INTEGER                        :: type           ! Damp GradPhi (0) or Phi (1)
+	REAL(KIND=long), allocatable :: gamPhi(:), gamEta(:)  ! Damper function values
+    TYPE(SparseArray_CSR_pdamp) :: Lop                 ! The 2D Laplacian operator in the damping zone
+    REAL(kind=long), allocatable :: Grad(:,:,:)      ! The 2D gradient operator in the damping zone
+END TYPE PDampZone_CSR
 
 ! New type for wavefield definition on Free Surface (scattered and incident)
 TYPE Wavefield_FS

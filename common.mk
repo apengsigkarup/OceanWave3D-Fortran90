@@ -5,7 +5,7 @@
 
 # Program name
 PROGNAME = OceanWave3D
-LIBNAME  = libOceanWave3D_botp.so
+LIBNAME  = libOceanWave3D.so
 
 # Installation directory
 INSTALLDIR = $(HOME)/bin
@@ -23,7 +23,7 @@ BUILDDIR = $(PWD)/build
 #FC = gfortran-4.4
 #FC = gf90
 
-USER = hbb
+USER = botp-dev
 
 # First the blocks based on compiler name:  
 
@@ -88,7 +88,7 @@ ifeq ($(USER),botp-dev)
   # botp kubuntu, 10.04-64bit
   FC       = gfortran
   LIBDIRS  = -L$(HOME)/lib/ 
-  LINLIB   = -lharwell_gfortran -ltmglib_gfortran -llapack_gfortran -lblas -lskit_gfortran
+  LINLIB   = -lskit_gfortran -ltmglib_gfortran -llapack_gfortran -lblas 
   DBFLAGS  = -pg -g -O0 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none 
   OPTFLAGS = -O3 -fPIC -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
   SHLIBFLAGS  = -shared -O2 -fPIC -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none -fstack-protector-all
