@@ -80,7 +80,7 @@ ifeq ($(USER),hbb)
   LIBDIRS  = -L $(HOME)/lib/ 
   LINLIB   = -lharwell -lskit -llapack -lblas
   DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic
-  OPTFLAGS = -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow
+  OPTFLAGS = -pg -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow
 #  OPTFLAGS = -g -fast
 endif
 
