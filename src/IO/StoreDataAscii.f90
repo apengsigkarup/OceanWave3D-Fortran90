@@ -15,10 +15,15 @@ IMPLICIT NONE
 INTEGER :: nx, ny, i, j, k, nr, i0=100, io
 REAL(KIND=long), DIMENSION(nx*ny) :: E,P
 TYPE (Level_def) :: FineGrid
-CHARACTER(len=30) :: filename,form
-CHARACTER*3 CHOUT3
+CHARACTER(len=1024) :: fn
+CHARACTER(len=1024) :: format_string
+
 io=i0+nr
-open(unit=io, file='fort.'//CHOUT3(INT(io)),status='unknown')
+format_string = "(A5,I6.6)"
+write(fn,format_string) "fort.", INT(io)
+
+open(unit=io, file=trim(fn),status='unknown')
+
 
 DO j=1,ny
    DO i=1,nx
