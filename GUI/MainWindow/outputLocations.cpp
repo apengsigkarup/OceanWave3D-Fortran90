@@ -30,22 +30,20 @@ void MainWindow::on_outputWidgetChanged(int nFiles)
 {
     int numberOfCol;
 
-    // number of colums needed. For kinematics we need 6, for wave gagues we need 4
+    // number of colums needed. For kinematics we need 6, for wave gagues we need 2
     if (ui->DropDownListOutputType->currentIndex()==1) {
         numberOfCol = 6;
+        ui->tableWidget->setColumnCount(numberOfCol);ui->tableWidget->setRowCount(0);
         ui->tableWidget->setHorizontalHeaderLabels(QString("").split(""));
         ui->tableWidget->setHorizontalHeaderLabels(QString("Xmin;Xmax;Ymin;Ymax;tmin;tmax").split(";"));
         ui->tableWidget->setFixedSize(625,227);
     } else {
-        numberOfCol = 4;
-        ui->tableWidget->setHorizontalHeaderLabels(QString("x;y;tmin;tmax").split(";"));
-        ui->tableWidget->setFixedSize(425,227);
+        numberOfCol = 2;
+        ui->tableWidget->setColumnCount(numberOfCol);ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setHorizontalHeaderLabels(QString("x;y").split(";"));
+        ui->tableWidget->setFixedSize(225,227);
     }
 
-    if (ui->tableWidget->columnCount()!=numberOfCol) {
-        ui->tableWidget->setRowCount(0);
-        ui->tableWidget->setColumnCount(numberOfCol);
-    }
 
 
     QDoubleSpinBox *sp;
@@ -83,15 +81,15 @@ void MainWindow::on_outputWidgetChanged(int nFiles)
 
 }
 
- QSize MainWindow::QTableWidgetSize(QTableWidget *t) {
-     int w = t->verticalHeader()->width() + 23 ; // +4 seems to be needed
-   for (int i = 0; i < t->columnCount(); i++)
-      w += t->columnWidth(i); // seems to include gridline (on my machine)
+QSize MainWindow::QTableWidgetSize(QTableWidget *t) {
+    int w = t->verticalHeader()->width() + 23 ; // +4 seems to be needed
+    for (int i = 0; i < t->columnCount(); i++)
+        w += t->columnWidth(i); // seems to include gridline (on my machine)
 
-   int h = t->horizontalHeader()->height();
-   int tmp = t->columnCount();
-   for (int i = 0; i < t->rowCount(); i++)
-      h += t->rowHeight(i) + 4;
+    int h = t->horizontalHeader()->height();
+    int tmp = t->columnCount();
+    for (int i = 0; i < t->rowCount(); i++)
+        h += t->rowHeight(i) + 4;
 
-   return QSize(w, h);
+    return QSize(w, h);
 }

@@ -196,6 +196,7 @@ SUBROUTINE OceanWave3DTakeATimeStep
                      ENDIF 
                 ENDDO
              ELSEIF (iKinematics==30) THEN ! Store wave gauges in ASCII format
+                     
                         CALL StoreWaveGauges(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                         FineGrid%Nz+GhostGridZ,2,tstep+1)
              ENDIF

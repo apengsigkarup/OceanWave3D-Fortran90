@@ -342,10 +342,6 @@ SUBROUTINE ReadInputFileParameters
            Print *, 'ReadInputFileParameters: Kinematics yrange is invalid'
            stop
         end if
-        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
-           Print *, 'ReadInputFileParameters: Kinematics trange is invalid'
-           stop
-        end if
         IF (Output(i)%xbeg /= Output(i)%xend) THEN
                 PRINT *, 'x_begin not equal x_end: Wave gauges only 1 point per             &
                 probe'

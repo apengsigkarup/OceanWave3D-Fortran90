@@ -244,7 +244,7 @@ void MainWindow::openFile(){
                     outPutList.push_back((tmp_list[5].toDouble())*dt);
 
                     if (ui->ny->value()==1) {outPutList[1] =1; }
-                    for (int j = 0; j < 4 ; j++) {
+                    for (int j = 0; j < 2 ; j++) {
                         ui->tableWidget->setCellWidget(i,j,new QDoubleSpinBox(ui->tableWidget));
                         sp = (QDoubleSpinBox*)ui->tableWidget->cellWidget(i,j);
                         sp->setMaximum(99999999);
@@ -494,23 +494,33 @@ void MainWindow::writeInputFile()
     bool storeAscii = ui->storeAscii_onOff->isChecked();
     int outputType = ui->DropDownListOutputType->currentIndex();
     int nCol;
-    outputType==1 ? nCol = 6 : nCol = 4;
+    std::vector<double> resolution;
+    if (outputType==1) {
+        nCol = 6;
+        double Res[] ={dx,dx,dy,dy,dt,dt};
+        resolution.insert(resolution.end(), &Res[0], &Res[sizeof(Res) / sizeof(double)]);
+
+    } else if (outputType==2) {
+        nCol = 2;
+        double Res[] ={dx,dy,dt,dt};
+        resolution.insert(resolution.end(), &Res[0], &Res[sizeof(Res) / sizeof(double)]);
+    }
     int nASCIIsteps = ui->nASCII->value();
 
-    double resolution[] ={dx,dx,dy,dy,dt,dt};
+
     QDoubleSpinBox* sp;
     Double2d outputValues(boost::extents[ui->tableWidget->rowCount()][6]);
-
+    double tmp;
     for (int i=0;i<ui->tableWidget->rowCount();i++){
         for (int j = 0; j < nCol ; j++) {
             sp = (QDoubleSpinBox*)ui->tableWidget->cellWidget(i,j);
-            outputValues[i][j]= round(sp->value()/resolution[j]+1);
-
+            tmp = round(sp->value()/resolution[j]+1);
+            outputValues[i][j]= tmp;
         }
 
         if (outputType==2) {
-            outputValues[i][5] = outputValues[i][3];
-            outputValues[i][4] = outputValues[i][2];
+            outputValues[i][5] = Nsteps;
+            outputValues[i][4] = 1;
             outputValues[i][3] = outputValues[i][1];
             outputValues[i][2] = outputValues[i][1];
             outputValues[i][1] = outputValues[i][0];

@@ -27,29 +27,37 @@ REAL(KIND=long) :: d(Nx,Ny)
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; 
 eta => WaveField%E
 !
-! Shift the horizontal grid point position to account for the ghost points.  
-!
-
-
-!; i1=Output(io)%xend+GhostGridX; is=Output(io)%xstride; 
-!j0=Output(io)%ybeg+GhostGridY; j1=Output(io)%yend+GhostGridY; js=Output(io)%ystride; 
 
 IF(it==0)THEN
    !
    ! Save the grid data on the first call
-   WRITE(fileop(io),'(A)',ADVANCE='no') 'x: '
+   WRITE(fileop(io),'(A)',ADVANCE='no') 'Time'
+   DO i = 1,nOutFiles
+           WRITE(fileop(io),'(A)',advance='no') ' WG'
+   END DO
+   WRITE(fileop(io),*) ''
+
+   WRITE(fileop(io),'(A)',ADVANCE='no') '-1 '
    DO i = 1,nOutFiles
            WRITE(fileop(io),'(F10.2)',advance='no') (x(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
    END DO
    WRITE(fileop(io),*) ''
 
-   WRITE(fileop(io),'(A)',ADVANCE='no') 'y: '
+
+   WRITE(fileop(io),'(A)',ADVANCE='no') '-2 '
    DO i = 1,nOutFiles
            WRITE(fileop(io),'(F10.2)',advance='no') (y(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
    END DO
-
    WRITE(fileop(io),*) ''
-   WRITE(fileop(io),'(A)') 'time, wg1, wg2, ..., wgN '
+
+
+   WRITE(fileop(io),'(A)',ADVANCE='no') '-3 '
+   DO i = 1,nOutFiles
+           WRITE(fileop(io),'(F10.2)',advance='no') (h(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
+   END DO
+   WRITE(fileop(io),*) ''
+
+
    
    IF(curvilinearOnOff/=0)THEN
       Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
