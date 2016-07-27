@@ -2276,6 +2276,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
          <property name="maximum">
           <double>1000.000000000000000</double>
          </property>
@@ -2895,6 +2898,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
         </widget>
         <widget class="QLabel" name="label_151">
          <property name="geometry">
@@ -2918,6 +2924,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
         </widget>
         <widget class="QDoubleSpinBox" name="Tp">
          <property name="geometry">
@@ -2927,6 +2936,9 @@
            <width>66</width>
            <height>24</height>
           </rect>
+         </property>
+         <property name="decimals">
+          <number>3</number>
          </property>
         </widget>
         <widget class="QLabel" name="label_152">
@@ -3460,8 +3472,8 @@
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>230</y>
-          <width>351</width>
+          <y>220</y>
+          <width>571</width>
           <height>81</height>
          </rect>
         </property>
@@ -3578,6 +3590,19 @@
           <bool>true</bool>
          </property>
         </widget>
+        <widget class="QPushButton" name="pushButton_advancedMorison">
+         <property name="geometry">
+          <rect>
+           <x>470</x>
+           <y>40</y>
+           <width>91</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Advanced</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QLabel" name="convertStatus">
         <property name="geometry">
@@ -3602,7 +3627,7 @@
         <property name="geometry">
          <rect>
           <x>400</x>
-          <y>220</y>
+          <y>320</y>
           <width>351</width>
           <height>81</height>
          </rect>

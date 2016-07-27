@@ -105,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->selectGridFile,SIGNAL(clicked()),this,SLOT(selectGridFile()));
     connect(ui->selectWaveFile_eta,SIGNAL(clicked()),this,SLOT(selectWaveFile_eta()));
     connect(ui->DropDownListOutputType,SIGNAL(currentIndexChanged(int)),this,SLOT(WaveTypeSelected()));
-
+    connect(ui->pushButton_advancedMorison,SIGNAL(clicked()),this,SLOT(advancedMorison()));
     // default
     connect(ui->checkBox_constantWidget,SIGNAL(stateChanged(int)),this,SLOT(constantWidget()));
     connect(ui->checkBox_breakingWidget,SIGNAL(stateChanged(int)),this,SLOT(breakingWidget()));
@@ -127,6 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #if externalOutputClass
     ui->SelectOutput->addItem("External output");
 #endif
+
 
 }
 

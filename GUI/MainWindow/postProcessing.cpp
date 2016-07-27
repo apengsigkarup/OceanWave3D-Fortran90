@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "advForce.h"
 
 // Make a system call to gnuplot and print *.fort
 //
@@ -109,6 +110,14 @@ void MainWindow::convertTo(){
 
     }
 #endif
+
+}
+
+void MainWindow::advancedMorison(){
+    advForce*newOutputClass = new advForce(convertFiles,this);
+
+    newOutputClass->show();
+
 
 }
 
