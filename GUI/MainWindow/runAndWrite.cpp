@@ -550,24 +550,24 @@ void MainWindow::writeInputFile()
         outStream << "0 0 \n";
     } else { // Outputs are requested
 
-        if ((ui->nOutFiles->value()>0)&(outputType==1)&storeAscii){ // Kinematics and ascii files
+        if ((outputType==1)&storeAscii){ // Kinematics and ascii files
             outStream << -1*nASCIIsteps << " 20 0 " << ui->nOutFiles->value() << "\n";
         }
-        if ((ui->nOutFiles->value()>0)&(outputType==2)&storeAscii){ // Wave gagues and ascii files
+        if ((outputType==2)&storeAscii){ // Wave gagues and ascii files
             outStream << -1*nASCIIsteps << " 30 0 " << ui->nOutFiles->value() << "\n";
         }
-        if ((ui->nOutFiles->value()==0)&(outputType==0)&(storeAscii)){ // Only ASCII files
+        if ((outputType==0)&(storeAscii)){ // Only ASCII files
             outStream << -1*nASCIIsteps << " 1 0 0\n";
         }
-        if ((ui->nOutFiles->value()>0)&(outputType==1)&(~storeAscii)){ // Only binary Files
+        if ((outputType==1)&(~storeAscii)){ // Only Kinematics files
             outStream << "0 20 1 " << ui->nOutFiles->value() << "\n";
         }
-        if ((ui->nOutFiles->value()>0)&(outputType==2)&(~storeAscii)){ // Only wave gagues
+        if ((outputType==2)&(~storeAscii)){ // Only wave gagues
             outStream << "0 30 30 " << ui->nOutFiles->value() << "\n";
         }
 
 
-        if (ui->nOutFiles->value()>0){ // Writing output positions for binary files and wave guages
+        if (outputType>0){ // Writing output positions for binary files and wave guages
 
             for (int i = 0;i<ui->nOutFiles->value();i++){ // loop over rows
                 for (int j = 0; j<6;j=j+2){
