@@ -31,13 +31,13 @@ void MainWindow::on_outputWidgetChanged(int nFiles)
     int numberOfCol;
 
     // number of colums needed. For kinematics we need 6, for wave gagues we need 2
-    if (ui->DropDownListOutputType->currentIndex()==1) {
+    if ((ui->DropDownListOutputType->currentIndex()==1)&(ui->tableWidget->columnCount()!=6)) {
         numberOfCol = 6;
         ui->tableWidget->setColumnCount(numberOfCol);ui->tableWidget->setRowCount(0);
         ui->tableWidget->setHorizontalHeaderLabels(QString("").split(""));
         ui->tableWidget->setHorizontalHeaderLabels(QString("Xmin;Xmax;Ymin;Ymax;tmin;tmax").split(";"));
         ui->tableWidget->setFixedSize(625,227);
-    } else {
+    } else if ((ui->DropDownListOutputType->currentIndex()==2)&(ui->tableWidget->columnCount()!=2)) {
         numberOfCol = 2;
         ui->tableWidget->setColumnCount(numberOfCol);ui->tableWidget->setRowCount(0);
         ui->tableWidget->setHorizontalHeaderLabels(QString("x;y").split(";"));
@@ -60,12 +60,12 @@ void MainWindow::on_outputWidgetChanged(int nFiles)
 
             ui->tableWidget->insertRow(i);
 
-            for (int j = 0; j < numberOfCol ; j++) {
+            for (int j = 0; j < ui->tableWidget->columnCount() ; j++) {
                 ui->tableWidget->setCellWidget(i,j,new QDoubleSpinBox(ui->tableWidget));
                 sp = (QDoubleSpinBox*)ui->tableWidget->cellWidget(i,j);
                 sp->setMaximum(99999999);
-                if (j==numberOfCol-2){sp->setValue(tStart);}
-                if (j==numberOfCol-1){sp->setValue(ui->timeDuration->value());}
+                if ((j==ui->tableWidget->columnCount()-2)&(j>2)){sp->setValue(tStart);}
+                if ((j==ui->tableWidget->columnCount()-1)&(j>2)){sp->setValue(ui->timeDuration->value());}
             }
 
         }
@@ -87,7 +87,6 @@ QSize MainWindow::QTableWidgetSize(QTableWidget *t) {
         w += t->columnWidth(i); // seems to include gridline (on my machine)
 
     int h = t->horizontalHeader()->height();
-    int tmp = t->columnCount();
     for (int i = 0; i < t->rowCount(); i++)
         h += t->rowHeight(i) + 4;
 

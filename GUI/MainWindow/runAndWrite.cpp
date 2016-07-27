@@ -44,10 +44,16 @@ void MainWindow::openFile(){
 
 
     QFile inputFile(fileName);
+
     QString tmp_line;
     QStringList tmp_list;
+    QString errMsg;
 
-    inputFile.open(QIODevice::ReadOnly);
+    if (!inputFile.open(QIODevice::ReadOnly)){
+        errorMsgUnknownFile();
+        return;
+    }
+
     QFileInfo fileInfo(inputFile.fileName());
 
 
@@ -73,12 +79,16 @@ void MainWindow::openFile(){
         if (tmp_list[1].toInt()==3) {ui->waveType->setCurrentIndex(5);}
     }
     if (tmp_list.size()>=3){
-        if (tmp_list[2].toInt()>100){
+        if ((tmp_list[2].toDouble()>100) | (tmp_list[2].toDouble()==0)){
             tmp_list[2] = "0";
+            ui->breakingWidget->setEnabled(false);
+            ui->checkBox_breakingWidget->setChecked(true);
+        } else {
+            ui->breakingWidget->setEnabled(true);
+            ui->checkBox_breakingWidget->setChecked(false);
         }
         ui->breaking_beta0->setValue(tmp_list[2].toDouble());
-        ui->breakingWidget->setEnabled(true);
-        ui->checkBox_breakingWidget->setChecked(false);
+
     }
 
     // third line
@@ -226,7 +236,7 @@ void MainWindow::openFile(){
                     outPutList.push_back((tmp_list[2].toDouble()-1)*dy);
                     outPutList.push_back((tmp_list[3].toDouble()-1)*dy);
                     outPutList.push_back((tmp_list[4].toDouble()-1)*dt);
-                    outPutList.push_back((tmp_list[5].toDouble()-1)*dt);
+                    outPutList.push_back((tmp_list[5].toDouble())*dt);
 
 
                     for (int j = 0; j < 6 ; j++) {
@@ -502,7 +512,7 @@ void MainWindow::writeInputFile()
 
     } else if (outputType==2) {
         nCol = 2;
-        double Res[] ={dx,dy,dt,dt};
+        double Res[] ={dx,dy};
         resolution.insert(resolution.end(), &Res[0], &Res[sizeof(Res) / sizeof(double)]);
     }
     int nASCIIsteps = ui->nASCII->value();

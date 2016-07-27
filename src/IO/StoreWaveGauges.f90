@@ -39,21 +39,21 @@ IF(it==0)THEN
 
    WRITE(fileop(io),'(A)',ADVANCE='no') '-1 '
    DO i = 1,nOutFiles
-           WRITE(fileop(io),'(F10.2)',advance='no') (x(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
+           WRITE(fileop(io),'(F10.6)',advance='no') (x(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
    END DO
    WRITE(fileop(io),*) ''
 
 
    WRITE(fileop(io),'(A)',ADVANCE='no') '-2 '
    DO i = 1,nOutFiles
-           WRITE(fileop(io),'(F10.2)',advance='no') (y(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
+           WRITE(fileop(io),'(F10.6)',advance='no') (y(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
    END DO
    WRITE(fileop(io),*) ''
 
 
    WRITE(fileop(io),'(A)',ADVANCE='no') '-3 '
    DO i = 1,nOutFiles
-           WRITE(fileop(io),'(F10.2)',advance='no') (h(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
+           WRITE(fileop(io),'(F10.6)',advance='no') (h(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
    END DO
    WRITE(fileop(io),*) ''
 
@@ -65,9 +65,9 @@ IF(it==0)THEN
 ELSE
    !
    IF(curvilinearOnOff == 0)THEN
-           write(fileop(io),'(F10.3 )',advance='no') time
+           write(fileop(io),'(F10.6 )',advance='no') time
            DO i = 1,nOutFiles
-                   WRITE(fileop(io),'(F10.3)',advance='no') (eta(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
+                   WRITE(fileop(io),'(F10.6)',advance='no') (eta(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
            END DO
    WRITE(fileop(io),*) ''
     ENDIF
