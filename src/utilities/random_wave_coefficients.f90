@@ -87,7 +87,6 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
 15   print *, 'random_wave_signal.f90: No header line in the .iwf'
      stop
 14   CLOSE(21)
-print *, 'line 99'
      CALL drealft (eta0, nt, 1)
      !
      ! Scale the FFT
@@ -108,7 +107,6 @@ print *, 'line 99'
        ' points per wavelength.'
   Print *, ' '
   eta0(2*n_cut-1:nt)=zero
-print *, 'line 111'
   !
   !Print out the wave maker elevation.
   !

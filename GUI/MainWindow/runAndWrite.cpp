@@ -42,6 +42,7 @@ void MainWindow::openFile(){
                 "OCW3D (*.inp);;"
                 );
 
+
     QFile inputFile(fileName);
     QString tmp_line;
     QStringList tmp_list;
@@ -132,8 +133,17 @@ void MainWindow::openFile(){
     // sixth line: g \rho
     //
     readAndSplit(inputFile,tmp_list);
-    ui->gravity_input->setValue(tmp_list[0].toDouble());
-    ui->Density->setValue(tmp_list[1].toDouble());
+    if (tmp_list[0].toDouble()==0){
+        ui->gravity_input->setValue(9.81);
+    } else {
+        ui->gravity_input->setValue(tmp_list[0].toDouble());
+    }
+
+    if (tmp_list[1].toDouble()==0) {
+        ui->Density->setValue(1025);
+    } else {
+        ui->Density->setValue(tmp_list[1].toDouble());
+    }
 
     // seventh line: numerical settings (SKIP)
     //
@@ -276,8 +286,7 @@ void MainWindow::openFile(){
         int relaxZone(tmp_list[2].toInt());
 
         // we read the first zone
-        tmp_line = inputFile.readLine();tmp_line.remove(QRegExp("[\\n\\t\\r]"));
-        tmp_list = tmp_line.split(" ");
+        readAndSplit(inputFile,tmp_list);
 
         ui->xGenStart->setValue(tmp_list[0].toDouble());
         ui->xGenEnd->setValue(tmp_list[1].toDouble());
@@ -285,8 +294,7 @@ void MainWindow::openFile(){
         ui->yGenEnd->setValue(tmp_list[3].toDouble());
 
         if (relaxZone==2){
-            tmp_line = inputFile.readLine();tmp_line.remove(QRegExp("[\\n\\t\\r]"));
-            tmp_list = tmp_line.split(" ");
+             readAndSplit(inputFile,tmp_list);
             ui->xAbsorbStart->setValue(tmp_list[0].toDouble());
             ui->xAbsorbEnd->setValue(tmp_list[1].toDouble());
             ui->yAbsorbStart->setValue(tmp_list[2].toDouble());
@@ -546,7 +554,7 @@ void MainWindow::writeInputFile()
             outStream << -1*nASCIIsteps << " 20 0 " << ui->nOutFiles->value() << "\n";
         }
         if ((ui->nOutFiles->value()>0)&(outputType==2)&storeAscii){ // Wave gagues and ascii files
-            outStream << -1*nASCIIsteps << " 30 30 " << ui->nOutFiles->value() << "\n";
+            outStream << -1*nASCIIsteps << " 30 0 " << ui->nOutFiles->value() << "\n";
         }
         if ((ui->nOutFiles->value()==0)&(outputType==0)&(storeAscii)){ // Only ASCII files
             outStream << -1*nASCIIsteps << " 1 0 0\n";
