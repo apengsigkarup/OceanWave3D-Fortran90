@@ -12,3 +12,4 @@ SOURCES += $(LDIR)/GatherData.f90
 SOURCES += $(LDIR)/StoreKinematicData.f90		
 SOURCES += $(LDIR)/ReadInputFileParameters.f90	
 SOURCES += $(LDIR)/StoreRealArray.f90
+SOURCES += $(LDIR)/StoreWaveGauges.f90

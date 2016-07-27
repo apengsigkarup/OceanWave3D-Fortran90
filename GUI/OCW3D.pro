@@ -37,7 +37,8 @@ SOURCES += main.cpp\
            MainWindow/errorMSG.cpp \
            MainWindow/check.cpp \
            checkdialog.cpp \
-           MainWindow/externaloutput.cpp
+           MainWindow/externaloutput.cpp \
+    MainWindow/outputLocations.cpp
 
 
 HEADERS  += mainwindow.h \

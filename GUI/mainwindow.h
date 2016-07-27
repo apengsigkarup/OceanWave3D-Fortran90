@@ -65,6 +65,8 @@ private slots:
     void selectWaveFile();
     void selectWaveFile_eta();
     void selectGridFile();
+    void WaveTypeSelected();
+
 
 
     // use constant
@@ -72,6 +74,7 @@ private slots:
     void breakingWidget();
     void FDWidget();
     void preconWidget();
+
     // error messages
     void error_grid_checkDomainLength();
     void error_matlab();
@@ -87,7 +90,8 @@ private:
     double dispersion_T(double,double);
     double dispersion_L(double,double);
     double round(double);
-
+    QSize QTableWidgetSize(QTableWidget*);
+    void readAndSplit(QFile &,QStringList &);
 
     // variables
     double SF_H;

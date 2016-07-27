@@ -1297,6 +1297,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
          <property name="value">
           <double>0.200000000000000</double>
          </property>
@@ -3093,32 +3096,6 @@
        <attribute name="title">
         <string>Output</string>
        </attribute>
-       <widget class="QSpinBox" name="nOutFiles">
-        <property name="geometry">
-         <rect>
-          <x>160</x>
-          <y>20</y>
-          <width>47</width>
-          <height>24</height>
-         </rect>
-        </property>
-        <property name="maximum">
-         <number>9</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>20</y>
-          <width>151</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Number of output files</string>
-        </property>
-       </widget>
        <widget class="Line" name="line_28">
         <property name="geometry">
          <rect>
@@ -3132,20 +3109,10 @@
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
-       <widget class="QTableWidget" name="tableWidget">
-        <property name="geometry">
-         <rect>
-          <x>45</x>
-          <y>100</y>
-          <width>631</width>
-          <height>241</height>
-         </rect>
-        </property>
-       </widget>
        <widget class="QCheckBox" name="storeAscii_onOff">
         <property name="geometry">
          <rect>
-          <x>240</x>
+          <x>290</x>
           <y>20</y>
           <width>121</width>
           <height>21</height>
@@ -3161,7 +3128,7 @@
        <widget class="QSpinBox" name="nASCII">
         <property name="geometry">
          <rect>
-          <x>580</x>
+          <x>620</x>
           <y>20</y>
           <width>61</width>
           <height>24</height>
@@ -3177,7 +3144,7 @@
        <widget class="QLabel" name="ACCII_label">
         <property name="geometry">
          <rect>
-          <x>380</x>
+          <x>430</x>
           <y>20</y>
           <width>211</width>
           <height>21</height>
@@ -3190,7 +3157,7 @@
        <widget class="QLabel" name="ASCII_label2">
         <property name="geometry">
          <rect>
-          <x>650</x>
+          <x>690</x>
           <y>20</y>
           <width>211</width>
           <height>21</height>
@@ -3199,6 +3166,96 @@
         <property name="text">
          <string>time steps.</string>
         </property>
+       </widget>
+       <widget class="QComboBox" name="DropDownListOutputType">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>20</y>
+          <width>201</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>No outputs</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Kinematics (all information)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Wave gagues </string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QLabel" name="ACCII_label_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>41</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Type:</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="outputTable" native="true">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>781</width>
+          <height>301</height>
+         </rect>
+        </property>
+        <widget class="QSpinBox" name="nOutFiles">
+         <property name="geometry">
+          <rect>
+           <x>150</x>
+           <y>10</y>
+           <width>47</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>10</y>
+           <width>151</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Number of output files</string>
+         </property>
+        </widget>
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="geometry">
+          <rect>
+           <x>35</x>
+           <y>40</y>
+           <width>681</width>
+           <height>241</height>
+          </rect>
+         </property>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_3">
