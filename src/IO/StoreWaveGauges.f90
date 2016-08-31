@@ -65,7 +65,7 @@ IF(it==0)THEN
 ELSE
    !
    IF(curvilinearOnOff == 0)THEN
-           write(fileop(io),'(F10.6 )',advance='no') time
+           write(fileop(io),'(F14.6 )',advance='no') time
            DO i = 1,nOutFiles
                    WRITE(fileop(io),'(F10.6)',advance='no') (eta(Output(i)%xbeg+GhostGridX,Output(i)%ybeg+GhostGridY))
            END DO

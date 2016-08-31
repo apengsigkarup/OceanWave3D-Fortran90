@@ -187,7 +187,7 @@ void MainWindow::openFile(){
     // outputs
     readAndSplit(inputFile,tmp_list);
 
-    if ((tmp_list[0].toInt()==0) & (tmp_list[1].toInt()==0)){
+    if ((tmp_list[0].toInt()==0) & (tmp_list[1].toInt()==0)){ // no outputs
         ui->storeAscii_onOff->setChecked(false);
         ui->nOutFiles->setValue(0);
     } else {
@@ -197,6 +197,12 @@ void MainWindow::openFile(){
             ui->ASCII_label2->setVisible(true);
             ui->nASCII->setVisible(true);
             ui->nASCII->setValue(-1*tmp_list[0].toInt());
+        } else {
+            ui->storeAscii_onOff->setChecked(false);
+            ui->ACCII_label->setVisible(false);
+            ui->ASCII_label2->setVisible(false);
+            ui->nASCII->setVisible(false);
+
         }
 
         if (tmp_list[3].toInt()>0){// Kinematics or wave gauge files
@@ -601,7 +607,13 @@ void MainWindow::writeInputFile()
     }
 
     outStream << mode << " 0\n"; // We hardcode the surface pressure term
-    outStream << "1 6 10 0.08 0.08 0.4 \n"; // SG-filtering
+    if (ui->waveType->currentIndex()==5) {
+        outStream << "1 6 10 1 1 1 \n"; // for wave padle we need stronger boundary filtering
+    } else {
+        outStream << "1 6 10 0.08 0.08 0.4 \n"; // SG-filtering
+    }
+
+
     if ((ui->waveType->currentIndex()==5) & (ui->pressureDampingOrRelax->currentIndex()==0)){
         outStream << "0 " << rampTime << " 0 X 0 \n"; // For wave paddle signal and pressure zone we don't need any relaxation zones
         outStream << "1 1\n";
