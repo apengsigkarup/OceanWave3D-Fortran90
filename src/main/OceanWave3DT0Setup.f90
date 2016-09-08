@@ -602,7 +602,6 @@ SUBROUTINE OceanWave3DT0Setup
        '***     Software library developed in 2009 by         ***',/,&
        '***                                                   ***',/,&
        '***     Allan P. Engsig-Karup                         ***',/,&
-       '***     Guillaume Ducrozet                            ***',/,&
        '***                                                   ***',/,&
        '*** At DTU Informatics                                ***',/,&
        '***    Scientific Computing Section                   ***',/,&

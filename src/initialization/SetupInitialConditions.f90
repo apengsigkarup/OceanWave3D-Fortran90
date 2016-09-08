@@ -681,7 +681,7 @@ SUBROUTINE SetupInitialConditions
      ! relaxation zone)
      y0 = FineGrid%x(RelaxZones(1)%idx(2),1)
      ! Define bottom
-     IF (Lz>0)
+     IF (Lz>0) THEN
         CALL SubmergedBar_2D(FineGrid,y0,GhostGridX)
      ELSE
       !-------------------------------------------------------------------------                                                            

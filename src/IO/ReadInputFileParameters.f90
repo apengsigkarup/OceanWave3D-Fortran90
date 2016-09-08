@@ -128,9 +128,11 @@ SUBROUTINE ReadInputFileParameters
      betaprecond = 0
   ENDIF
   WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)=(',alpha,',',beta,',',gamma,')'
-  WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)=(',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
+  WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)='
+  WRITE (*,901) '      (',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
   WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)=(',alpha,',',beta,',',gamma,')'
-  WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)=(',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
+  WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)='
+  WRITE (fileop(1),901) '      (',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
   IF (2*alpha+1>FineGrid%Nx .AND. FineGrid%Nx>1) THEN
      GOTO 101
   ENDIF
@@ -372,7 +374,8 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) filteringONOFF, filterALPHA, filterORDER, sigma_filt(1), sigma_filt(2), sigma_filt(3)
   IF (filteringONOFF>0) THEN
      WRITE(*,*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed after every ',filteringONOFF,' time step.' 
-     WRITE(fileop(1),*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed after every ',filteringONOFF,' time step.' 
+     WRITE(fileop(1),*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed'
+     WRITE(fileop(1),*) '      after every ',filteringONOFF,' time step.' 
      filterNP = filterALPHA*2+1
      ALLOCATE(filtercoefficients(filterNP),tmpfilter(max(filterNP,13)))
      filtercoefficients = zero; tmpfilter = zero
@@ -546,7 +549,8 @@ SUBROUTINE ReadInputFileParameters
         IF (abs(ispec)<30) THEN
            Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
         ELSE
-           Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle, a spreading factor and a JONSWAP gamma factor.'
+           Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle,'
+           Print *, '                          a spreading factor and a JONSWAP gamma factor.'
         END IF
         STOP
      END IF
