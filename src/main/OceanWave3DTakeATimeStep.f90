@@ -66,7 +66,6 @@ SUBROUTINE OceanWave3DTakeATimeStep
      CALL CloseVariables
      stop
   END IF
-
   time = time + dt
 
   CALL SYSTEM_CLOCK(count_1, count_rate, count_max)

@@ -16,17 +16,18 @@ curdir = cd;
 %dirpath = '/Users/apek/OW3Dtest';
 %dirpath = '/Users/apek/Desktop/OCW3D';
 %dirpath = '/Users/apek/Desktop/OCWD3DWhalinTest';
-%cd(dirpath)
+dirpath = '/Users/apek/Desktop/OCW3DTest';
+cd(dirpath)
 %
 %************************************************************************
 % *** Set these values to correspond to the run at hand.***
 initialstep = 0;
-Nsteps = 20; %915;
-jump   = 2;
+Nsteps = 2000; %915;
+jump   = 25;
 dt     = .0245
 g      = 9.81;
 plotmethod = 2;  % 1-> 2D, 2->3D
-Amax=1.;%10*50*0.125;       % To set the scale of the z-axis plot
+Amax=0.1;%10*50*0.125;       % To set the scale of the z-axis plot
 IOmethod = 1; %0:binary ; 1:classical unformatted ; 2:unformatted ftn95
 fac = 1;       %1e-1;
 %
@@ -143,7 +144,6 @@ for tstep = initialstep : jump : Nsteps
     end
     drawnow
     %hold on
-    E'
-    pause(0.3)
+    pause(0.1)
     % pause
 end
