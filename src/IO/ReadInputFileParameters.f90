@@ -305,15 +305,15 @@ SUBROUTINE ReadInputFileParameters
         ! Check that the requested output ranges exist on this grid.
         !
         if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
-           Print *, 'ReadInputFileParameters: Kinematics xrange is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid'
            stop
         end if
         if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
-           Print *, 'ReadInputFileParameters: Kinematics yrange is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics y coorindate range is invalid'
            stop
         end if
         if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
-           Print *, 'ReadInputFileParameters: Kinematics trange is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
            stop
         end if
         ! Open the required output files
@@ -325,7 +325,7 @@ SUBROUTINE ReadInputFileParameters
   END IF
   go to 111
 110 print *, 'ReadInputFile Parameters:  Error reading kinematics file parameters.'
-  print *, 'Failed after reading ',i-1,' output file lines.'
+  print *, 'Failed after reading line ',i,' for the output file configurations.'
   stop
 111 continue
 
