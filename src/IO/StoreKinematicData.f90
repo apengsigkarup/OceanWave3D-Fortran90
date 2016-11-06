@@ -17,10 +17,12 @@ IMPLICIT NONE
 INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
+INTEGER :: FOUT
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z
 ! Automatic work space
 REAL(KIND=long) :: U(Nz,Nx,Ny), V(Nz,Nx,Ny), W(Nz,Nx,Ny), d(Nx,Ny)
+CHARACTER(len=30) :: form
 !
 ! Assign the local pointers
 !
@@ -31,18 +33,30 @@ hy => FineGrid%hy; eta => WaveField%E; etax => WaveField%Ex; etay => WaveField%E
 !
 i0=Output(io)%xbeg+GhostGridX; i1=Output(io)%xend+GhostGridX; is=Output(io)%xstride; 
 j0=Output(io)%ybeg+GhostGridY; j1=Output(io)%yend+GhostGridY; js=Output(io)%ystride; 
+! Determine fileoutput
+print*,'formattype=',formattype
+IF(formattype==21)THEN
+   WRITE(unit=filename, FMT="(A,I2.2,A,I5.5,A)") "Kinematics_",io,"_",it,".bin"
+   form="unformatted" ! binary format chosen
+   FOUT = 22 ! file handle
+   OPEN (unit=FOUT, file=filename,form=form)
+   WRITE(*,FMT='(A,A)') '  File output = ',filename
+ELSE
+   FOUT = FILEOP(io+1)
+   WRITE(*,FMT='(A,I2)') '  File output = ',FOUT
+END IF
 IF(it==0)THEN
    !
    ! Save the grid data on the first call
    !
-   write (fileop(io+1)) Output(io)%xbeg,Output(io)%xend,Output(io)%xstride, &
+   write (FOUT) Output(io)%xbeg,Output(io)%xend,Output(io)%xstride, &
         Output(io)%ybeg, Output(io)%yend, Output(io)%ystride,               &
         Output(io)%tbeg,Output(io)%tend,Output(io)%tstride, dt,             &
         FineGrid%Nz+GhostGridZ
    !
-   WRITE (fileop(io+1)) ( ( x(i,j), y(i,j), h(i,j), hx(i,j), hy(i,j), &
+   WRITE (FOUT) ( ( x(i,j), y(i,j), h(i,j), hx(i,j), hy(i,j), &
         i=i0,i1,is ), j=j0,j1,js ) 
-   WRITE (fileop(io+1)) (z(i),i=1,Nz)
+   WRITE (FOUT) (z(i),i=1,Nz)
    IF(curvilinearOnOff/=0)THEN
       Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
    END IF
@@ -54,16 +68,16 @@ ELSE
       !
       ! First the free surface elevation and gradient at all points in this slice
       ! 
-      WRITE (fileop(io+1)) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js) 
+      WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js) 
       IF(Nx > 1) THEN
-         WRITE (fileop(io+1)) ( ( etax(i,j), i=i0,i1,is ), j=j0,j1,js) 
+         WRITE (FOUT) ( ( etax(i,j), i=i0,i1,is ), j=j0,j1,js) 
       ELSE
-         WRITE (fileop(io+1)) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
+         WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
       END IF
       IF(Ny > 1) THEN
-         WRITE (fileop(io+1)) ( ( etay(i,j), i=i0,i1,is ), j=j0,j1,js) 
+         WRITE (FOUT) ( ( etay(i,j), i=i0,i1,is ), j=j0,j1,js) 
       ELSE
-         WRITE (fileop(io+1)) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
+         WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
       END IF
       !
       ! The fluid thickness d=h+eta
@@ -77,7 +91,7 @@ ELSE
       ! Then the velocity potential at all points in this horizontal slice and at all sigma 
       ! (vertical) locations.  
       !
-      WRITE (fileop(io+1)) ( ( ( phi(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+      WRITE (FOUT) ( ( ( phi(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
       !
       ! Then the velocities at all points in this horizontal slice and at all sigma 
       ! (vertical) locations.  
@@ -109,7 +123,7 @@ ELSE
          U=zero
       END IF
       !
-      WRITE (fileop(io+1)) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+      WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
       ! 
       IF (FineGrid%Ny>1) THEN
          ! dphi/dy
@@ -127,22 +141,26 @@ ELSE
       ELSE
          V=zero
       END IF
-      WRITE (fileop(io+1)) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+      WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
       !
       ! Write the vertical velocity
       !
-      WRITE (fileop(io+1)) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+      WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
       !
       ! Compute du/dsigma and write du/dz to disc
       !
       CALL DiffZArbitrary(U,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      WRITE (fileop(io+1)) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+      WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
       !
       CALL DiffZArbitrary(V,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      WRITE (fileop(io+1)) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+      WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
    END IF
-End IF
+END IF
 
+IF(formattype==21)THEN
+   ! close file access
+   CLOSE(FOUT)
+END IF
 END SUBROUTINE StoreKinematicData

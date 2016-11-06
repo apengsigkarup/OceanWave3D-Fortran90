@@ -3,7 +3,7 @@
 % from the fortran OceanWave3D model. The script can be easily tailored
 % to output data from other data files as well.
 %
-% By Allan P. Engsig-Karup, apek@imm.dtu.dk.
+% By Allan P. Engsig-Karup, apek@dtu.dk.
 
 % Show free surface evolution
 clear all; close all

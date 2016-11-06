@@ -288,7 +288,7 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) StoreDataONOFF, formattype
   IF(formattype==20)THEN
      BACKSPACE(FILEIP(1))
-     READ (FILEIP(1),*) StoreDataONOFF, iKinematics, formattype, nOutFiles
+     READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
      Allocate (Output(nOutFiles))
      IF (nOutFiles>10)THEN
         print *, 'Max. 10 kinematics output files at this point.'
@@ -309,7 +309,7 @@ SUBROUTINE ReadInputFileParameters
            stop
         end if
         if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
-           Print *, 'ReadInputFileParameters: Kinematics y coorindate range is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid'
            stop
         end if
         if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
@@ -319,6 +319,40 @@ SUBROUTINE ReadInputFileParameters
         ! Open the required output files
         OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
              STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
+     END Do
+  ELSEIF(formattype==21)THEN
+     ! APEK: Configuration designed for extracting data on a per time step basis
+     BACKSPACE(FILEIP(1))
+     READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
+     Allocate (Output(nOutFiles))
+     IF (nOutFiles>10)THEN
+        print *, 'Max. 10 kinematics output files at this point.'
+        stop
+     END IF
+     print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     print *, ' '
+     write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     write(fileop(1),*) ' '
+     Do i=1,nOutFiles
+        READ (FILEIP(1),*,err=110)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
+             Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+        !                                                                                                                                                                                        ! Check that the requested output ranges exist on this grid.                                                                                                                             !                                                                                                                                                                                
+        if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid'
+           stop
+        end if
+        if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid'
+           stop
+        end if
+        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
+           stop
+        end if
+!!   No need to open file in advanced, since we will be outputting data at requested times in files Kinematics_**_0000X.bin, where X is the time step no, cf. StoreKinematicsSpecific.f90
+!!       Open the required output files                                                                                                                                                
+!       OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
+!           STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
      END Do
   ELSE
      iKinematics=0
