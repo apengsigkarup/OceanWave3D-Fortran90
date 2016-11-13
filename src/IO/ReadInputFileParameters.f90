@@ -353,7 +353,39 @@ SUBROUTINE ReadInputFileParameters
 !!       Open the required output files                                                                                                                                                
 !       OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
 !           STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
-     END Do
+     END DO
+  ELSEIF(formattype==22)THEN
+     ! APEK: Configuration designed for extracting data on a per time step basis                                                                                                          
+     BACKSPACE(FILEIP(1))
+     READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
+     Allocate (Output(nOutFiles))
+     IF (nOutFiles>10)THEN
+        print *, 'Max. 10 kinematics output files at this point.'
+        stop
+     END IF
+     print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     print *, ' '
+     write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     write(fileop(1),*) ' '
+     Do i=1,nOutFiles
+        READ (FILEIP(1),*,err=110)Output(i)%x,Output(i)%y,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+        print *, '  Location ',i,' : (x,y) = (',Output(i)%x,',',Output(i)%y,')'
+        !                                                                                                                                                                                
+        ! Check that the requested output ranges exist on this grid.
+        !
+        if ( Output(i)%x<zero .or. Output(i)%x>Lx ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid.'
+           stop
+        end if
+        if ( Output(i)%y<zero .or. Output(i)%y>Ly ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid.'
+           stop
+        end if
+        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
+           stop
+        end if
+     END DO
   ELSE
      iKinematics=0
   END IF

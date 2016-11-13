@@ -171,6 +171,10 @@ END TYPE BreakingModelParam
 
 TYPE OutputParam
    INTEGER :: xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride
+   REAL(KIND=long) :: x,y    ! coordinates for extracting kinematics in a water column
+   INTEGER                        :: idx(4)         ! index list start stop [xmin xmax ymin ymax]
+   REAL(KIND=long), DIMENSION(:), POINTER :: stencilx    ! coefficient values of interpolation stencil                  
+   REAL(KIND=long), DIMENSION(:), POINTER :: stencily    ! coefficient values of interpolation stencil 
 END TYPE OutputParam
 
 
