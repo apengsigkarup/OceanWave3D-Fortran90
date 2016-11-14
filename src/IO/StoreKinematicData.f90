@@ -19,7 +19,7 @@ INTEGER :: Nx, Ny, Nz, io, it
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
 INTEGER :: FOUT
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
-REAL(KIND=long), DIMENSION(:), POINTER   :: z
+REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
 ! Automatic work space
 REAL(KIND=long) :: U(Nz,Nx,Ny), V(Nz,Nx,Ny), W(Nz,Nx,Ny), d(Nx,Ny)
 REAL(KIND=long) :: tmpx(Nx), tmpy(Ny)
@@ -44,7 +44,7 @@ ELSE
   ! search
   DO i=1,Nx
     IF(tmpx(i)>0)THEN
-       Output(io)%idx(1) = i-1-alpha
+       Output(io)%idx(1) = i-alpha
        Output(io)%idx(2) = i+alpha
        EXIT ! Out of DO loop
     END IF
@@ -53,7 +53,7 @@ ELSE
     tmpy = y(1,1:Ny)-Output(io)%y
     DO j=1,Ny
       IF(tmpy(j)>0)THEN
-         Output(io)%idx(3) = j-1-beta
+         Output(io)%idx(3) = j-beta
          Output(io)%idx(4) = j+beta
          EXIT ! Out of DO loop
       END IF
@@ -64,7 +64,12 @@ ELSE
   ENDIF
   ! determine stencil weights for the interpolation
   ALLOCATE( Output(io)%stencilx(2*alpha+1) )
-  CALL TaylorFDStencils1DArbitrary(alpha,alpha,0,Output(io)%stencilx,Output(io)%x)
+  ALLOCATE( tmpxval(2*alpha+1) )
+  tmpxval = x(Output(io)%idx(1) : Output(io)%idx(2),1)
+  tmpxval(alpha+1) = Output(io)%x
+  CALL TaylorFDStencils1DArbitrary(alpha,alpha,0,Output(io)%stencilx,tmpxval)
+!  Output(io)%stencilx = zero
+  print*,'stencilx = ',Output(io)%stencilx
   IF(Ny>1)THEN
      ALLOCATE( Output(io)%stencily(2*beta+1) )
      ! weights in stream_func_wave_finite.f
@@ -75,6 +80,10 @@ ELSE
   i1=Output(io)%idx(2) ! xmax
   j0=Output(io)%idx(3) ! ymin
   j1=Output(io)%idx(4) ! ymax
+  print*,'i0=',i0
+  print*,'i1=',i1
+  print*,'j0=',j0
+  print*,'j1=',j1
 END IF
 ! Determine fileoutput
 print*,'formattype=',formattype
@@ -99,6 +108,7 @@ IF(it==0)THEN
    ! Save the grid data on the first call
    !
    IF(formattype==22)THEN
+!     WRITE (FOUT) Nx,Ny,Nz
      WRITE (FOUT) Output(io)%x, Output(io)%y, Output(io)%tbeg,Output(io)%tend, &
           Output(io)%tstride, dt, FineGrid%Nz+GhostGridZ
      IF(FineGrid%Nx>1 .AND. FineGrid%Ny>1) THEN
@@ -110,7 +120,9 @@ IF(it==0)THEN
         WRITE (FOUT) hint, etaint, dint
      ELSE IF(FineGrid%Nx>1) THEN
         hint   = DOT_PRODUCT( Output(io)%stencilx,h(i0:i1,1)   )
+        print*,'hint = ',hint
         etaint = DOT_PRODUCT( Output(io)%stencilx,eta(i0:i1,1) )
+        print*,'eta = ',etaint
         dint   = hint + etaint
         WRITE (FOUT) hint, etaint, dint
      ELSE IF(FineGrid%Ny>1) THEN
@@ -122,6 +134,7 @@ IF(it==0)THEN
 !          i=i0,i1,is ), j=j0,j1,js )
      ! are these z values the sigma values??
      WRITE (FOUT) (z(i),i=1,Nz)
+     print*,'z=',z
      IF(curvilinearOnOff/=0)THEN
         Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
      END IF
@@ -129,8 +142,7 @@ IF(it==0)THEN
      ! formattype != 22
      write (FOUT) Output(io)%xbeg,Output(io)%xend,Output(io)%xstride, &
           Output(io)%ybeg, Output(io)%yend, Output(io)%ystride,               &
-          Output(io)%tbeg,Output(io)%tend,Output(io)%tstride, dt,             &
-          FineGrid%Nz+GhostGridZ
+          Output(io)%tbeg,Output(io)%tend,Output(io)%tstride, dt, Nz
      !
      WRITE (FOUT) ( ( x(i,j), y(i,j), h(i,j), hx(i,j), hy(i,j), &
           i=i0,i1,is ), j=j0,j1,js ) 
