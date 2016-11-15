@@ -69,7 +69,7 @@ ELSE
   tmpxval(alpha+1) = Output(io)%x
   CALL TaylorFDStencils1DArbitrary(alpha,alpha,0,Output(io)%stencilx,tmpxval)
 !  Output(io)%stencilx = zero
-  print*,'stencilx = ',Output(io)%stencilx
+!  print*,'stencilx = ',Output(io)%stencilx
   IF(Ny>1)THEN
      ALLOCATE( Output(io)%stencily(2*beta+1) )
      ! weights in stream_func_wave_finite.f
@@ -80,13 +80,13 @@ ELSE
   i1=Output(io)%idx(2) ! xmax
   j0=Output(io)%idx(3) ! ymin
   j1=Output(io)%idx(4) ! ymax
-  print*,'i0=',i0
-  print*,'i1=',i1
-  print*,'j0=',j0
-  print*,'j1=',j1
+!  print*,'i0=',i0
+!  print*,'i1=',i1
+!  print*,'j0=',j0
+!  print*,'j1=',j1
 END IF
+
 ! Determine fileoutput
-print*,'formattype=',formattype
 IF(formattype==21)THEN
    WRITE(unit=filename, FMT="(A,I2.2,A,I5.5,A)") "Kinematics_",io,"_",it,".bin"
    form="unformatted" ! binary format chosen
@@ -103,6 +103,7 @@ ELSE
    FOUT = FILEOP(io+1)
    WRITE(*,FMT='(A,I2)') '  File output = ',FOUT
 END IF
+
 IF(it==0)THEN
    !
    ! Save the grid data on the first call
@@ -124,6 +125,7 @@ IF(it==0)THEN
         etaint = DOT_PRODUCT( Output(io)%stencilx,eta(i0:i1,1) )
         print*,'eta = ',etaint
         dint   = hint + etaint
+        print*,'dint = ',dint
         WRITE (FOUT) hint, etaint, dint
      ELSE IF(FineGrid%Ny>1) THEN
         PRINT*,'2D setup in y-direction for formattype=22 in StoreKinematicData.f90 not setup yet.'
@@ -151,7 +153,9 @@ IF(it==0)THEN
         Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
      END IF
    END IF
+
 ELSE
+
    !
    IF(curvilinearOnOff == 0)THEN
      IF(formattype==22)THEN
@@ -169,11 +173,11 @@ ELSE
              d(i,j)=h(i,j)+eta(i,j);
           END DO
        END DO
-       CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+!       CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+!           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
       ! Compute dphi/dsigma
       !
-      CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+       CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
       IF (FineGrid%Nx>1) THEN
          !
@@ -203,6 +207,8 @@ ELSE
          END DO
       END DO
       WRITE (FOUT) Uint
+!      print*,'Uint:stencilx=',Output(io)%stencilx
+!      print*,'Uint = ',Uint
 !      WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
       ! 
       IF (FineGrid%Ny>1) THEN
