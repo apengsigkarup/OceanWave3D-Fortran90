@@ -12,7 +12,7 @@ void MainWindow::run(){
     //     out << QString("Some text");
     writeInputFile();
     QProcess *OCW = new QProcess();
-    OCW->start("/usr/bin/xterm -hold -e \\\"OceanWave3D\\\"");
+    OCW->start("/usr/bin/xterm -hold -e \"OceanWave3D\"");
 }
 
 void MainWindow::openWorkDirDialog(){
