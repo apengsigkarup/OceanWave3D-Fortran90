@@ -21,7 +21,7 @@
    COMPLEX(kind=long) :: phase
    EXTERNAL gasdev, ran1_b, jonswap_spectrum
 !
-! Open the file to write the spectral coeeficients out to 
+! Open the file to write the spectral coeficients out to 
 !
    open(unit=78,file='spectrum',status='unknown')
    write(78,79)

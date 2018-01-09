@@ -21,8 +21,8 @@ curdir = cd;
 %************************************************************************
 % *** Set these values to correspond to the run at hand.***
 initialstep = 0;
-Nsteps = 20; %915;
-jump   = 2;
+Nsteps = 1280; %915;
+jump   = 40;
 dt     = .0245
 g      = 9.81;
 plotmethod = 2;  % 1-> 2D, 2->3D
@@ -142,8 +142,6 @@ for tstep = initialstep : jump : Nsteps
             mesh(X,Y,abs(E-P)*fac)
     end
     drawnow
-    %hold on
-    E'
     pause(0.3)
     % pause
 end

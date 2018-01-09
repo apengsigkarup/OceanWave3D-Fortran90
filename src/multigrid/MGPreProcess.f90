@@ -4,13 +4,13 @@
 !! Allan P. Engsig-Karup, 23 Aug 2007.
 !<
 SUBROUTINE MGPreProcess (FineGrid,GhostGridX,GhostGridY,GhostGridZ,MGCoarseningStrategy,alpha,beta,gamma,Precond,&
-	MGmaxgrids,CurvilinearONOFF)
+	MGmaxgrids,CurvilinearONOFF,fileop)
 USE Precision
 USE Constants
 USE MGLevels
 USE GlobalVariables, ONLY: filename, formattype
 IMPLICIT NONE
-INTEGER :: k, GhostGridX, GhostGridY, GhostGridZ, alpha, beta, gamma, Precond, MGmaxgrids
+INTEGER :: k, GhostGridX, GhostGridY, GhostGridZ, alpha, beta, gamma, Precond, MGmaxgrids, fileop
 INTEGER :: xcoarsen, ycoarsen, zcoarsen, MGCoarseningStrategy, CurvilinearONOFF
 INTEGER :: NFx, NFy, NFz, XFAC, YFAC, ZFAC
 TYPE (Level_def) :: FineGrid
@@ -306,7 +306,12 @@ DO k = MG_N_levels-1, 1, -1
 	END IF
 	! FIXME: h is not defined on ghost points since it is not needed there
 	arrLevels(k)%h(1+GhostGridX:arrLevels(k)%Nx+GhostGridX,1+GhostGridY:arrLevels(k)%Ny+GhostGridY)   = &
-    	arrLevels(k+1)%h(1+GhostGridX:arrLevels(k+1)%Nx+GhostGridX:XFAC,1+GhostGridY:arrLevels(k+1)%Ny+GhostGridY:YFAC)
+      arrLevels(k+1)%h(1+GhostGridX:arrLevels(k+1)%Nx+GhostGridX:XFAC,1+GhostGridY:arrLevels(k+1)%Ny+GhostGridY:YFAC)
+ !hbb I'm setting the depth on the ghost points here, as they are in fact used below
+       arrLevels(k)%h(1,:) = arrLevels(k)%h(1+GhostGridX,:)
+       arrLevels(k)%h(Nxg,:) = arrLevels(k)%h(Nxg-GhostGridX,:)
+       arrLevels(k)%h(:,1) = arrLevels(k)%h(:,1+GhostGridY)
+       arrLevels(k)%h(:,Nyg) = arrLevels(k)%h(:,Nyg-GhostGridY)
 
 	WRITE (*,100) '     (Nx,Ny,Nz) = (',arrLevels(k)%Nx,',',arrLevels(k)%Ny,',',arrLevels(k)%Nz,')'
 
@@ -323,7 +328,7 @@ DO k = MG_N_levels, 1, -1
 !print*,'gamma=',gamma
 !print*,'CurvilinearONOFF=',CurvilinearONOFF
 	CALL PreparePreconditioner(arrLevels(k)%PreconditioningMatrix,arrLevels(k),GhostGridX, GhostGridY, GhostGridZ, &
-		alpha, beta, gamma, 1, CurvilinearONOFF)
+		alpha, beta, gamma, 1, CurvilinearONOFF,fileop)
 
 IF (0==1) THEN
     WRITE(filename,'(a,i4.4,a4)') 'P',k,'.bin'        
@@ -336,9 +341,9 @@ END IF
 
 	IF (k==1) THEN
 		! Prepare for using direct LU-FACTORIZATION at coarsest gridlevel
-		! we can only factor on one level with current setup due to global variables in LUFactor subroutine
+    ! we can only factor on one level with current setup due to global variables in LUFactor subroutine
 		CALL FactorPreconditioner(arrLevels(k)%PreconditioningMatrix, &
-    		 (arrLevels(k)%Nx+2*GhostGridX)*(arrLevels(k)%Ny+2*GhostGridY)*(arrLevels(k)%Nz+GhostGridZ))
+    		 (arrLevels(k)%Nx+2*GhostGridX)*(arrLevels(k)%Ny+2*GhostGridY)*(arrLevels(k)%Nz+GhostGridZ),fileop)
     !         END IF
 !             print*,'LU factorization of coarsest ceoffciient matrix in multigrid preconditinoing strategy done...'
 !             print*,'k=',k

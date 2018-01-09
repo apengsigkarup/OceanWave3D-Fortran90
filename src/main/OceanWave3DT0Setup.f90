@@ -391,7 +391,7 @@ SUBROUTINE OceanWave3DT0Setup
 
      ! Prepare for Multigrid
      CALL MGPreProcess ( FineGrid, GhostGridX, GhostGridY, GhostGridZ, MGCoarseningStrategy, alphaprecond, betaprecond, &
-          gammaprecond, Precond, MGmaxgrids, CurvilinearONOFF)
+          gammaprecond, Precond, MGmaxgrids, CurvilinearONOFF,fileop(1))
   ENDIF
   !
   ! DETERMINE HIGH-ORDER FINITE DIFFERENCE STENCILS

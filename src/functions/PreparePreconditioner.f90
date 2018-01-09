@@ -33,7 +33,7 @@ SELECT CASE (Precond)
 			! Determine linear sigma-coefficients
 			ALLOCATE(FineGrid%dsigmanew(Nzg,Nxg,Nyg,5),STAT=iERR)
             CALL CheckError(iERR,11)
-			FineGrid%dsigmanew = zero
+            FineGrid%dsigmanew = zero
 
 	        CALL ALLOCATE_Wavefield_Type(tmp_wavefield, Nx, Ny, Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
 
@@ -87,7 +87,8 @@ SELECT CASE (Precond)
 !            print*,'Nzg=',Nzg
 !            read*            
 			CALL PrepareFullOperatorStencils(FineGrid%DiffStencils,FullRankStencils,alpha,beta,gamma,Nxg,Nyg,Nzg) ! table for generating linear system
-			CALL ALLOCATE_Wavefield_Type(tmp_wavefield, Nx, Ny, Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
+                    CALL ALLOCATE_Wavefield_Type(tmp_wavefield, Nx, Ny, Nz, GhostGridX, GhostGridy, GhostGridZ, 0)
+
 		    CALL DetermineTransformationConstantsArray(Nxg,Nyg,Nzg,FineGrid,FineGrid%dsigmanew,tmp_wavefield)
             ! GD: Determine the cross derivatives coefficients
             CALL ConstructTableCrossDerivatives(FineGrid, FineGrid%DiffStencils, gamma, GhostGridX, GhostGridY, GhostGridZ, 1)
