@@ -128,9 +128,11 @@ SUBROUTINE ReadInputFileParameters
      betaprecond = 0
   ENDIF
   WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)=(',alpha,',',beta,',',gamma,')'
-  WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)=(',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
+  WRITE (*,901) '   Half-width stencils: (alpha,beta,gamma)='
+  WRITE (*,901) '      (',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
   WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)=(',alpha,',',beta,',',gamma,')'
-  WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)=(',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
+  WRITE (fileop(1),901) '   Half-width stencils: (alpha,beta,gamma)='
+  WRITE (fileop(1),901) '      (',alphaprecond,',',betaprecond,',',gammaprecond,') (Preconditioner)'
   IF (2*alpha+1>FineGrid%Nx .AND. FineGrid%Nx>1) THEN
      GOTO 101
   ENDIF
@@ -286,7 +288,7 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) StoreDataONOFF, formattype
   IF(formattype==20)THEN
      BACKSPACE(FILEIP(1))
-     READ (FILEIP(1),*) StoreDataONOFF, iKinematics, formattype, nOutFiles
+     READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
      Allocate (Output(nOutFiles))
      IF (nOutFiles>10)THEN
         print *, 'Max. 10 kinematics output files at this point.'
@@ -303,27 +305,93 @@ SUBROUTINE ReadInputFileParameters
         ! Check that the requested output ranges exist on this grid.
         !
         if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
-           Print *, 'ReadInputFileParameters: Kinematics xrange is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid'
            stop
         end if
         if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
-           Print *, 'ReadInputFileParameters: Kinematics yrange is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid'
            stop
         end if
         if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
-           Print *, 'ReadInputFileParameters: Kinematics trange is invalid'
+           Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
            stop
         end if
         ! Open the required output files
         OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
              STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
      END Do
+  ELSEIF(formattype==21)THEN
+     ! APEK: Configuration designed for extracting data on a per time step basis
+     BACKSPACE(FILEIP(1))
+     READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
+     Allocate (Output(nOutFiles))
+     IF (nOutFiles>10)THEN
+        print *, 'Max. 10 kinematics output files at this point.'
+        stop
+     END IF
+     print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     print *, ' '
+     write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     write(fileop(1),*) ' '
+     Do i=1,nOutFiles
+        READ (FILEIP(1),*,err=110)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
+             Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+        !                                                                                                                                                                                        ! Check that the requested output ranges exist on this grid.                                                                                                                             !                                                                                                                                                                                
+        if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid'
+           stop
+        end if
+        if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid'
+           stop
+        end if
+        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
+           stop
+        end if
+!!   No need to open file in advanced, since we will be outputting data at requested times in files Kinematics_**_0000X.bin, where X is the time step no, cf. StoreKinematicsSpecific.f90
+!!       Open the required output files                                                                                                                                                
+!       OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
+!           STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
+     END DO
+  ELSEIF(formattype==22)THEN
+     ! APEK: Configuration designed for extracting data on a per time step basis                                                                                                          
+     BACKSPACE(FILEIP(1))
+     READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
+     Allocate (Output(nOutFiles))
+     IF (nOutFiles>10)THEN
+        print *, 'Max. 10 kinematics output files at this point.'
+        stop
+     END IF
+     print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     print *, ' '
+     write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**_XXXXX.bin".'
+     write(fileop(1),*) ' '
+     Do i=1,nOutFiles
+        READ (FILEIP(1),*,err=110)Output(i)%x,Output(i)%y,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+        print *, '  Location ',i,' : (x,y) = (',Output(i)%x,',',Output(i)%y,')'
+        !                                                                                                                                                                                
+        ! Check that the requested output ranges exist on this grid.
+        !
+        if ( Output(i)%x<zero .or. Output(i)%x>Lx ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid.'
+           stop
+        end if
+        if ( Output(i)%y<zero .or. Output(i)%y>Ly ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid.'
+           stop
+        end if
+        if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
+           stop
+        end if
+     END DO
   ELSE
      iKinematics=0
   END IF
   go to 111
 110 print *, 'ReadInputFile Parameters:  Error reading kinematics file parameters.'
-  print *, 'Failed after reading ',i-1,' output file lines.'
+  print *, 'Failed after reading line ',i,' for the output file configurations.'
   stop
 111 continue
 
@@ -372,7 +440,8 @@ SUBROUTINE ReadInputFileParameters
   READ (FILEIP(1),*) filteringONOFF, filterALPHA, filterORDER, sigma_filt(1), sigma_filt(2), sigma_filt(3)
   IF (filteringONOFF>0) THEN
      WRITE(*,*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed after every ',filteringONOFF,' time step.' 
-     WRITE(fileop(1),*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed after every ',filteringONOFF,' time step.' 
+     WRITE(fileop(1),*) '   SG(',2*filterALPHA+1,',',filterORDER,')-filtering will be employed'
+     WRITE(fileop(1),*) '      after every ',filteringONOFF,' time step.' 
      filterNP = filterALPHA*2+1
      ALLOCATE(filtercoefficients(filterNP),tmpfilter(max(filterNP,13)))
      filtercoefficients = zero; tmpfilter = zero
@@ -546,7 +615,8 @@ SUBROUTINE ReadInputFileParameters
         IF (abs(ispec)<30) THEN
            Print *, 'ReadInputFileParameters:  For IncWaveType==2 we need irregular wave parameters.'
         ELSE
-           Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle, a spreading factor and a JONSWAP gamma factor.'
+           Print *, 'ReadInputFileParameters:  For 3D waves, abs(ispec)>30, we need a heading angle,'
+           Print *, '                          a spreading factor and a JONSWAP gamma factor.'
         END IF
         STOP
      END IF

@@ -681,7 +681,67 @@ SUBROUTINE SetupInitialConditions
      ! relaxation zone)
      y0 = FineGrid%x(RelaxZones(1)%idx(2),1)
      ! Define bottom
-     CALL SubmergedBar_2D(FineGrid,y0,GhostGridX)
+     IF (Lz>0) THEN
+        CALL SubmergedBar_2D(FineGrid,y0,GhostGridX)
+     ELSE
+      !-------------------------------------------------------------------------                                                            
+      ! Read in the bottom contours from a file:                                                                                            
+      !-------------------------------------------------------------------------                                                            
+      OPEN(unit=fileip(4),file=fname_bottom,status='old')
+      READ(fileip(4),'(A)')head(4)
+      PRINT *, 'SetUpInitialConditions:  Reading the bottom contours from file:'
+      PRINT *,fname_bottom,' with header:'
+      PRINT *, head(4)
+      PRINT *, ' '
+      WRITE(FILEOP(1),*) 'SetUpInitialConditions:  Reading the bottom contours from file:'
+      WRITE(FILEOP(1),*)fname_bottom,' with header:'
+      WRITE(FILEOP(1),*) head(4)
+      WRITE(FILEOP(1),*) ' '
+      READ(fileip(4),*)  DetermineBottomGradients ! Read the gradient flag                                                                  
+
+      !-------------------------------------------------------------------------                                                            
+      ! Read h(x,y),h_x,h_xx,h_y,h_yy                                                                                                       
+      !-------------------------------------------------------------------------                                                            
+      Print *, ' Reading h,h_x,h_xx,h_y,h_yy.'
+      print *, ' '
+      write(fileop(1),*) ' Reading h,h_x,h_xx,h_y,h_yy.'
+      write(fileop(1),*) ' '
+      Do j=1+GhostGridY,ny+GhostGridY
+        DO i=1+GhostGridX,nx+GhostGridX
+          READ(fileip(4),*) FineGrid%h(i,j),    &
+                            FineGrid%hx(i,j),   &
+                            FineGrid%hxx(i,j),  &
+                            FineGrid%hy(i,j),   &
+                            FineGrid%hyy(i,j)
+        END DO
+      END DO
+
+      !-------------------------------------------------------------------------                                                            
+      ! Extend the bathymetry to the ghost points by copying the domain                                                                     
+      ! endpoint values.                                                                                                                    
+      !-------------------------------------------------------------------------                                                            
+      FineGrid%h(1,:)                   = FineGrid%h(1+GhostGridX,:);
+      FineGrid%h(:,1)                   = FineGrid%h(:,1+GhostGridY);
+      FineGrid%h(nx+2*GhostGridX,:)     = FineGrid%h(nx+GhostGridX,:);
+      FineGrid%h(:,ny+2*GhostGridY)     = FineGrid%h(:,ny+GhostGridY)
+      FineGrid%hx(1,:)                  = FineGrid%hx(1+GhostGridX,:);
+      FineGrid%hx(:,1)                  = FineGrid%hx(:,1+GhostGridY);
+      FineGrid%hx(nx+2*GhostGridX,:)    = FineGrid%hx(nx+GhostGridX,:);
+      FineGrid%hx(:,ny+2*GhostGridY)    = FineGrid%hx(:,ny+GhostGridY)
+      FineGrid%hxx(1,:)                 = FineGrid%hxx(1+GhostGridX,:);
+      FineGrid%hxx(:,1)                 = FineGrid%hxx(:,1+GhostGridY);
+      FineGrid%hxx(nx+2*GhostGridX,:)   = FineGrid%hxx(nx+GhostGridX,:);
+      FineGrid%hxx(:,ny+2*GhostGridY)   = FineGrid%hxx(:,ny+GhostGridY)
+      FineGrid%hy(1,:)                  = FineGrid%hy(1+GhostGridX,:);
+      FineGrid%hy(:,1)                  = FineGrid%hy(:,1+GhostGridY);
+      FineGrid%hy(nx+2*GhostGridX,:)    = FineGrid%hy(nx+GhostGridX,:);
+      FineGrid%hy(:,ny+2*GhostGridY)    = FineGrid%hy(:,ny+GhostGridY)
+      FineGrid%hyy(1,:)                 = FineGrid%hyy(1+GhostGridX,:);
+      FineGrid%hyy(:,1)                 = FineGrid%hyy(:,1+GhostGridY);
+      FineGrid%hyy(nx+2*GhostGridX,:)   = FineGrid%hyy(nx+GhostGridX,:);
+      FineGrid%hyy(:,ny+2*GhostGridY)   = FineGrid%hyy(:,ny+GhostGridY)
+        
+     END IF
      !
      IF(swenseONOFF==1)THEN
         IF (LinearONOFF==0) THEN

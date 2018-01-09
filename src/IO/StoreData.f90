@@ -17,7 +17,8 @@ SELECT CASE (formattype)
 	CASE DEFAULT
 		! Most efficient for large data storage
 		! no information about records stored
-        form="binary"
+!        form="binary"
+        form="unformatted"
 END SELECT
 OPEN (unit=22, file=filename,form=form)
 ! Size of free surface

@@ -24,6 +24,7 @@ IF (RKtime<relaxTransienttime) THEN
 ELSE
   FAC = one
 ENDIF
+
 !
 ! Local x- and y-coordinate arrays.
 !

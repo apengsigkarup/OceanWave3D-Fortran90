@@ -66,7 +66,6 @@ SUBROUTINE OceanWave3DTakeATimeStep
      CALL CloseVariables
      stop
   END IF
-
   time = time + dt
 
   CALL SYSTEM_CLOCK(count_1, count_rate, count_max)
@@ -187,13 +186,14 @@ SUBROUTINE OceanWave3DTakeATimeStep
   ! If kinematics output is requested save it
   !
   IF(iKinematics/=0)THEN
-     Do i=1,nOutFiles
+     WRITE(*,FMT='(A)') 'Writing kinematics output...'
+     DO i=1,nOutFiles
         IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
              mod(tstep,Output(i)%tstride)==0 )THEN
            CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                 FineGrid%Nz+GhostGridZ,i,tstep+1)
         END IF
-     END Do
+     END DO
   END IF
   !
 !
