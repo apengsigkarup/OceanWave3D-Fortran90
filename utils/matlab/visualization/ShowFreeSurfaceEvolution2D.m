@@ -21,12 +21,12 @@ curdir = cd;
 %************************************************************************
 % *** Set these values to correspond to the run at hand.***
 initialstep = 0;
-Nsteps = 1280; %915;
-jump   = 40;
+Nsteps = 400; %915;
+jump   = 20;
 dt     = .0245
 g      = 9.81;
-plotmethod = 2;  % 1-> 2D, 2->3D
-Amax=1.;%10*50*0.125;       % To set the scale of the z-axis plot
+plotmethod = 1;  % 1-> 2D, 2->3D
+Amax=.1;%10*50*0.125;       % To set the scale of the z-axis plot
 IOmethod = 1; %0:binary ; 1:classical unformatted ; 2:unformatted ftn95
 fac = 1;       %1e-1;
 %

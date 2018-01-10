@@ -544,6 +544,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! Open and initialize the kinematics output file(s) if called for
   !
   If(iKinematics/=0)THEN
+     Print *, 'Initial t=0 data to kinematics file...'
      Do i=1,nOutFiles
         CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
              FineGrid%Nz+GhostGridZ,i,0)

@@ -62,7 +62,7 @@ nx=floor((xend-xbeg)/xstride)+1; ny=floor((yend-ybeg)/ystride)+1; nt=floor((tend
 %
 % A scratch vector for reading the data
 %
-tmp=zeros(nx*ny*max(nz,5));
+tmp=zeros(nx*ny*max(nz,5),1);
 %
 % The x-y grid, the depth and bottom gradients for this slice of data
 %
