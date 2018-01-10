@@ -86,6 +86,7 @@ ELSE
 !  print*,'j1=',j1
 END IF
 
+
 ! Determine fileoutput
 IF(formattype==21)THEN
    WRITE(unit=filename, FMT="(A,I2.2,A,I5.5,A)") "Kinematics_",io,"_",it,".bin"
@@ -101,7 +102,7 @@ ELSE IF(formattype==22)THEN
    WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE
    FOUT = FILEOP(io+1)
-   WRITE(*,FMT='(A,I2)') '  File output = ',FOUT
+   WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
 END IF
 
 IF(it==0)THEN
@@ -141,7 +142,7 @@ IF(it==0)THEN
         Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
      END IF
    ELSE
-     ! formattype != 22
+     ! formattype /= 22
      write (FOUT) Output(io)%xbeg,Output(io)%xend,Output(io)%xstride, &
           Output(io)%ybeg, Output(io)%yend, Output(io)%ystride,               &
           Output(io)%tbeg,Output(io)%tend,Output(io)%tstride, dt, Nz
@@ -239,7 +240,7 @@ ELSE
       ! Write the vertical velocity
       !
  !     WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-     ELSE
+   ELSE
       !
       ! Dump this solution slice to the output file
       !
@@ -333,9 +334,11 @@ ELSE
       CALL DiffZArbitrary(V,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
       WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-    END IF
    END IF
 END IF
+END IF
 
-CLOSE(FOUT)
+if (formattype == 22 .or. formattype == 21) then 
+   CLOSE(FOUT)
+end if
 END SUBROUTINE StoreKinematicData

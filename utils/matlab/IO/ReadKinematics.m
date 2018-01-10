@@ -13,6 +13,11 @@ if exist('Nbits')==0 | exist('idn')==0
     error('Set "Nbits"=32 or 64 and "idn"= kinematics file number to read');
 end
 %
+% Turn this flag on to compute time-derivatives and pressures. 
+%
+% Pressure='yes';
+Pressure='no';
+%
 % Turn this flag on to plot up the data.  What is plotted is controlled
 % after the reading block.  
 %
@@ -130,37 +135,42 @@ for it=1:nt
     vz(it,:)=tmp;
     junk = fread(fid1,2,int_nbit);
 end
-display(['Read ',num2str(it),' data points out of ',num2str(nt)])
-%
 t=[0:nt-1]*dt*tstride;   % The time axis
-%
-% Compute the pressure and acceleration from the standard output
-% kinematics.  
-%
-% Build the 4th-order even grid time differentiation matrix
-%
-alpha=2; r=2*alpha+1; c=BuildStencilEven(alpha,1); 
-Dt=spdiags([ones(nt,1)*c(:,alpha+1)'],[-alpha:alpha],nt,nt);
-for j=1:alpha
-    Dt(j,:)=0; Dt(j,1:r)=c(:,j)';
-    Dt(nt-j+1,:)=0; Dt(nt-j+1,nt-r+1:nt)=c(:,r-j+1)';
+display(['Read ',num2str(it),' data points out of ',num2str(nt)])
+%%
+switch Pressure
+    case 'yes'
+        %
+        % Compute the pressure and acceleration from the standard output
+        % kinematics.  This is only done along the first slice in y for 3D
+        % problems.
+        %
+        % Build the 4th-order even grid time differentiation matrix
+        %
+        alpha=2; r=2*alpha+1; c=BuildStencilEven(alpha,1);
+        Dt=spdiags([ones(nt,1)*c(:,alpha+1)'],[-alpha:alpha],nt,nt);
+        for j=1:alpha
+            Dt(j,:)=0; Dt(j,1:r)=c(:,j)';
+            Dt(nt-j+1,:)=0; Dt(nt-j+1,nt-r+1:nt)=c(:,r-j+1)';
+        end
+        Dt=Dt/dt;
+        %
+        % Compute time-derivatives of eta, phi, and u and eta_tt
+        %
+        % ip=input('x point index to work with?');
+        etat=zeros(nt,nx); etatt=etat; phit=zeros(nt,nx,nz); p=phit; ut=p;
+        for ip=1:nx
+            etat(:,ip)=Dt*eta(:,ip); etatt(:,ip)=Dt*etat(:,ip);
+            %
+            for j=1:nz
+                phit(:,j,ip)=Dt*phi(:,j,ip)-w(:,j,ip).*sigma(j).*etat(:,ip);
+                p(:,j,ip)=-(phit(:,j,ip)+1/2*(u(:,j,ip).^2+w(:,j,ip).^2));
+                ut(:,j,ip)=Dt*u(:,j,ip)-uz(:,j,ip).*sigma(j).*etat(:,ip);
+            end
+        end
 end
-Dt=Dt/dt;
-%
-% Compute time-derivatives of eta, phi, and u and eta_tt
-%
-% ip=input('x point index to work with?');
-for ip=1:nx
-    etat(:,ip)=Dt*eta(:,ip); etatt(:,ip)=Dt*etat(:,ip);
-    %
-    for j=1:nz
-        phit(:,j,ip)=Dt*phi(:,j,ip)-w(:,j,ip).*sigma(j).*etat(:,ip);
-        p(:,j,ip)=-(phit(:,j,ip)+1/2*(u(:,j,ip).^2+w(:,j,ip).^2));
-        ut(:,j,ip)=Dt*u(:,j,ip)-uz(:,j,ip).*sigma(j).*etat(:,ip);
-    end
-end
-%
-% Skip the following if no graphics are wanted.  
+%%
+% A block for plotting the results
 %
 switch Plots
     case 'yes'

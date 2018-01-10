@@ -541,7 +541,9 @@ SUBROUTINE OceanWave3DT0Setup
      CALL StoreDataAscii(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,FineGrid%h,FineGrid%hx,FineGrid,899)
   ENDIF
   !
-  ! Open and initialize the kinematics output file(s) if called for
+  ! Initialize the kinematics output file(s) if called for. For formattype=20, the files
+  ! have been opened in ReadInputFileParameters.f90, otherwise new files are opened for
+  ! each time-step. 
   !
   If(iKinematics/=0)THEN
      Print *, 'Initial t=0 data to kinematics file...'

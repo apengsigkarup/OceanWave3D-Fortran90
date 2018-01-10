@@ -189,7 +189,8 @@ SUBROUTINE OceanWave3DTakeATimeStep
      DO i=1,nOutFiles
         IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
              mod(tstep,Output(i)%tstride)==0 )THEN
-           WRITE(*,FMT='(A)') 'Writing kinematics output...'
+              
+           WRITE(*,FMT='(A)') 'Writing kinematics output'
            CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                 FineGrid%Nz+GhostGridZ,i,tstep+1)
         END IF
