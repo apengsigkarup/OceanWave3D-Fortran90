@@ -349,7 +349,7 @@ SUBROUTINE ReadInputFileParameters
            Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
            stop
         end if
-!!   No need to open file in advanced, since we will be outputting data at requested times in files Kinematics_**_0000X.bin, where X is the time step no, cf. StoreKinematicsSpecific.f90
+!!   No need to open file in advance, since we will be outputting data at requested times in files Kinematics_**_0000X.bin, where X is the time step no, cf. StoreKinematicsSpecific.f90
 !!       Open the required output files                                                                                                                                                
 !       OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
 !           STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')

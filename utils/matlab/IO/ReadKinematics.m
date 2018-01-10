@@ -46,7 +46,7 @@ end
 %
 % Read the data from the file
 % These read statements must correspond exactly to what appears in the
-% Fortran subroutine IO_routines.f90:StoreKinematicData
+% Fortran subroutine: <top dir>/src/IO/StoreKinematicData.f90
 %
 junk = fread(fid1,1,int_nbit); % Read as a junk parameter
 xbeg = fread(fid1,1,'int'); %
@@ -93,6 +93,7 @@ eta=zeros(nt,nx,ny); etax=zeros(nt,nx,ny); etay=zeros(nt,nx,ny);
 phi=zeros(nt,nz,nx,ny); w=zeros(nt,nz,nx,ny); 
 u=zeros(nt,nz,nx,ny); uz=zeros(nt,nz,nx,ny);
 v=zeros(nt,nz,nx,ny); vz=zeros(nt,nz,nx,ny);
+t=[0:nt-1]*dt*tstride;   % The time axis
 %
 % Read in the solution variables eta, gradeta, phi, u, v, w, dudz, dvdz.  
 %
@@ -135,7 +136,6 @@ for it=1:nt
     vz(it,:)=tmp;
     junk = fread(fid1,2,int_nbit);
 end
-t=[0:nt-1]*dt*tstride;   % The time axis
 display(['Read ',num2str(it),' data points out of ',num2str(nt)])
 %%
 switch Pressure

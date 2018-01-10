@@ -75,7 +75,7 @@ endif
 
 # Then the blocks for specific users (this clobbers the above info.)
 ifeq ($(USER),hbb)
-  # hbb home machine
+  # hbb machine, gfortran
   FC=gfortran	
   LIBDIRS  = -L $(HOME)/lib/ 
   LINLIB   = -lharwell -lskit -llapack -lblas
