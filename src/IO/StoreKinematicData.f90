@@ -26,7 +26,8 @@ REAL(KIND=long) :: tmpx(Nx), tmpy(Ny)
 CHARACTER(len=30) :: form
 REAL(KIND=long) :: hint, etaint, dint
 REAL(KIND=long) :: Uint(Nz), Vint(Nz)
-!
+REAL(KIND=long) :: Wz(Nz,Nx,Ny)!
+
 ! Assign the local pointers
 !
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; hx => FineGrid%hx
@@ -159,33 +160,133 @@ ELSE
 
    !
    IF(curvilinearOnOff == 0)THEN
-     IF(formattype==22)THEN
-       !
-       ! Dump free surface elevation, still water depth and kinematics to the output file.
-       ! Minimal no of variables and storage is output.
-       !
-!       WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js)
-!       WRITE (FOUT) ( ( h(i,j), i=i0,i1,is ), j=j0,j1,js) 
-       !                                                                  
-       ! The fluid thickness d=h+eta
-       !            
-       DO j=1,Ny
-          DO i=1,Nx
-             d(i,j)=h(i,j)+eta(i,j);
-          END DO
-       END DO
-!       CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-!           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      ! Compute dphi/dsigma
-      !
-       CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+      IF(formattype==22)THEN
+         !
+         ! Dump free surface elevation, still water depth and kinematics to the output file.
+         ! Minimal no of variables and storage is output.
+         !
+         ! WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js)
+         ! WRITE (FOUT) ( ( h(i,j), i=i0,i1,is ), j=j0,j1,js) 
+         !                                                                  
+         ! The fluid thickness d=h+eta
+         !            
+         DO j=1,Ny
+            DO i=1,Nx
+                d(i,j)=h(i,j)+eta(i,j);
+            END DO
+         END DO
+         !  CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         !  FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+         ! Compute dphi/dsigma
+         !
+         CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      IF (FineGrid%Nx>1) THEN
+         IF (FineGrid%Nx>1) THEN
          !
          ! Compute dphi/dx 
          !	
-         CALL DiffXEven(phi,U,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            CALL DiffXEven(phi,U,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
+            IF ( LinearOnOff /= 0) THEN
+               !
+               ! Add in the chain rule contribution to get the velocity
+               !
+               Do j=1,Ny
+                  Do i=1,Nx
+                     Do k=1,Nz
+                        U(k,i,j) = U(k,i,j) + ((1-z(k))/d(i,j)*hx(i,j)-z(k)/d(i,j)*etax(i,j))*W(k,i,j)
+                     END Do
+                  END Do
+               END Do
+            END IF
+         ELSE
+            U=zero
+         END IF
+         ! Interpolate to point in question
+         DO k = 1, FineGrid%Nz+GhostGridZ
+            DO j=j0,j1
+               Uint(k) = DOT_PRODUCT( Output(io)%stencilx,U(k,i0:i1,j) )
+            END DO
+         END DO
+         WRITE (FOUT) Uint
+         ! print*,'Uint:stencilx=',Output(io)%stencilx
+         ! print*,'Uint = ',Uint
+         ! WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         ! 
+         IF (FineGrid%Ny>1) THEN
+            ! dphi/dy
+            CALL DiffYEven(phi,V,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
+            IF ( LinearOnOff /= 0) THEN
+               Do j=1,Ny
+                  Do i=1,Nx
+                     Do k=1,Nz
+                        V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
+                     END Do
+                  END Do
+               END Do
+            END IF
+            ! WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+            ! Interpolate to point in question
+            DO k = 1, FineGrid%Nz+GhostGridZ
+               DO j=j0,j1
+                  Vint(k) = DOT_PRODUCT( Output(io)%stencilx,V(k,i0:i1,j) )
+               END DO
+            END DO
+            WRITE (FOUT) Vint
+         ELSE
+            V=zero
+         END IF
+      !
+      ! Write the vertical velocity
+      !
+      ! WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+      ELSE
+         !
+         ! Dump this solution slice to the output file
+         !
+         ! First the free surface elevation and gradient at all points in this slice
+         ! 
+         WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js) 
+         IF(Nx > 1) THEN
+            WRITE (FOUT) ( ( etax(i,j), i=i0,i1,is ), j=j0,j1,js) 
+         ELSE
+            WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
+         END IF
+
+         IF(Ny > 1) THEN
+            WRITE (FOUT) ( ( etay(i,j), i=i0,i1,is ), j=j0,j1,js) 
+         ELSE
+            WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
+         END IF
+         !
+         ! The fluid thickness d=h+eta
+         !
+         DO j=1,Ny
+            DO i=1,Nx
+               d(i,j)=h(i,j)+eta(i,j);
+            END DO
+         END DO
+         !
+         ! Then the velocity potential at all points in this horizontal slice and at all sigma 
+         ! (vertical) locations.  
+         !
+         WRITE (FOUT) ( ( ( phi(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         !
+         ! Then the velocities at all points in this horizontal slice and at all sigma 
+         ! (vertical) locations.  
+         !
+         !
+         ! Compute dphi/dsigma
+         !
+         CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+         IF (FineGrid%Nx>1) THEN
+            !
+            ! Compute dphi/dx 
+            !	
+         CALL DiffXEven(phi,U,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
          IF ( LinearOnOff /= 0) THEN
             !
             ! Add in the chain rule contribution to get the velocity
@@ -198,144 +299,133 @@ ELSE
                END Do
             END Do
          END IF
-      ELSE
-         U=zero
-      END IF
-      ! Interpolate to point in question
-      DO k = 1, FineGrid%Nz+GhostGridZ
-         DO j=j0,j1
-            Uint(k) = DOT_PRODUCT( Output(io)%stencilx,U(k,i0:i1,j) )
-         END DO
-      END DO
-      WRITE (FOUT) Uint
-!      print*,'Uint:stencilx=',Output(io)%stencilx
-!      print*,'Uint = ',Uint
-!      WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-      ! 
-      IF (FineGrid%Ny>1) THEN
-         ! dphi/dy
-         CALL DiffYEven(phi,V,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-              FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
-         IF ( LinearOnOff /= 0) THEN
-            Do j=1,Ny
-               Do i=1,Nx
-                  Do k=1,Nz
-                     V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
-                  END Do
-               END Do
-            END Do
+
+         ELSE
+            U=zero
          END IF
-!      WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-        ! Interpolate to point in question
-        DO k = 1, FineGrid%Nz+GhostGridZ
-           DO j=j0,j1
-             Vint(k) = DOT_PRODUCT( Output(io)%stencilx,V(k,i0:i1,j) )
-           END DO
-        END DO
-        WRITE (FOUT) Vint
-      ELSE
-         V=zero
-      END IF
-      !
-      ! Write the vertical velocity
-      !
- !     WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-   ELSE
-      !
-      ! Dump this solution slice to the output file
-      !
-      ! First the free surface elevation and gradient at all points in this slice
-      ! 
-      WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js) 
-      IF(Nx > 1) THEN
-         WRITE (FOUT) ( ( etax(i,j), i=i0,i1,is ), j=j0,j1,js) 
-      ELSE
-         WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
-      END IF
-      IF(Ny > 1) THEN
-         WRITE (FOUT) ( ( etay(i,j), i=i0,i1,is ), j=j0,j1,js) 
-      ELSE
-         WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
-      END IF
-      !
-      ! The fluid thickness d=h+eta
-      !
-      DO j=1,Ny
-         DO i=1,Nx
-            d(i,j)=h(i,j)+eta(i,j);
-         END DO
-      END DO
-      !
-      ! Then the velocity potential at all points in this horizontal slice and at all sigma 
-      ! (vertical) locations.  
-      !
-      WRITE (FOUT) ( ( ( phi(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-      !
-      ! Then the velocities at all points in this horizontal slice and at all sigma 
-      ! (vertical) locations.  
-      !
-      !
-      ! Compute dphi/dsigma
-      !
-      CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      IF (FineGrid%Nx>1) THEN
          !
-         ! Compute dphi/dx 
-         !	
-         CALL DiffXEven(phi,U,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-              FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
-         IF ( LinearOnOff /= 0) THEN
-            !
-            ! Add in the chain rule contribution to get the velocity
-            !
-            Do j=1,Ny
-               Do i=1,Nx
-                  Do k=1,Nz
-                     U(k,i,j) = U(k,i,j) + ((1-z(k))/d(i,j)*hx(i,j)-z(k)/d(i,j)*etax(i,j))*W(k,i,j)
+         WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         ! 
+         IF (FineGrid%Ny>1) THEN
+            ! dphi/dy
+            CALL DiffYEven(phi,V,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
+            IF ( LinearOnOff /= 0) THEN
+               Do j=1,Ny
+                  Do i=1,Nx
+                     Do k=1,Nz
+                        V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
+                     END Do
                   END Do
                END Do
-            END Do
+            END IF
+         ELSE
+            V=zero
          END IF
-      ELSE
-         U=zero
-      END IF
-      !
-      WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-      ! 
-      IF (FineGrid%Ny>1) THEN
-         ! dphi/dy
-         CALL DiffYEven(phi,V,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-              FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
-         IF ( LinearOnOff /= 0) THEN
-            Do j=1,Ny
-               Do i=1,Nx
-                  Do k=1,Nz
-                     V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
-                  END Do
-               END Do
-            END Do
+
+         WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         !
+         ! Write the vertical velocity
+         !
+         WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         !
+         ! Compute du/dsigma and write du/dz to disc
+         !
+         CALL DiffZArbitrary(U,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+         WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         !
+         ! Compute du/dsigma and write dv/dz to disc
+         !
+         CALL DiffZArbitrary(V,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+         WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         !
+         ! Compute du/dsigma and write dw/dz to disc
+         !
+         CALL DiffZArbitrary(W,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+         WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         !--------------------------------------- du/dy
+         IF (FineGrid%Ny>1) THEN
+         CALL DiffYEven(U,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
+            ! IF ( LinearOnOff /= 0) THEN
+            ! Do j=1,Ny
+               !   Do i=1,Nx
+               !     Do k=1,Nz
+               !       V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
+                  !  END Do
+                  ! END Do
+            ! END Do
+         ! END IF
+         ELSE
+         Wz=zero
          END IF
-      ELSE
-         V=zero
+      
+         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         !--------------------------------------- dv/dy
+         IF (FineGrid%Ny>1) THEN
+         CALL DiffYEven(V,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
+            ! IF ( LinearOnOff /= 0) THEN
+            ! Do j=1,Ny
+               !   Do i=1,Nx
+               !     Do k=1,Nz
+               !       V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
+                  !  END Do
+                  ! END Do
+            ! END Do
+         ! END IF
+         ELSE
+         Wz=zero
+         END IF
+         
+         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         !--------------------------------------- du/dx
+         IF (FineGrid%Nx>1) THEN
+         CALL DiffXEven(U,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
+         !IF ( LinearOnOff /= 0) THEN
+         !
+         ! Add in the chain rule contribution to get the velocity
+         !
+         !Do j=1,Ny
+         !    Do i=1,Nx
+         !          Do k=1,Nz
+            !            U(k,i,j) = U(k,i,j) + ((1-z(k))/d(i,j)*hx(i,j)-z(k)/d(i,j)*etax(i,j))*W(k,i,j)
+            !        END Do
+            !    END Do
+               !END Do
+            !END IF
+         ELSE
+            Wz=zero
+         END IF
+         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         !--------------------------------------- dv/dx
+         IF (FineGrid%Nx>1) THEN
+         CALL DiffXEven(V,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
+         !IF ( LinearOnOff /= 0) THEN
+         !
+         ! Add in the chain rule contribution to get the velocity
+         !
+         !Do j=1,Ny
+         !    Do i=1,Nx
+         !          Do k=1,Nz
+            !            U(k,i,j) = U(k,i,j) + ((1-z(k))/d(i,j)*hx(i,j)-z(k)/d(i,j)*etax(i,j))*W(k,i,j)
+            !        END Do
+            !    END Do
+               !END Do
+            !END IF
+         ELSE
+            Wz=zero
+         END IF
+         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+      ! sigs ends lines
       END IF
-      WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-      !
-      ! Write the vertical velocity
-      !
-      WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-      !
-      ! Compute du/dsigma and write du/dz to disc
-      !
-      CALL DiffZArbitrary(U,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-      !
-      CALL DiffZArbitrary(V,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-      WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+
    END IF
-END IF
 END IF
 
 if (formattype == 22 .or. formattype == 21) then 
