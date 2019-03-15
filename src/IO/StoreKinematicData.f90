@@ -35,7 +35,7 @@ INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
                     extdims1(1), extdims2(3), extdims3(4)
 INTEGER(HSIZE_T), SAVE :: nx_save, ny_save, nz_save, onei = 1
-
+REAL(kind=long), ALLOCATABLE, SAVE :: PosX(:,:,:), PosY(:,:,:), PosZ(:,:,:)
 ! Assign the local pointers
 !
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; hx => FineGrid%hx
@@ -179,10 +179,18 @@ IF(it==0)THEN
                   & extdims1, maxdims1, chunkdims1) 
          call h5_dataset_create_chunked(h5file, 'surface_elevation', INT(3, HID_T), &
                   & extdims2, maxdims2, chunkdims2)
+         call h5_dataset_create_chunked(h5file, 'position_x', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
+         
 
          ! Write
          call h5_write(h5file, 'time', (/it*dt/))
          call h5_write(h5file, 'surface_elevation', transpose(eta(i0:i1:is, j0:j1:js)))
+
+         ! Generate the x position array
+         print *, "FP20190315: I need to figure a way to print the Positionx array in te h5 file"
+         stop
+         !call h5_write(h5file, 'position_x', transpose(eta(i0:i1:is, j0:j1:js)))
 
       IF(curvilinearOnOff/=0)THEN
       Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
@@ -293,6 +301,9 @@ ELSE !IF(it==0)THEN
          extended_dimension_id = 3
          call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
             & transpose(eta(i0:i1:is, j0:j1:js)))
+         extended_dimension_id = 4
+         call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
+            & PosX)         
       ELSE
          !
          ! Dump this solution slice to the output file
