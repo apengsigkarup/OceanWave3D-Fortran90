@@ -12,6 +12,7 @@ SUBROUTINE StoreKinematicData(Nx,Ny,Nz,io,it)
 !! By Allan P. Engsig-Karup.
 !<
 USE GlobalVariables
+USE hl_hdf5
 IMPLICIT NONE
 ! Input parameters
 INTEGER :: Nx, Ny, Nz, io, it
@@ -27,6 +28,13 @@ CHARACTER(len=30) :: form
 REAL(KIND=long) :: hint, etaint, dint
 REAL(KIND=long) :: Uint(Nz), Vint(Nz)
 REAL(KIND=long) :: Wz(Nz,Nx,Ny)!
+CHARACTER(LEN=20) :: h5file
+INTEGER(HID_T) :: extended_dimension_id
+INTEGER(HSIZE_T), ALLOCATABLE :: dims_ext(:)
+INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
+                    chunkdims1(1), chunkdims2(3), chunkdims3(4), &
+                    extdims1(1), extdims2(3), extdims3(4)
+INTEGER(HSIZE_T), SAVE :: nx_save, ny_save, nz_save, onei = 1
 
 ! Assign the local pointers
 !
@@ -101,6 +109,8 @@ ELSE IF(formattype==22)THEN
    FOUT = 22 ! file handle
    OPEN (unit=FOUT, file=filename,form=form)
    WRITE(*,FMT='(A,A)') '  File output = ',filename
+ELSE IF(formattype==30)THEN   
+   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ','Kinematics'//fnt(i+1)//'.h5'
 ELSE
    FOUT = FILEOP(io+1)
    WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
@@ -142,6 +152,41 @@ IF(it==0)THEN
      IF(curvilinearOnOff/=0)THEN
         Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
      END IF
+   ELSEIF (formattype == 30) THEN !hdf5 file
+
+         ! Some parameters that are necessary for h5 saving
+         ny_save = size((/(i, i=j0,j1,js)/))
+         nx_save = size((/(i, i=i0,i1,is)/))
+         nz_save = Nz
+         
+         ! Max dimensions for h5 writing
+         maxdims1 = (/H5S_UNLIMITED_F/)
+         maxdims2 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
+         maxdims3 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
+         ! Chunk dims
+         chunkdims1 = (/100*onei/)
+         chunkdims2 = (/ny_save, nx_save, 100*onei/)
+         chunkdims3 = (/nz_save, ny_save, nx_save, 100*onei/)
+         ! ext dims
+         extdims1 = (/onei/)
+         extdims2 = (/ny_save, nx_save, onei/)
+         extdims3 = (/nz_save, ny_save, nx_save, onei/)
+
+         ! Initialize all datasets
+         h5file = 'Kinematics'//fnt(io)//'.h5';
+         ! Create
+         call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
+                  & extdims1, maxdims1, chunkdims1) 
+         call h5_dataset_create_chunked(h5file, 'surface_elevation', INT(3, HID_T), &
+                  & extdims2, maxdims2, chunkdims2)
+
+         ! Write
+         call h5_write(h5file, 'time', (/it*dt/))
+         call h5_write(h5file, 'surface_elevation', transpose(eta(i0:i1:is, j0:j1:js)))
+
+      IF(curvilinearOnOff/=0)THEN
+      Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
+      END IF
    ELSE
      ! formattype /= 22
      write (FOUT) Output(io)%xbeg,Output(io)%xend,Output(io)%xstride, &
@@ -156,7 +201,7 @@ IF(it==0)THEN
      END IF
    END IF
 
-ELSE
+ELSE !IF(it==0)THEN
 
    !
    IF(curvilinearOnOff == 0)THEN
@@ -241,6 +286,13 @@ ELSE
       ! Write the vertical velocity
       !
       ! WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+      ELSE IF (formattype==30)THEN
+         h5file = 'Kinematics'//fnt(io)//'.h5';
+         extended_dimension_id = 1
+         call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
+         extended_dimension_id = 3
+         call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
+            & transpose(eta(i0:i1:is, j0:j1:js)))
       ELSE
          !
          ! Dump this solution slice to the output file

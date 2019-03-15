@@ -9,11 +9,13 @@ SUBROUTINE ReadInputFileParameters
   !<
   USE GlobalVariables
   USE MGLevels
+  use hl_hdf5
   IMPLICIT NONE
   INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones, seed, seed2 
   REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, x0, &
        y0, beta0, s0, gamma_jonswap
   CHARACTER(len=30):: inc_wave_file
+  
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
   WRITE (*,FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
@@ -320,6 +322,47 @@ SUBROUTINE ReadInputFileParameters
         OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
              STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
      END Do
+
+  elseif(formattype==30) THEN ! h5 files save
+   BACKSPACE(FILEIP(1))
+   READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
+   Allocate (Output(nOutFiles))
+   IF (nOutFiles>10)THEN
+      print *, 'Max. 10 kinematics output files at this point.'
+      stop
+   END IF
+   print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.h5".'
+   print *, ' '
+   write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.h5".'
+   write(fileop(1),*) ' '
+
+   allocate(fidH5(nOutFiles)) ! allocate the outputfiles file ids
+
+   Do i=1,nOutFiles
+   READ (FILEIP(1),*,err=110)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
+        Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+   !
+   ! Check that the requested output ranges exist on this grid.
+   !
+   if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
+      Print *, 'ReadInputFileParameters: Kinematics x coordinate range is invalid'
+      stop
+   end if
+   if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
+      Print *, 'ReadInputFileParameters: Kinematics y coordinate range is invalid'
+      stop
+   end if
+   if(Output(i)%tbeg<1 .or. Output(i)%tend>Nsteps .or. Output(i)%tbeg > Output(i)%tend) THEN
+      Print *, 'ReadInputFileParameters: Kinematics time range is invalid'
+      stop
+   end if
+   ! Open the required output files
+   ! Open the h5 files
+   
+   call h5_file_create("Kinematics"//fnt(i)//".h5", fidH5(i))
+   !OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
+   !     STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
+END Do
   ELSEIF(formattype==21)THEN
      ! APEK: Configuration designed for extracting data on a per time step basis
      BACKSPACE(FILEIP(1))

@@ -1,6 +1,7 @@
 LDIR = src/IO
 
 # Sources and objects
+SOURCES += $(LDIR)/hl_hdf5.f90
 SOURCES += $(LDIR)/CheckError.f90			
 SOURCES += $(LDIR)/StoreData.f90
 # SOURCES += $(LDIR)/StoreDataVTK.f90
@@ -12,3 +13,4 @@ SOURCES += $(LDIR)/GatherData.f90
 SOURCES += $(LDIR)/StoreKinematicData.f90		
 SOURCES += $(LDIR)/ReadInputFileParameters.f90	
 SOURCES += $(LDIR)/StoreRealArray.f90
+

@@ -12,7 +12,7 @@ INSTALLDIR = $(HOME)/bin
 LIBINSTALLDIR = $(HOME)/lib
 
 # Build directory where object files are stored 
-BUILDDIR = $(PWD)/build
+BUILDDIR = $(PWD)/buildDevelop
 
 FC = gfortran
 
@@ -20,11 +20,11 @@ FC = gfortran
 ifeq ($(FC),gfortran)
   # fabpi machine, gfortran
   FC=gfortran
-  # LIBDIRS  = -L$(HOME)/lib/ 
+  # LIBDIRS  = -L$(HOME)/lib/
   LIBDIRS  = -L$(HOME)/lib/  -L$(MODULE_OPENBLAS_LIB_DIR)
-  LINLIB   = -lharwell -lskit -lopenblas -lma41  -lma27 -lmi24 -lhsl_mi20 
-  DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic
-  OPTFLAGS = -pg -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow
+  LINLIB   = -lharwell -lskit -lopenblas -lma41  -lma27 -lmi24 -lhsl_mi20 -lhdf5 -lhdf5_fortran -lhdf5_hl
+  DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic -I/usr/lib64/gfortran/modules
+  OPTFLAGS = -pg -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow -I/usr/lib64/gfortran/modules
 endif
 
 ifeq ($(FC),ifort)

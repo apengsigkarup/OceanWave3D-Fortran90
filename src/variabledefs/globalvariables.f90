@@ -8,6 +8,7 @@ USE Constants
 USE DataTypes
 USE HSL_LU
 USE OFmodule
+USE hl_hdf5
 IMPLICIT NONE 
 
 ! I/O File handle arrays
@@ -15,6 +16,7 @@ INTEGER           :: FILEIP(4), FILEOP(16)
 CHARACTER(len=2) fnt(10)
 CHARACTER(LEN=40) :: filenameINPUT, filename, fname_bottom
 INTEGER           :: STAT
+INTEGER(HID_T), DIMENSION(:), ALLOCATABLE :: fidH5(:)
 
 ! DUMMY VARIABLES
 REAL(KIND=long) :: dum
