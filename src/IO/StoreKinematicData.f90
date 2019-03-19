@@ -27,15 +27,17 @@ REAL(KIND=long) :: tmpx(Nx), tmpy(Ny)
 CHARACTER(len=30) :: form
 REAL(KIND=long) :: hint, etaint, dint
 REAL(KIND=long) :: Uint(Nz), Vint(Nz)
-REAL(KIND=long) :: Wz(Nz,Nx,Ny)!
+REAL(KIND=long) :: Ux(Nz,Nx,Ny),Uy(Nz,Nx,Ny),Uz(Nz,Nx,Ny)
+REAL(KIND=long) :: Vx(Nz,Nx,Ny),Vy(Nz,Nx,Ny),Vz(Nz,Nx,Ny)
+REAL(KIND=long) :: Wx(Nz,Nx,Ny),Wy(Nz,Nx,Ny),Wz(Nz,Nx,Ny)
 CHARACTER(LEN=20) :: h5file
 INTEGER(HID_T) :: extended_dimension_id
 INTEGER(HSIZE_T), ALLOCATABLE :: dims_ext(:)
 INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
                     extdims1(1), extdims2(3), extdims3(4)
-INTEGER(HSIZE_T), SAVE :: nx_save, ny_save, nz_save, onei = 1
-REAL(kind=long), ALLOCATABLE, SAVE :: PosX(:,:,:), PosY(:,:,:), PosZ(:,:,:)
+INTEGER(HSIZE_T), SAVE :: nx_save, ny_save, nz_save, onei = 1, cx, cy, cz
+REAL(KIND=long), ALLOCATABLE, SAVE, DIMENSION(:,:,:) :: x3d, y3d, z3d
 ! Assign the local pointers
 !
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; hx => FineGrid%hx
@@ -46,6 +48,13 @@ hy => FineGrid%hy; eta => WaveField%E; etax => WaveField%Ex; etay => WaveField%E
 IF(FORMATTYPE/=22)THEN
   i0=Output(io)%xbeg+GhostGridX; i1=Output(io)%xend+GhostGridX; is=Output(io)%xstride; 
   j0=Output(io)%ybeg+GhostGridY; j1=Output(io)%yend+GhostGridY; js=Output(io)%ystride; 
+
+
+   ! Some parameters that are necessary for h5 saving
+  nx_save = size((/(i, i=i0,i1,is)/))
+  ny_save = size((/(j, j=j0,j1,js)/))
+  nz_save = Nz
+
 ELSE
   PRINT*,'Storing kinematics data...'
   ! determine indices for stencils
@@ -110,7 +119,7 @@ ELSE IF(formattype==22)THEN
    OPEN (unit=FOUT, file=filename,form=form)
    WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE IF(formattype==30)THEN   
-   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ','Kinematics'//fnt(i+1)//'.h5'
+   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ','Kinematics'//fnt(io)//'.h5'
 ELSE
    FOUT = FILEOP(io+1)
    WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
@@ -153,13 +162,15 @@ IF(it==0)THEN
         Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
      END IF
    ELSEIF (formattype == 30) THEN !hdf5 file
+         ! FabioPierella 20190319
+         ! Output in HDF5 files. We need some preparation on the dataset before
+         ! we can output it to file.
+         ! 1. Fortran is column-major. We want to therefore transpose the arrays before output to have a row-major HDF5 file structure.
+         ! 2. This HDF5 file output wants  to be consistent with OW3D-GPU version, therefore some variables need to be made 3D before being output (e.g. the position arrays)
+         ! 3. 
 
-         ! Some parameters that are necessary for h5 saving
-         ny_save = size((/(i, i=j0,j1,js)/))
-         nx_save = size((/(i, i=i0,i1,is)/))
-         nz_save = Nz
-         
-         ! Max dimensions for h5 writing
+         ! Set max dimensions for h5 writing
+
          maxdims1 = (/H5S_UNLIMITED_F/)
          maxdims2 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
          maxdims3 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
@@ -167,7 +178,7 @@ IF(it==0)THEN
          chunkdims1 = (/100*onei/)
          chunkdims2 = (/ny_save, nx_save, 100*onei/)
          chunkdims3 = (/nz_save, ny_save, nx_save, 100*onei/)
-         ! ext dims
+         ! Dimensions of the extended dataset, when appending.
          extdims1 = (/onei/)
          extdims2 = (/ny_save, nx_save, onei/)
          extdims3 = (/nz_save, ny_save, nx_save, onei/)
@@ -177,20 +188,66 @@ IF(it==0)THEN
          ! Create
          call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
                   & extdims1, maxdims1, chunkdims1) 
+         ! Surface elevation variables
          call h5_dataset_create_chunked(h5file, 'surface_elevation', INT(3, HID_T), &
+                  & extdims2, maxdims2, chunkdims2)
+         call h5_dataset_create_chunked(h5file, 'surface_elevation_derivative_etax', INT(3, HID_T), &
+                  & extdims2, maxdims2, chunkdims2)
+         call h5_dataset_create_chunked(h5file, 'surface_elevation_derivative_etay', INT(3, HID_T), &
                   & extdims2, maxdims2, chunkdims2)
          call h5_dataset_create_chunked(h5file, 'position_x', INT(4, HID_T), &
                   & extdims3, maxdims3, chunkdims3)
-         
+         call h5_dataset_create_chunked(h5file, 'position_y', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
+         call h5_dataset_create_chunked(h5file, 'position_z', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
+         call h5_dataset_create_chunked(h5file, 'velocity_u', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
+         call h5_dataset_create_chunked(h5file, 'velocity_v', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
+         call h5_dataset_create_chunked(h5file, 'velocity_w', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
 
-         ! Write
+         ! Write the first timestep
          call h5_write(h5file, 'time', (/it*dt/))
-         call h5_write(h5file, 'surface_elevation', transpose(eta(i0:i1:is, j0:j1:js)))
+         
+         
+         ! allocate the position arrays
+         ! Allocate them only once. The x3d and y3d arrays are constant in time;
+         ! The z3d needs to be filled at every timestep.
+         allocate(x3d(nz_save, ny_save, nx_save), y3d(nz_save, ny_save, nx_save), z3d(nz_save, ny_save, nx_save))
 
-         ! Generate the x position array
-         print *, "FP20190315: I need to figure a way to print the Positionx array in te h5 file"
-         stop
-         !call h5_write(h5file, 'position_x', transpose(eta(i0:i1:is, j0:j1:js)))
+         ! loop counters 
+         cx = 0; cy=0; cz=0;
+         do i=i0, i1, is
+            cx = cx +1 ! increment x loop
+            do j=j0,j1,js
+               cy = cy +1 ! increment y loop
+               do k=1,nz_save
+                  cz = cz +1 ! increment z loop
+                  ! x => FineGrid%x; y => FineGrid%y; z => FineGrid%z;
+                  x3d(cz,cy,cx) = x(i,j)
+                  y3d(cz,cy,cx) = y(i,j)
+                  z3d(cz,cy,cx)  = z(k)
+               end do 
+               cz = 0
+            end do 
+            cy = 0
+         end do
+
+
+         call h5_write(h5file, 'position_x', x3d)
+         call h5_write(h5file, 'position_y', y3d)
+         call h5_write(h5file, 'position_z', z3d)
+         call h5_write(h5file, 'velocity_u', & 
+            & reshape(U, shape=(/nx_save, ny_save, nz_save/), order=(/3,2,1/)))
+         call h5_write(h5file, 'velocity_v', & 
+            & reshape(V, shape=(/nx_save, ny_save, nz_save/), order=(/3,2,1/)))
+         call h5_write(h5file, 'velocity_w', & 
+            & reshape(W, shape=(/nx_save, ny_save, nz_save/), order=(/3,2,1/)))
+         
+         ! print *, "FP20190318 need to fill in the first timestep"
+         ! stop
 
       IF(curvilinearOnOff/=0)THEN
       Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
@@ -301,9 +358,45 @@ ELSE !IF(it==0)THEN
          extended_dimension_id = 3
          call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
             & transpose(eta(i0:i1:is, j0:j1:js)))
+         
+         ! Write only if there is more than one point in the x direction
+         if (Ny>1) then
+            call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
+            & transpose(etax(i0:i1:is, j0:j1:js)))            
+         else ! just write 0s
+            call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
+            & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/)))     
+         end if
+
+         ! Write only if there is more than one point in the y direction
+         if (Ny>1) then
+            call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
+            & transpose(etay(i0:i1:is, j0:j1:js)))            
+         else ! just write 0s
+            call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
+            & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/))) 
+         end if
+
          extended_dimension_id = 4
          call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
-            & PosX)         
+            & x3d)         
+         call h5_extend(h5file, 'position_y', extended_dimension_id, extdims3, &
+            & y3d)                     
+
+         ! rewrite z3d
+         cz=0;cy=0;cx=0
+         do i=i0, i1, is
+            cx = cx+1
+            do j=j0,j1,js
+               cy = cy+1
+               z3d(:,cy,cx) = z(:)
+            end do 
+            cy = 0
+         end do 
+         
+         call h5_extend(h5file, 'position_z', extended_dimension_id, extdims3, &
+         & z3d)                     
+
       ELSE
          !
          ! Dump this solution slice to the output file
@@ -394,15 +487,15 @@ ELSE !IF(it==0)THEN
          !
          ! Compute du/dsigma and write du/dz to disc
          !
-         CALL DiffZArbitrary(U,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         CALL DiffZArbitrary(U,Uz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
             FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-         WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         WRITE (FOUT) ( ( ( Uz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
          !
          ! Compute du/dsigma and write dv/dz to disc
          !
-         CALL DiffZArbitrary(V,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         CALL DiffZArbitrary(V,Vz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
             FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-         WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+         WRITE (FOUT) ( ( ( Vz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
          !
          ! Compute du/dsigma and write dw/dz to disc
          !
@@ -411,7 +504,7 @@ ELSE !IF(it==0)THEN
          WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
          !--------------------------------------- du/dy
          IF (FineGrid%Ny>1) THEN
-         CALL DiffYEven(U,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         CALL DiffYEven(U,Uy,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
             ! IF ( LinearOnOff /= 0) THEN
             ! Do j=1,Ny
@@ -426,10 +519,10 @@ ELSE !IF(it==0)THEN
          Wz=zero
          END IF
       
-         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         WRITE (FOUT) ( ( ( Uy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
          !--------------------------------------- dv/dy
          IF (FineGrid%Ny>1) THEN
-         CALL DiffYEven(V,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         CALL DiffYEven(V,Vy,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
             ! IF ( LinearOnOff /= 0) THEN
             ! Do j=1,Ny
@@ -444,10 +537,10 @@ ELSE !IF(it==0)THEN
          Wz=zero
          END IF
          
-         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         WRITE (FOUT) ( ( ( Vy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
          !--------------------------------------- du/dx
          IF (FineGrid%Nx>1) THEN
-         CALL DiffXEven(U,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         CALL DiffXEven(U,Ux,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
          !IF ( LinearOnOff /= 0) THEN
          !
@@ -464,10 +557,10 @@ ELSE !IF(it==0)THEN
          ELSE
             Wz=zero
          END IF
-         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         WRITE (FOUT) ( ( ( Ux(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
          !--------------------------------------- dv/dx
          IF (FineGrid%Nx>1) THEN
-         CALL DiffXEven(V,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+         CALL DiffXEven(V,Vx,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
          !IF ( LinearOnOff /= 0) THEN
          !
@@ -484,7 +577,7 @@ ELSE !IF(it==0)THEN
          ELSE
             Wz=zero
          END IF
-         WRITE (FOUT) ( ( ( Wz(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+         WRITE (FOUT) ( ( ( Vx(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
       ! sigs ends lines
       END IF
 
@@ -494,4 +587,23 @@ END IF
 if (formattype == 22 .or. formattype == 21) then 
    CLOSE(FOUT)
 end if
+
+contains
+
+subroutine chainRuleContribution(InOutArray, h_gradient, eta_gradient)
+
+   real(kind=long),intent(INOUT) :: InOutArray(:,:,:)
+
+   Do j=1,Ny
+      Do i=1,Nx
+         Do k=1,Nz
+            InOutArray(k,i,j) = InOutArray(k,i,j) + ((1-z(k))/d(i,j)*h_gradient(i,j)-z(k)/d(i,j)*eta_gradient(i,j))*W(k,i,j)
+         END Do
+      END Do
+   END Do
+
+end subroutine chainRuleContribution
+
+
 END SUBROUTINE StoreKinematicData
+
