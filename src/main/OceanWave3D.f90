@@ -35,7 +35,7 @@ PROGRAM OceanWave3D
   WRITE(*,FMT='(A)') 'Change the file name to OceanWave3D.init and change IC to -1 for a hot start.'
   CLOSE(fileip(3))
   OPEN(fileip(3), file = 'OceanWave3D.end', status = 'unknown')
-  WRITE(fileip(3),*) 'Initial conditions outputted from a previous simulation.' ! Header
+  WRITE(fileip(3),*) 'Initial conditions output from a previous simulation.' ! Header
   WRITE(fileip(3),*) FineGrid%x(FineGrid%Nx,1)-FineGrid%x(1,1),FineGrid%y(FineGrid%Nx,1)-FineGrid%y(1,1), &
        FineGrid%Nx, FineGrid%Ny, time  ! Domain size, number of grid points and ending time.
   DO j=1+GhostGridY,FineGrid%Ny+GhostGridY

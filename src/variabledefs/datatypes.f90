@@ -151,6 +151,7 @@ TYPE RandomWaveParam
    CHARACTER(len=30)  inc_wave_file
    REAL(KIND=long), allocatable :: eta(:,:), Phis(:,:), eta0(:), Phis0(:), beta(:)
 END TYPE RandomWaveParam
+
 ! DEFINE a structure for 3D random wave generation by flux condition, botp
 TYPE wave3DFluxStruct
    REAL(KIND=long) :: dt, rampTime
@@ -158,8 +159,15 @@ TYPE wave3DFluxStruct
    CHARACTER(len=30)  inc_wave_file
    REAL(KIND=long), allocatable :: flux(:,:), y(:), time(:), etax(:,:)
 END TYPE wave3DFluxStruct
-! DEFINE a Structure for the wave breaking model parameters
 
+! DEFINE a structure for a constant flux through the domain (wave-current)
+TYPE CurrentFluxStruct
+   INTEGER :: Flag
+   REAL(KIND=long) :: Ul, Ur, Q
+END TYPE CurrentFluxStruct
+
+
+! DEFINE a Structure for the wave breaking model parameters
 TYPE BreakingModelParam
    Integer :: i_breaking, n_rollers, i_break_time
    Integer, allocatable :: i_roller(:,:)

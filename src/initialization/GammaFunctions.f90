@@ -22,6 +22,8 @@ SELECT CASE (ABS(ftype))
 		gam = three*tmp**2-two*tmp**3
         CASE (11)
                 gam=(exp(tmp**param)-1)/(exp(one)-one)
+        CASE (12)
+                gam=exp(-((x-x(n))/(x(n)-x(1)))**2/(2*param**2))
 END SELECT
 IF (dir==-1) THEN ! REVERSE
 	gam = gam(n:1:-1)  ! FIXME: not just for x

@@ -38,6 +38,15 @@ SUBROUTINE ReadInputFileParameters
        accel_tol_fact
   WRITE(fileop(1),FMT='(A//)') ' * g m/s^2.  Theoretically breaking should occur between 0.5 and 1.'
 
+  !
+  ! For IncWaveType==4, we add a current to the SF wave, so re-set IncWaveFlag to 1 and turn on the current flag.
+  !
+  IF(IncWaveType==4)THEN
+     IncWaveType=1; CurrentFlux%Flag=1;
+  ELSE
+     CurrentFlux%Flag=0
+  END IF
+
   GO TO 24
 
   ! If no parameters are specified after IC on the same line choose default values
@@ -185,7 +194,7 @@ SUBROUTINE ReadInputFileParameters
 
   print *, 'Starting time for this run is ',time0
   WRITE (*,902) '   Number of time steps chosen: ', Nsteps
-  write(fileop(1),*), 'Starting time for this run is ',time0
+  write(fileop(1),*) 'Starting time for this run is ',time0
   WRITE (fileop(1),902) '   Number of time steps chosen: ', Nsteps
   IF (CFL/=zero) THEN
      ! GD: FIXME for 2D-3D case with propagation along y...
@@ -564,7 +573,6 @@ SUBROUTINE ReadInputFileParameters
 !
 ! Linear mono-chromatic, random wave or flux boundary generation parameters.  
 ! 
-
   IF (IncWaveType==3) THEN 
      ! Wave generation with flux condition on western boundary
      READ(FILEIP(1),*,IOSTAT=ios) wave3DFlux%rampTime, wave3DFlux%order, wave3DFlux%inc_wave_file
@@ -637,6 +645,40 @@ SUBROUTINE ReadInputFileParameters
      end IF
   END IF
 
+  IF(CurrentFlux%Flag >= 0) THEN
+     !
+     ! Constant flux through the domain for wave-current interaction, plus a SF wave
+     !
+     READ(FILEIP(1),*,IOSTAT=ios) CurrentFlux%Q
+     IF (ios>0) THEN
+        CurrentFlux%Q=zero; CurrentFlux%Ul=zero; CurrentFlux%Ur=zero
+        print *, ' ' 
+        Print *, 'ReadInputFileParameters:  Constant flux current is turned off.' 
+        print *, ' ' 
+        write(fileop(1), *)'ReadInputFileParameters:  Constant flux current is turned off.' 
+     ELSE
+        print *, ' ' 
+        Print *, 'ReadInputFileParameters: Constant current corresponding to a flux of Q=', &
+             CurrentFlux%Q,' has been specified.'
+        print *, ' ' 
+        write(fileop(1), *)'ReadInputFileParameters: Constant current corresponding to a flux of Q=', &
+             CurrentFlux%Q,' has been specified.'
+        !
+        ! Check that the Eulerian velocity is consistent with the current flux if turned on
+        !
+        IF(SFsol%i_euler_or_stokes/=0 .or. abs(SFsol%e_or_s_vel - CurrentFlux%Q/SFsol%h) >= 1.E-8) THEN
+           print *, ' '
+           print *, '************************************************'
+           print *, '*** Your current flux and stream function solution are not consistent with each other!! ****'
+           print *, '************************************************'
+           print *, ' '
+           write(fileop(1), *) '************************************************'
+           write(fileop(1), *) '*** Your current flux and stream function solution are not consistent with each other!! ****'
+           write(fileop(1), *) '************************************************'
+        END IF
+     END IF
+  END IF
+
   !
   !
   IF (relaxONOFF==1) THEN ! GD: add this test in case of no relaxation zones defined
@@ -672,6 +714,8 @@ SUBROUTINE ReadInputFileParameters
         write(fileop(1),*) ' '
      ENDIF
   ENDIF
+
+
 
   RETURN
 

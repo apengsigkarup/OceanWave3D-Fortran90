@@ -27,7 +27,8 @@ SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
   USE Precision
   USE Constants
   USE DataTypes
-  USE GlobalVariables, ONLY: PressureTermONOFF, Lz, NDampZones, PDampingOnOff, PDampZones, alpha
+  USE GlobalVariables, ONLY: PressureTermONOFF, Lz, NDampZones, PDampingOnOff, PDampZones, alpha, &
+       CurrentFlux
   IMPLICIT NONE
   INTEGER :: Nx,Ny, i, j, k, nd, rank, id0, job, id, idebug
   REAL(KIND=long) :: t, g, x0, y0, sigma, sigmay, Lx, Ly, dx, Fr, V, rhs(Nx*Ny),            &
@@ -166,10 +167,11 @@ SUBROUTINE funPressureTerm(t,g,Nx,Ny,FineGrid,Wavefield)
         !
         CALL DfDx_1D_Uneven(tmp,nd,PDampZones(id)%Grad,rank,rhs)
         !
-        ! Multiply by gamma and take the divergence
+        ! Multiply by gamma and take the divergence. Note here that we damp on the
+        ! difference between the flow velocity and the possible uniform current. 
         !
         Do i=1,nd
-           tmp(i)=PDampZones(id)%gamPhi(id0+i-1)*rhs(i)
+           tmp(i)=PDampZones(id)%gamPhi(id0+i-1)*(rhs(i)-CurrentFlux%Ur)     
         END Do
         CALL DfDx_1D_Uneven(tmp,nd,PDampZones(id)%Grad,rank,rhs)
         !

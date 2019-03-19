@@ -52,7 +52,10 @@ Do i=1,NDampZones
    Allocate(PDampZones(i)%gamPhi(nx*ny),PDampZones(i)%gamEta(nx*ny))
    PDampZones(i)%gamPhi(1:nx*ny)=zero; PDampZones(i)%gamEta(1:nx*ny)=zero; 
    !
-   CAll GammaFunctions(tmpx(i1:i2),nd,1,11,gtmp,3.5d00)
+   !hbb   CAll GammaFunctions(tmpx(i1:i2),nd,1,11,gtmp,3.5d00)
+   ! I replaced the exponential here with a Gaussian. The choice should be
+   ! moved to the input file. 
+   CAll GammaFunctions(tmpx(i1:i2),nd,1,12,gtmp,0.25d00)
    PDampZones(i)%gamPhi(i1:i2)=two*pi*PDampZones(i)%g0Phi*gtmp(1:nxd)
    PDampZones(i)%gamEta(i1:i2)=two*pi*PDampZones(i)%g0Eta*gtmp(1:nxd)
    ! 

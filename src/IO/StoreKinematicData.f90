@@ -38,7 +38,7 @@ IF(FORMATTYPE/=22)THEN
   i0=Output(io)%xbeg+GhostGridX; i1=Output(io)%xend+GhostGridX; is=Output(io)%xstride; 
   j0=Output(io)%ybeg+GhostGridY; j1=Output(io)%yend+GhostGridY; js=Output(io)%ystride; 
 ELSE
-  PRINT*,'Storing kinematics data...'
+ ! PRINT*,'Storing kinematics data...'
   ! determine indices for stencils
   tmpx = x(1:Nx,1)-Output(io)%x
   ! search
@@ -93,16 +93,16 @@ IF(formattype==21)THEN
    form="unformatted" ! binary format chosen
    FOUT = 22 ! file handle
    OPEN (unit=FOUT, file=filename,form=form)
-   WRITE(*,FMT='(A,A)') '  File output = ',filename
+!   WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE IF(formattype==22)THEN
    WRITE(unit=filename, FMT="(A,I2.2,A,I5.5,A)") "Kinematics_",io,"_",it,".bin"
    form="unformatted" ! binary format chosen
    FOUT = 22 ! file handle
    OPEN (unit=FOUT, file=filename,form=form)
-   WRITE(*,FMT='(A,A)') '  File output = ',filename
+!   WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE
    FOUT = FILEOP(io+1)
-   WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
+!   WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
 END IF
 
 IF(it==0)THEN

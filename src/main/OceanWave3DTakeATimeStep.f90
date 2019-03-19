@@ -13,12 +13,13 @@ SUBROUTINE OceanWave3DTakeATimeStep
   TOTALITEROLD = TOTALITER
 
   CALL SYSTEM_CLOCK(count_0, count_rate, count_max)
-
+  
+  ! hbb I've taken this out as there is no need to do it twice and it's done below. 
   ! Print the simulation time to the screen every 10 time steps.
-  IF(MOD(tstep,10)==0)THEN
-     WRITE(6,2000) tstep, time
-     WRITE(fileop(1),2000) tstep, time
-  END IF
+!  IF(MOD(tstep,10)==0)THEN
+!     WRITE(6,2000) tstep, time
+!     WRITE(fileop(1),2000) tstep, time
+!  END IF
   !
   ! Use the free-surface conditions to step forward in time and get new
   ! values for eta and phi.
@@ -104,8 +105,10 @@ SUBROUTINE OceanWave3DTakeATimeStep
   else
      ! Print the simulation time to the screen every 10 time steps.
      IF(MOD(tstep,10)==0)THEN
-        print *, 'time step number ',tstep,' t=',time
-        write(fileop(1),*) 'time step number ',tstep,' t=',time
+        WRITE(6,2000) tstep, time
+        WRITE(fileop(1),2000) tstep, time
+        !        print *, 'time step number ',tstep,' t=',time
+        !        write(fileop(1),*) 'time step number ',tstep,' t=',time
         IF (solver==0) THEN
           WRITE (6,2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
           WRITE (fileop(1),2009) REAL(TOTALITER,long)/(RKSTAGES*REAL(tstep-1,long))
@@ -152,7 +155,9 @@ SUBROUTINE OceanWave3DTakeATimeStep
              FineGrid%Nx, FineGrid%Ny, time  ! Domain size, number of grid points and ending time.
         DO j=1+GhostGridY,FineGrid%Ny+GhostGridY
            DO i=1+GhostGridX,FineGrid%Nx+GhostGridX
-              WRITE(fileip(3),*)WaveField%E(i,j),phi(FineGrid%Nz+GhostGridZ,i,j)
+!              k=(j-1)*FineGrid%Nx+i
+              WRITE(fileip(3),*)WaveField%E(i,j),Wavefield%P(i,j)
+!              WRITE(fileip(3),*)WaveField%E(i,j),phi(FineGrid%Nz+GhostGridZ,i,j)
            END DO
         END DO
         close(fileip(3))
@@ -190,7 +195,7 @@ SUBROUTINE OceanWave3DTakeATimeStep
         IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
              mod(tstep,Output(i)%tstride)==0 )THEN
               
-           WRITE(*,FMT='(A)') 'Writing kinematics output'
+           !WRITE(*,FMT='(A)') 'Writing kinematics output'
            CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                 FineGrid%Nz+GhostGridZ,i,tstep+1)
         END IF

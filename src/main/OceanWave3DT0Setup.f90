@@ -318,6 +318,13 @@ SUBROUTINE OceanWave3DT0Setup
   print *,'done with ICs'
   write(fileop(1),*)'done with ICs'
   !
+  ! Set up the constant flux current boundary conditions. As with the flux-type wavemaker,
+  ! These values are always added to the RHS vector, but are zero unless the current is
+  ! turned on. At this point, uniform depth along y- is assumed. 
+  !
+  CurrentFlux%Ul=CurrentFlux%Q/FineGrid%h(1,1)
+  CurrentFlux%Ur=CurrentFlux%Q/FineGrid%h(FineGrid%Nx+GhostGridX,1)
+  !
   ! Set up the Pressure Damping Zones if any.
   !
   If (NDampZones /=0) THEN
