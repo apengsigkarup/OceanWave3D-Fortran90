@@ -645,7 +645,7 @@ SUBROUTINE ReadInputFileParameters
      end IF
   END IF
 
-  IF(CurrentFlux%Flag >= 0) THEN
+  IF(CurrentFlux%Flag > 0) THEN
      !
      ! Constant flux through the domain for wave-current interaction, plus a SF wave
      !
