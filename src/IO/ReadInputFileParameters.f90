@@ -39,10 +39,13 @@ SUBROUTINE ReadInputFileParameters
   WRITE(fileop(1),FMT='(A//)') ' * g m/s^2.  Theoretically breaking should occur between 0.5 and 1.'
 
   !
-  ! For IncWaveType==4, we add a current to the SF wave, so re-set IncWaveFlag to 1 and turn on the current flag.
+  ! For IncWaveType==4 or 5, we add a current to the SF wave, so re-set IncWaveFlag to
+  ! either 1 (for SF wave) or 3 (flux wavemaker), and turn on the current flag.
   !
   IF(IncWaveType==4)THEN
      IncWaveType=1; CurrentFlux%Flag=1;
+  ELSEIF(IncWaveType==5) THEN
+     IncWaveType=3; CurrentFlux%Flag=1;
   ELSE
      CurrentFlux%Flag=0
   END IF
@@ -647,7 +650,8 @@ SUBROUTINE ReadInputFileParameters
 
   IF(CurrentFlux%Flag > 0) THEN
      !
-     ! Constant flux through the domain for wave-current interaction, plus a SF wave
+     ! Constant flux through the domain for wave-current interaction, plus either
+     ! a SF wave or a flux wavemaker. 
      !
      READ(FILEIP(1),*,IOSTAT=ios) CurrentFlux%Q
      IF (ios>0) THEN
@@ -663,18 +667,20 @@ SUBROUTINE ReadInputFileParameters
         print *, ' ' 
         write(fileop(1), *)'ReadInputFileParameters: Constant current corresponding to a flux of Q=', &
              CurrentFlux%Q,' has been specified.'
-        !
-        ! Check that the Eulerian velocity is consistent with the current flux if turned on
-        !
-        IF(SFsol%i_euler_or_stokes/=0 .or. abs(SFsol%e_or_s_vel - CurrentFlux%Q/SFsol%h) >= 1.E-8) THEN
-           print *, ' '
-           print *, '************************************************'
-           print *, '*** Your current flux and stream function solution are not consistent with each other!! ****'
-           print *, '************************************************'
-           print *, ' '
-           write(fileop(1), *) '************************************************'
-           write(fileop(1), *) '*** Your current flux and stream function solution are not consistent with each other!! ****'
-           write(fileop(1), *) '************************************************'
+        IF (IncWaveType==1) THEN
+           !
+           ! Check that the Eulerian velocity is consistent with the current flux if turned on
+           !
+           IF(SFsol%i_euler_or_stokes/=0 .or. abs(SFsol%e_or_s_vel - CurrentFlux%Q/SFsol%h) >= 1.E-8) THEN
+              print *, ' '
+              print *, '************************************************'
+              print *, '*** Your current flux and stream function solution are not consistent with each other!! ****'
+              print *, '************************************************'
+              print *, ' '
+              write(fileop(1), *) '************************************************'
+              write(fileop(1), *) '*** Your current flux and stream function solution are not consistent with each other!! ****'
+              write(fileop(1), *) '************************************************'
+           END IF
         END IF
      END IF
   END IF
