@@ -331,9 +331,9 @@ SUBROUTINE ReadInputFileParameters
       print *, 'Max. 10 kinematics output files at this point.'
       stop
    END IF
-   print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.h5".'
+   print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "WaveKinematicsZone**.h5".'
    print *, ' '
-   write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.h5".'
+   write(fileop(1),*) 'Kinematics output requested in ',nOutFiles,' file(s) named "WaveKinematicsZone**.h5".'
    write(fileop(1),*) ' '
 
    allocate(fidH5(nOutFiles)) ! allocate the outputfiles file ids
@@ -358,8 +358,7 @@ SUBROUTINE ReadInputFileParameters
    end if
    ! Open the required output files
    ! Open the h5 files
-   
-   call h5_file_create("Kinematics"//fnt(i)//".h5", fidH5(i))
+   call h5_file_create("WaveKinematicsZone"//fntH5(i)//".h5", fidH5(i))
    !OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
    !     STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 END Do

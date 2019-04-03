@@ -13,6 +13,7 @@ IMPLICIT NONE
 ! I/O File handle arrays
 INTEGER           :: FILEIP(4), FILEOP(16)
 CHARACTER(len=2) fnt(10)
+CHARACTER(len=1) fntH5(10)
 CHARACTER(LEN=40) :: filenameINPUT, filename, fname_bottom
 INTEGER           :: STAT
 INTEGER, DIMENSION(:), ALLOCATABLE :: fidH5(:)

@@ -30,13 +30,13 @@ REAL(KIND=long) :: Uint(Nz), Vint(Nz)
 REAL(KIND=long) :: Ux(Nz,Nx,Ny),Uy(Nz,Nx,Ny),Uz(Nz,Nx,Ny)
 REAL(KIND=long) :: Vx(Nz,Nx,Ny),Vy(Nz,Nx,Ny),Vz(Nz,Nx,Ny)
 REAL(KIND=long) :: Wx(Nz,Nx,Ny),Wy(Nz,Nx,Ny),Wz(Nz,Nx,Ny)
-CHARACTER(LEN=20) :: h5file
+CHARACTER(LEN=30) :: h5file
 INTEGER(HID_T) :: extended_dimension_id
 INTEGER(HSIZE_T), ALLOCATABLE :: dims_ext(:)
 INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
                     extdims1(1), extdims2(3), extdims3(4)
-INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1
+INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 1
 REAL(KIND=long) :: x3d(Nz, Ny, Nx), y3d(Nz, Ny, Nx), z3d(Nz, Ny, Nx)
 ! Assign the local pointers
 !
@@ -53,7 +53,7 @@ IF(FORMATTYPE/=22)THEN
    ! Some parameters that are necessary for h5 saving
   nx_save = size((/(i, i=i0,i1,is)/))
   ny_save = size((/(j, j=j0,j1,js)/))
-  nz_save = Nz
+  nz_save = Nz-GhostGridZ
 
   ! Set max dimensions for h5 writing
 
@@ -133,7 +133,7 @@ ELSE IF(formattype==22)THEN
    OPEN (unit=FOUT, file=filename,form=form)
    WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE IF(formattype==30)THEN   
-   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ','Kinematics'//fnt(io)//'.h5'
+   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ','WaveKinematicsZone'//fntH5(io)//'.h5'
 ELSE
    FOUT = FILEOP(io+1)
    WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
@@ -183,7 +183,7 @@ IF(it==0)THEN
          ! 2. This HDF5 file output wants  to be consistent with OW3D-GPU version, therefore some variables need to be made 3D before being output (e.g. the position arrays)
 
          ! Initialize all datasets
-         h5file = 'Kinematics'//fnt(io)//'.h5';
+         h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
          ! Create
          call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
                   & extdims1, maxdims1, chunkdims1) 
@@ -246,6 +246,15 @@ IF(it==0)THEN
                end do 
             end do 
          end do
+
+         extended_dimension_id = 4
+         extdims3(4) = zeroi
+         ! call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
+         !    & x3d(:,j0:j1:js, i0:i1:is))         
+         call h5_write(h5file, 'position_x', x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                  
+         call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                          
+         call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, :, :))
+         extdims3(4) = onei
 
       IF(curvilinearOnOff/=0)THEN
       Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
@@ -482,7 +491,7 @@ ELSE !IF(it==0)THEN
          ! After computation, store according to user choice
          IF (formattype==30)THEN
 
-            h5file = 'Kinematics'//fnt(io)//'.h5';
+            h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
 
             extended_dimension_id = 1
             call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
@@ -490,12 +499,12 @@ ELSE !IF(it==0)THEN
 
             extended_dimension_id = 4
             call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
-               & x3d)         
+               & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
             call h5_extend(h5file, 'position_y', extended_dimension_id, extdims3, &
-               & y3d)                          
+               & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                          
 
             call h5_extend(h5file, 'position_z', extended_dimension_id, extdims3, &
-               & z3d)               
+               & z3d(1+GhostGridZ:, :, :))
 
             extended_dimension_id = 3
             call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
@@ -522,32 +531,32 @@ ELSE !IF(it==0)THEN
             extended_dimension_id = 4
             ! velocities
             call h5_extend(h5file, 'velocity_u', extended_dimension_id, extdims3, &
-           & reshape(U(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+           & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_v', extended_dimension_id, extdims3, &
-            & reshape(V(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_w', extended_dimension_id, extdims3, &
-            & reshape(W(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
+            & reshape(W(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
 
             ! velocity z gradients
             call h5_extend(h5file, 'velocity_derivative_uz', extended_dimension_id, extdims3, &
-           & reshape(Uz(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+           & reshape(Uz(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_derivative_vz', extended_dimension_id, extdims3, &
-            & reshape(Vz(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            & reshape(Vz(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_derivative_wz', extended_dimension_id, extdims3, &
-            & reshape(Wz(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
+            & reshape(Wz(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
 
 
             ! velocity x gradients
             call h5_extend(h5file, 'velocity_derivative_ux', extended_dimension_id, extdims3, &
-           & reshape(Ux(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+           & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_derivative_vx', extended_dimension_id, extdims3, &
-            & reshape(Vx(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
             ! velocity y gradients
             call h5_extend(h5file, 'velocity_derivative_uy', extended_dimension_id, extdims3, &
-           & reshape(Uy(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+           & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_derivative_vy', extended_dimension_id, extdims3, &
-            & reshape(Vy(:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
+            & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
 
          else
 
