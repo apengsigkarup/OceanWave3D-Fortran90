@@ -1,6 +1,7 @@
 LDIR = /src/variabledefs
 
 # Local sources and objects
+SOURCES += $(LDIR)/kinematicsArray.f90
 SOURCES += $(LDIR)/precision.f90
 SOURCES += $(LDIR)/constants.f90
 SOURCES += $(LDIR)/datatypes.f90

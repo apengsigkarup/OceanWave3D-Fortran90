@@ -13,6 +13,7 @@ SUBROUTINE StoreKinematicData(Nx,Ny,Nz,io,it)
 !<
 USE GlobalVariables
 USE hl_hdf5
+use kinematicsArray
 IMPLICIT NONE
 ! Input parameters
 INTEGER :: Nx, Ny, Nz, io, it
@@ -182,6 +183,12 @@ IF(it==0)THEN
          ! 1. Fortran is column-major. We want to therefore transpose the arrays before output to have a row-major HDF5 file structure.
          ! 2. This HDF5 file output wants  to be consistent with OW3D-GPU version, therefore some variables need to be made 3D before being output (e.g. the position arrays)
 
+         ! The kinematicsArray will hold 5 kinematics timesteps.
+         ! They will be used to compute the kinematic acceleration at the location
+         ! so that we can save it in the .h5 file.
+         call allocatePointers(Zones(io), nx_save, ny_save, nz_save)
+         call increment_timestep_counter(Zones(io))
+
          ! Initialize all datasets
          h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
          ! Create
@@ -224,6 +231,14 @@ IF(it==0)THEN
          call h5_dataset_create_chunked(h5file, 'velocity_derivative_vz', INT(4, HID_T), &
                   & extdims3, maxdims3, chunkdims3)      
          call h5_dataset_create_chunked(h5file, 'velocity_derivative_wz', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)      
+
+         ! Velocity kinematic accelerations
+         call h5_dataset_create_chunked(h5file, 'velocity_derivative_ut', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)
+         call h5_dataset_create_chunked(h5file, 'velocity_derivative_vt', INT(4, HID_T), &
+                  & extdims3, maxdims3, chunkdims3)      
+         call h5_dataset_create_chunked(h5file, 'velocity_derivative_wt', INT(4, HID_T), &
                   & extdims3, maxdims3, chunkdims3)      
 
          ! Write the first timestep
@@ -491,6 +506,24 @@ ELSE !IF(it==0)THEN
          ! After computation, store according to user choice
          IF (formattype==30)THEN
 
+            ! Save the velocity information in the array of Kinematics, for later
+            ! computation of the kinematic acceleration
+
+            call cycle(Zones(io)%Kinematics)
+            Zones(io)%Kinematics(5)%U = U(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            Zones(io)%Kinematics(5)%V = V(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            Zones(io)%Kinematics(5)%W = W(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            Zones(io)%Kinematics(5)%Uz = Uz(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            Zones(io)%Kinematics(5)%Vz = Vz(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            Zones(io)%Kinematics(5)%Wz = Wz(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            Zones(io)%Kinematics(5)%Eta = Eta(i0:i1:is, j0:j1:js);
+
+            call increment_timestep_counter(Zones(io)) ! signal that we have added another timestep
+
+            if (Zones(io)%number_of_saved_timesteps == 5) then ! if we have saved more than 5 timesteps
+               call calculateKinAcceleration(Zones(io), dt, z(1+GhostGridZ:))
+            end if 
+
             h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
 
             extended_dimension_id = 1
@@ -536,6 +569,15 @@ ELSE !IF(it==0)THEN
             & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_w', extended_dimension_id, extdims3, &
             & reshape(W(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
+
+
+            ! Kinematics accelerations
+            call h5_extend(h5file, 'velocity_derivative_ut', extended_dimension_id, extdims3, &
+           & reshape(Zones(io)%Kinematics(5)%Ut, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            call h5_extend(h5file, 'velocity_derivative_vt', extended_dimension_id, extdims3, &
+            & reshape(Zones(io)%Kinematics(5)%Vt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            call h5_extend(h5file, 'velocity_derivative_wt', extended_dimension_id, extdims3, &
+            & reshape(Zones(io)%Kinematics(5)%Wt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
             ! velocity z gradients
             call h5_extend(h5file, 'velocity_derivative_uz', extended_dimension_id, extdims3, &

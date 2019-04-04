@@ -8,6 +8,7 @@ USE Constants
 USE DataTypes
 USE HSL_LU
 USE OFmodule
+use kinematicsArray
 IMPLICIT NONE 
 
 ! I/O File handle arrays
@@ -38,6 +39,11 @@ REAL(KIND=long), DIMENSION(:,:,:,:), POINTER :: LASTPHI ! Solution variable in t
 TYPE (Wavefield_FS) :: Wavefield, Wavefield_tmp !tmp_wavefield
 REAL(KIND=long), DIMENSION(:,:),   POINTER :: EA,WA
 REAL(KIND=long), DIMENSION(:,:),   POINTER :: tmp2D, rhsE, rhsP
+
+! WAVE KINEMATICS VARIABLES: they will hold the kinematics in the sampling zones for 5 timesteps.
+! Necessary to apply a 4th order forward stencil and calculate the kinematics acceleration at the 
+! current timestep.
+type(zoneKin), allocatable :: Zones(:)
 
 ! Initial condition and wave generation flags
 Integer :: IC, IncWaveType
