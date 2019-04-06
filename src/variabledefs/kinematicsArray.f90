@@ -11,22 +11,22 @@ use hdf5
 implicit none
 
 type kinArray
-    real(kind=8), pointer :: U(:,:,:)
-    real(kind=8), pointer :: V(:,:,:)
-    real(kind=8), pointer :: W(:,:,:)
-    real(kind=8), pointer :: Uz(:,:,:)
-    real(kind=8), pointer :: Vz(:,:,:)
-    real(kind=8), pointer :: Wz(:,:,:)
-    real(kind=8), pointer :: Ut(:,:,:)
-    real(kind=8), pointer :: Vt(:,:,:)
-    real(kind=8), pointer :: Wt(:,:,:)
-    real(kind=8), pointer :: Eta(:,:)
-    real(kind=8), pointer :: Eta_t(:,:)
+    real(kind=8), allocatable :: U(:,:,:)
+    real(kind=8), allocatable :: V(:,:,:)
+    real(kind=8), allocatable :: W(:,:,:)
+    real(kind=8), allocatable :: Uz(:,:,:)
+    real(kind=8), allocatable :: Vz(:,:,:)
+    real(kind=8), allocatable :: Wz(:,:,:)
+    real(kind=8), allocatable :: Ut(:,:,:)
+    real(kind=8), allocatable :: Vt(:,:,:)
+    real(kind=8), allocatable :: Wt(:,:,:)
+    real(kind=8), allocatable :: Eta(:,:)
 end type kinArray
 
 type zoneKin
     type(kinArray), dimension(5) :: Kinematics
     integer :: number_of_saved_timesteps = 0
+    integer :: id
 end type zoneKin
 
 contains
@@ -117,9 +117,10 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
 
     CALL BuildStencilsGridX(alpha,1,time,FDStencil,5,1)
 
-    nz_save = size(inZone%Kinematics(1)%U, 1) ! How many points in the y-direction we are saving
-    ny_save = size(inZone%Kinematics(1)%U, 3) ! How many points in the y-direction we are saving
+    nz_save = size(inZone%Kinematics(1)%U, 1) ! How many points in the z-direction we are saving
     nx_save = size(inZone%Kinematics(1)%U, 2) ! How many points in the x-direction we are saving
+    ny_save = size(inZone%Kinematics(1)%U, 3) ! How many points in the y-direction we are saving
+    
 
     DO j=1,ny_save
         DO i=1,nx_save
@@ -132,13 +133,14 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
                 Vt_nocorr = &
                 Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%V(k,i,j),it=1,5)/))                        
                 Wt_nocorr = &
-                Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%V(k,i,j),it=1,5)/))
+                Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%W(k,i,j),it=1,5)/))
+
                 inZone%Kinematics(5)%Ut(k,i,j) = Ut_nocorr - &
                     sigma(k)*inZone%Kinematics(5)%Uz(k,i,j)*Eta_t
                 inZone%Kinematics(5)%Vt(k,i,j) = Vt_nocorr - &
                     sigma(k)*inZone%Kinematics(5)%Vz(k,i,j)*Eta_t
                 inZone%Kinematics(5)%Wt(k,i,j) = Wt_nocorr - &
-                    sigma(k)*inZone%Kinematics(5)%Vz(k,i,j)*Eta_t                
+                    sigma(k)*inZone%Kinematics(5)%Wz(k,i,j)*Eta_t                
             END DO
         END DO
     END Do

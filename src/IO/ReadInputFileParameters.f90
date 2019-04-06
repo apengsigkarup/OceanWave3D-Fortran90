@@ -363,6 +363,9 @@ SUBROUTINE ReadInputFileParameters
       !OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
       !     STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 
+      ! Save and id number for the zones
+      Zones(i)%id = i
+
    END DO
   ELSEIF(formattype==21)THEN
      ! APEK: Configuration designed for extracting data on a per time step basis

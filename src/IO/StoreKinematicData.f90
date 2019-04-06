@@ -263,13 +263,11 @@ IF(it==0)THEN
          end do
 
          extended_dimension_id = 4
-         extdims3(4) = zeroi
-         ! call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
-         !    & x3d(:,j0:j1:js, i0:i1:is))         
+         extdims3(4) = zeroi ! Write the positions at time zero: zero means overwrite current value
          call h5_write(h5file, 'position_x', x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                  
          call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                          
          call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, :, :))
-         extdims3(4) = onei
+         extdims3(4) = onei ! Put it back to one, which means: append to current array
 
       IF(curvilinearOnOff/=0)THEN
       Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
@@ -512,22 +510,25 @@ ELSE !IF(it==0)THEN
             call cycle(Zones(io)%Kinematics)
             Zones(io)%Kinematics(5)%U = U(1+GhostGridZ:, i0:i1:is, j0:j1:js);
             Zones(io)%Kinematics(5)%V = V(1+GhostGridZ:, i0:i1:is, j0:j1:js);
-            Zones(io)%Kinematics(5)%W = W(1+GhostGridZ:, i0:i1:is, j0:j1:js);
-            Zones(io)%Kinematics(5)%Uz = Uz(1+GhostGridZ:, i0:i1:is, j0:j1:js);
-            Zones(io)%Kinematics(5)%Vz = Vz(1+GhostGridZ:, i0:i1:is, j0:j1:js);
-            Zones(io)%Kinematics(5)%Wz = Wz(1+GhostGridZ:, i0:i1:is, j0:j1:js);
+            DO K=1+GhostGridZ,NZ
+               Zones(io)%Kinematics(5)%W(K-GhostGridZ,:,:) = W(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
+               Zones(io)%Kinematics(5)%Uz(K-GhostGridZ,:,:) = Uz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
+               Zones(io)%Kinematics(5)%Vz(K-GhostGridZ,:,:) = Vz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
+               Zones(io)%Kinematics(5)%Wz(K-GhostGridZ,:,:) = Wz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
+            END DO
             Zones(io)%Kinematics(5)%Eta = Eta(i0:i1:is, j0:j1:js);
 
             call increment_timestep_counter(Zones(io)) ! signal that we have added another timestep
 
             if (Zones(io)%number_of_saved_timesteps == 5) then ! if we have saved more than 5 timesteps
-               call calculateKinAcceleration(Zones(io), dt, z(1+GhostGridZ:))
+               
+               call calculateKinAcceleration(Zones(io), dt*Output(io)%tstride, z(1+GhostGridZ:))
             end if 
 
             h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
 
             extended_dimension_id = 1
-            call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
+            call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt*Output(io)%tstride/))
 
 
             extended_dimension_id = 4
@@ -564,12 +565,11 @@ ELSE !IF(it==0)THEN
             extended_dimension_id = 4
             ! velocities
             call h5_extend(h5file, 'velocity_u', extended_dimension_id, extdims3, &
-           & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+           & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
             call h5_extend(h5file, 'velocity_v', extended_dimension_id, extdims3, &
-            & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
             call h5_extend(h5file, 'velocity_w', extended_dimension_id, extdims3, &
-            & reshape(W(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
-
+            & reshape(Zones(io)%Kinematics(5)%W, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
             ! Kinematics accelerations
             call h5_extend(h5file, 'velocity_derivative_ut', extended_dimension_id, extdims3, &
@@ -581,11 +581,11 @@ ELSE !IF(it==0)THEN
 
             ! velocity z gradients
             call h5_extend(h5file, 'velocity_derivative_uz', extended_dimension_id, extdims3, &
-           & reshape(Uz(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+           & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_derivative_vz', extended_dimension_id, extdims3, &
-            & reshape(Vz(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+            & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
             call h5_extend(h5file, 'velocity_derivative_wz', extended_dimension_id, extdims3, &
-            & reshape(Wz(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
+            & reshape(Zones(io)%Kinematics(5)%Wz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
 
 
             ! velocity x gradients
@@ -629,8 +629,8 @@ ELSE !IF(it==0)THEN
 
             ! Then the U, V, W velocity   z  gradients
             WRITE (FOUT) ( ( ( Uz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-            WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
             WRITE (FOUT) ( ( ( Vz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)             
+            WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)             
 
             ! Then the U, V velocity   y gradients
             WRITE (FOUT) ( ( ( Uy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)                  
