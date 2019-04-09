@@ -264,9 +264,9 @@ IF(it==0)THEN
 
          extended_dimension_id = 4
          extdims3(4) = zeroi ! Write the positions at time zero: zero means overwrite current value
-         call h5_write(h5file, 'position_x', x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                  
-         call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                          
-         call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, :, :))
+         call h5_write(h5file, 'position_x', x3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                  
+         call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                          
+         call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
          extdims3(4) = onei ! Put it back to one, which means: append to current array
 
       IF(curvilinearOnOff/=0)THEN
@@ -535,10 +535,10 @@ ELSE !IF(it==0)THEN
             call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
                & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
             call h5_extend(h5file, 'position_y', extended_dimension_id, extdims3, &
-               & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))                          
+               & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is)) 
 
             call h5_extend(h5file, 'position_z', extended_dimension_id, extdims3, &
-               & z3d(1+GhostGridZ:, :, :))
+               & z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
 
             extended_dimension_id = 3
             call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
