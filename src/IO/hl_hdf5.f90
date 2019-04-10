@@ -12,6 +12,12 @@ module HL_HDF5 !High level HDF5 interface
         module procedure H5_write_3d
     end interface 
 
+    interface h5_write_at_step
+        module procedure h5_write_1d_at_step
+        module procedure H5_write_2d_at_step
+        module procedure H5_write_3d_at_step
+    end interface 
+
     interface h5_extend
         module procedure h5_extend_1d
         module procedure h5_extend_2d
@@ -158,6 +164,22 @@ module HL_HDF5 !High level HDF5 interface
 
     end subroutine h5_write_3d
        
+    subroutine h5_write_3d_at_step(file_name, dataset_name, extended_dimension_id, &
+            step, dims, data)
+
+        character(*) :: file_name, dataset_name
+        real(kind=8) :: data(:,:,:)
+        integer(HID_T) :: file_id, dataset_id, &
+            dataspace_id, extended_dimension_id, memspace_id
+        integer(HSIZE_T) :: dims(:)
+        integer(HSIZE_T),allocatable :: maxdims(:), &
+                dims_old(:), dims_new(:), offset(:)        
+        logical :: dummy
+        integer :: rank, i, step
+
+        include "h5_write_at_step.f90"
+
+    end subroutine h5_write_3d_at_step
 
     subroutine h5_extend_3d(file_name, dataset_name, extended_dimension_id, &
             dims_ext, data)
@@ -191,7 +213,23 @@ module HL_HDF5 !High level HDF5 interface
         include "h5_write.f90"
 
     end subroutine h5_write_2d
-       
+
+    subroutine h5_write_2d_at_step(file_name, dataset_name, extended_dimension_id, &
+        step, dims, data)
+
+    character(*) :: file_name, dataset_name
+    real(kind=8) :: data(:,:)
+    integer(HID_T) :: file_id, dataset_id, &
+        dataspace_id, extended_dimension_id, memspace_id
+    integer(HSIZE_T) :: dims(:)
+    integer(HSIZE_T),allocatable :: maxdims(:), &
+            dims_old(:), dims_new(:), offset(:)        
+    logical :: dummy
+    integer :: rank, i, step
+
+    include "h5_write_at_step.f90"
+
+end subroutine h5_write_2d_at_step
 
     subroutine h5_extend_2d(file_name, dataset_name, extended_dimension_id, &
             dims_ext, data)
@@ -226,6 +264,23 @@ module HL_HDF5 !High level HDF5 interface
 
     end subroutine h5_write_1d
        
+
+    subroutine h5_write_1d_at_step(file_name, dataset_name, extended_dimension_id, &
+        step, dims, data)
+
+    character(*) :: file_name, dataset_name
+    real(kind=8) :: data(:)
+    integer(HID_T) :: file_id, dataset_id, &
+        dataspace_id, extended_dimension_id, memspace_id
+    integer(HSIZE_T) :: dims(:)
+    integer(HSIZE_T),allocatable :: maxdims(:), &
+            dims_old(:), dims_new(:), offset(:)        
+    logical :: dummy
+    integer :: rank, i, step
+
+    include "h5_write_at_step.f90"
+
+end subroutine h5_write_1d_at_step
 
     subroutine h5_extend_1d(file_name, dataset_name, extended_dimension_id, &
             dims_ext, data)
