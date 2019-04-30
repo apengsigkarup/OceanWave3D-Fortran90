@@ -14,7 +14,7 @@ SUBROUTINE ReadInputFileParameters
   INTEGER ios, i, nxIC, nyIC, iflag_phi, ispec, nGenZones, seed, seed2 
   REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, x0, &
        y0, beta0, s0, gamma_jonswap
-  CHARACTER(len=30):: inc_wave_file
+  CHARACTER(len=30):: inc_wave_file, h5_wave_kin_file
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
   WRITE (*,FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
@@ -326,8 +326,12 @@ SUBROUTINE ReadInputFileParameters
    BACKSPACE(FILEIP(1))
    READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
    Allocate (Output(nOutFiles))
-   IF (nOutFiles>10)THEN
-      print *, 'Max. 10 kinematics output files at this point.'
+   ! Allocate the fileNames 
+   allocate(fntH5(nOutFiles))
+   fntH5 = (/(i,i=0,nOutFiles)/)
+
+   IF (nOutFiles>999)THEN
+      print *, 'Max. 999 kinematics output files at this point.'
       stop
    END IF
    print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "WaveKinematicsZone**.h5".'
@@ -359,7 +363,8 @@ SUBROUTINE ReadInputFileParameters
       end if
       ! Open the required output files
       ! Open the h5 files
-      call h5_file_create("WaveKinematicsZone"//fntH5(i)//".h5", fidH5(i))
+      write(h5_wave_kin_file, "(A18,I3.3,A3)") "WaveKinematicsZone",(fntH5(i)),".h5"
+      call h5_file_create(h5_wave_kin_file, fidH5(i))
       !OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
       !     STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 

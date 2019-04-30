@@ -135,7 +135,8 @@ ELSE IF(formattype==22)THEN
    OPEN (unit=FOUT, file=filename,form=form)
    WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE IF(formattype==30)THEN   
-   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ','WaveKinematicsZone'//fntH5(io)//'.h5'
+   WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
+   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ',h5file
 ELSE
    FOUT = FILEOP(io+1)
    WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
@@ -191,7 +192,7 @@ IF(it==0)THEN
          call increment_timestep_counter(Zones(io))
 
          ! Initialize all datasets
-         h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
+         WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
          ! Create
          call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
                   & extdims1, maxdims1, chunkdims1) 
@@ -513,7 +514,8 @@ ELSE !IF(it==0)THEN
                Zones(io)%Kinematics(5)%W(K-GhostGridZ,:,:) = W(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
                Zones(io)%Kinematics(5)%Uz(K-GhostGridZ,:,:) = Uz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
                Zones(io)%Kinematics(5)%Vz(K-GhostGridZ,:,:) = Vz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
-               Zones(io)%Kinematics(5)%Wz(K-GhostGridZ,:,:) = Wz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js);
+               !FP20190430: We need to divide Wz by twice the fluid thickness. Before today it was mistakenly divided only once.
+               Zones(io)%Kinematics(5)%Wz(K-GhostGridZ,:,:) = Wz(K, i0:i1:is, j0:j1:js)/d(i0:i1:is, j0:j1:js)**2; 
             END DO
             Zones(io)%Kinematics(5)%Eta = Eta(i0:i1:is, j0:j1:js);
 
@@ -524,7 +526,7 @@ ELSE !IF(it==0)THEN
                call calculateKinAcceleration(Zones(io), dt*Output(io)%tstride, z(1+GhostGridZ:))
             end if 
 
-            h5file = 'WaveKinematicsZone'//fntH5(io)//'.h5';
+            WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
 
             if (it == 1) then
 
