@@ -16,6 +16,8 @@ type kinArray
     real(kind=8), allocatable :: W(:,:,:)
     real(kind=8), allocatable :: Uz(:,:,:)
     real(kind=8), allocatable :: Vz(:,:,:)
+    real(kind=8), allocatable :: Wx(:,:,:)
+    real(kind=8), allocatable :: Wy(:,:,:)
     real(kind=8), allocatable :: Wz(:,:,:)
     real(kind=8), allocatable :: Ut(:,:,:)
     real(kind=8), allocatable :: Vt(:,:,:)
@@ -125,22 +127,22 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
     DO j=1,ny_save
         DO i=1,nx_save
             Eta_t = &
-            Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%Eta(i,j),it=1,5)/))
-            ! Forward derivative of the surface elevation
+            Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%Eta(i,j),it=1,5)/))
+            ! Central, 5-points derivative of the surface elevation
             DO k=1,nz_save
                 Ut_nocorr = &
-                Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%U(k,i,j),it=1,5)/))
+                Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%U(k,i,j),it=1,5)/))
                 Vt_nocorr = &
-                Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%V(k,i,j),it=1,5)/))                        
+                Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%V(k,i,j),it=1,5)/))                        
                 Wt_nocorr = &
-                Dot_Product(FDStencil(5,:), (/(inZone%Kinematics(it)%W(k,i,j),it=1,5)/))
+                Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%W(k,i,j),it=1,5)/))
 
-                inZone%Kinematics(5)%Ut(k,i,j) = Ut_nocorr - &
-                    sigma(k)*inZone%Kinematics(5)%Uz(k,i,j)*Eta_t
-                inZone%Kinematics(5)%Vt(k,i,j) = Vt_nocorr - &
-                    sigma(k)*inZone%Kinematics(5)%Vz(k,i,j)*Eta_t
-                inZone%Kinematics(5)%Wt(k,i,j) = Wt_nocorr - &
-                    sigma(k)*inZone%Kinematics(5)%Wz(k,i,j)*Eta_t                
+                inZone%Kinematics(3)%Ut(k,i,j) = Ut_nocorr - &
+                    sigma(k)*inZone%Kinematics(3)%Uz(k,i,j)*Eta_t
+                inZone%Kinematics(3)%Vt(k,i,j) = Vt_nocorr - &
+                    sigma(k)*inZone%Kinematics(3)%Vz(k,i,j)*Eta_t
+                inZone%Kinematics(3)%Wt(k,i,j) = Wt_nocorr - &
+                    sigma(k)*inZone%Kinematics(3)%Wz(k,i,j)*Eta_t                
             END DO
         END DO
     END Do
