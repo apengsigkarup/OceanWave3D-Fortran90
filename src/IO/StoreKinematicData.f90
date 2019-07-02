@@ -542,7 +542,7 @@ ELSE !IF(it==0)THEN
                   & transpose(eta(i0:i1:is, j0:j1:js)))
                
                ! Write only if there is more than one point in the x direction
-               if (Ny>1) then
+               if (FineGrid%Nx>1) then
                   call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, 0, extdims2, &
                   & transpose(etax(i0:i1:is, j0:j1:js)))            
                else ! just write 0s
@@ -551,7 +551,7 @@ ELSE !IF(it==0)THEN
                end if
 
                ! Write only if there is more than one point in the y direction
-               if (Ny>1) then
+               if (FineGrid%Ny>1) then
                   call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, 0, extdims2, &
                   & transpose(etay(i0:i1:is, j0:j1:js)))            
                else ! just write 0s
@@ -619,7 +619,7 @@ ELSE !IF(it==0)THEN
                   & transpose(eta(i0:i1:is, j0:j1:js)))
                
                ! Write only if there is more than one point in the x direction
-               if (Ny>1) then
+               if (FineGrid%Nx>1) then
                   call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
                   & transpose(etax(i0:i1:is, j0:j1:js)))            
                else ! just write 0s
@@ -628,7 +628,7 @@ ELSE !IF(it==0)THEN
                end if
 
                ! Write only if there is more than one point in the y direction
-               if (Ny>1) then
+               if (FineGrid%Ny>1) then
                   call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
                   & transpose(etay(i0:i1:is, j0:j1:js)))            
                else ! just write 0s
