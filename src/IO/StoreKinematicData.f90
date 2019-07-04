@@ -72,7 +72,7 @@ IF(FORMATTYPE/=22)THEN
    extdims3 = (/nz_save, ny_save, nx_save, onei/)
 
 ELSE
-  PRINT*,'Storing kinematics data...'
+ ! PRINT*,'Storing kinematics data...'
   ! determine indices for stencils
   tmpx = x(1:Nx,1)-Output(io)%x
   ! search
@@ -127,7 +127,7 @@ IF(formattype==21)THEN
    form="unformatted" ! binary format chosen
    FOUT = 22 ! file handle
    OPEN (unit=FOUT, file=filename,form=form)
-   WRITE(*,FMT='(A,A)') '  File output = ',filename
+!   WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE IF(formattype==22)THEN
    WRITE(unit=filename, FMT="(A,I2.2,A,I5.5,A)") "Kinematics_",io,"_",it,".bin"
    form="unformatted" ! binary format chosen
@@ -139,7 +139,7 @@ ELSE IF(formattype==30)THEN
    WRITE(*,FMT='(A,A)') '  File output of h5 file number = ',h5file
 ELSE
    FOUT = FILEOP(io+1)
-   WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
+!   WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
 END IF
 
 IF(it==0)THEN

@@ -98,9 +98,14 @@ t=[0:nt-1]*dt*tstride;   % The time axis
 % Read in the solution variables eta, gradeta, phi, u, v, w, dudz, dvdz.  
 %
 for it=1:nt
-    tmp(1:nx*ny)=fread(fid1,nx*ny,'double');
-    eta(it,:)=tmp(1:nx*ny);
-    junk = fread(fid1,2,int_nbit);
+    try
+        tmp(1:nx*ny)=fread(fid1,nx*ny,'double');
+        eta(it,:)=tmp(1:nx*ny);
+        junk = fread(fid1,2,int_nbit);
+    catch
+        warning(['Read failed at time step ',num2str(it)]);
+        break
+    end
     %
     tmp(1:nx*ny)=fread(fid1,nx*ny,'double');
     etax(it,:)=tmp(1:nx*ny);

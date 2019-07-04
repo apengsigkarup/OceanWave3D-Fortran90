@@ -44,8 +44,8 @@ SUBROUTINE setupwavepaddle
   READ(21,'(A)',err=15)header
   READ(21,*)dt_inc, nt, n2
   ! Informative output
-  write(6,23),wave3DFlux%inc_wave_file,header
-  write(fileop(1),23),wave3DFlux%inc_wave_file,header
+  write(6,23) wave3DFlux%inc_wave_file,header
+  write(fileop(1),23) wave3DFlux%inc_wave_file,header
 23 FORMAT('Reading the wall boundary flux from file:  ',A,'with header ',/,A)
   !
   ! Allocate fields

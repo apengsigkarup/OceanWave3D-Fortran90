@@ -41,7 +41,10 @@ C         kx=wavenum*xp(1,j)-omega_t
          ENDDO
          ph=0.D00
          w=0.d00
-!         ph=(zz(4)-zz(7))*xp(1,j)
+!     This orginal version had a bug and used the dimensional xp instead
+!     of the non-dimensional one. So I've gone back to this form which should
+!     be correct for either  U_E or U_S versions. HBB - corrected 18/03/2019. 
+         ph=(zz(4)-zz(7))*xp(j)*wavenum
 C Here phi, is computed on the free-surface etai.  To get values 
 C at another level of z, replace etai with z in the following two loops.  
          DO m=1,n_four_modes
@@ -57,7 +60,8 @@ C at another level of z, replace etai with z in the following two loops.
          etai(j)=kinv*etai(j)
          phi_s(j)=ph*pfactor
 !	Next line ADDED: APEK 01-07-2008, ! phi_s=uE*x+ph, uE=c-ubar, 
-         phi_s(j)=phi_s(j) + xp(j)*(zz(5)*sqrt(grav/wavenum))   
+!     phi_s(j)=phi_s(j) + xp(j)*(zz(5)*sqrt(grav/wavenum))
+!     HBB - corrected 18/03/2019. 
          w=w*ufactor
 !hbb temporary output for checking the GOperator
 !         write(26,*)phi_s(j),w
@@ -99,7 +103,11 @@ C Local variables
             slope=slope-km*yy(m)*sin(km*kx)
          ENDDO
          ph=0.D00
-!         ph=(zz(4)-zz(7))*xp(1,j)
+!     This orginal version had a bug and used the dimensional xp instead
+!     of the non-dimensional one. So I've gone back to this form which should
+!     be correct for either  U_E or U_S versions. HBB - corrected 18/03/2019. 
+         ph=(zz(4)-zz(7))*xp(j)*wavenum
+!         ph=-zz(7)*xp(j)*wavenum
 C Here phi is computed on the free-surface etai.  To get values 
 C at another level of z, replace etai with z in the following two loops.  
          DO m=1,n_four_modes
@@ -109,7 +117,8 @@ C at another level of z, replace etai with z in the following two loops.
          etai(j)=kinv*etai(j)
          phi_s(j)=ph*pfactor
 !	Next line ADDED: APEK 01-07-2008, ! phi_s=uE*x+ph, uE=c-ubar, 
-         phi_s(j)=phi_s(j) + xp(j)*(zz(5)*sqrt(grav/wavenum))   
+!     phi_s(j)=phi_s(j) + xp(j)*(zz(5)*sqrt(grav/wavenum))
+!     See note above, HBB 18/03/2019. 
 
       END DO
 

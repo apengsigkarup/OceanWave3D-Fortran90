@@ -128,4 +128,8 @@ TYPE (Interpolation_def) :: Interpolation
 REAL(KIND=dp), DIMENSION(:,:), ALLOCATABLE :: Uneumann
 TYPE (wave3DFluxStruct) :: wave3DFlux
 
+! A constant flux current through the domain for wave-current interaction
+TYPE (CurrentFluxStruct) :: CurrentFlux
+
+
 END MODULE GlobalVariables

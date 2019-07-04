@@ -5,7 +5,7 @@ SUBROUTINE RelaxationModule_new(E,P,RKtime,time)
 ! By Allan P. Engsig-Karup and Harry B. Bingham
 !
 USE GlobalVariables, ONLY: RelaxZones, FineGrid, SFsol, g, relaxTransientTime, relaxNo, &
-	GhostGridX, GhostGridY, curvilinearONOFF, RandomWave, IncWaveType
+	GhostGridX, GhostGridY, curvilinearONOFF, RandomWave, IncWaveType, CurrentFlux
 USE Precision
 USE Constants
 IMPLICIT NONE
@@ -14,7 +14,8 @@ IMPLICIT NONE
 REAL(KIND=long), DIMENSION(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY) :: E, P
 REAL(KIND=long) :: RKtime, time, FAC
 INTEGER :: i, j, k, j0, j1, k0, k1, krel
-REAL(KIND=long) :: tmpx(FineGrid%Nx+2*GhostGridX), tmpy(FineGrid%Ny+2*GhostGridY)
+REAL(KIND=long) :: tmpx(FineGrid%Nx+2*GhostGridX), tmpy(FineGrid%Ny+2*GhostGridY), &
+     tmph(FineGrid%Nx+2*GhostGridX)
 
 !
 ! The ramp factor in time for smooth initialization of the wave generation.
@@ -44,6 +45,7 @@ ELSE
   tmpx(:) = FineGrid%x(:,1)
   tmpy(:) = FineGrid%y(1,:)
 ENDIF
+tmph(:) = FineGrid%h(:,1) !hbb Not sure how this fits into curvilinear...
 !
 ! FOR EACH RELAXATION ZONE
 !
@@ -57,14 +59,16 @@ DO i = 1, relaxNo
    !
    IF (RelaxZones(i)%XorY=='X' .AND. RelaxZones(i)%XorYgen=='X') THEN
       IF (RelaxZones(i)%WavegenONOFF==0) THEN
-         ! No incident wave -> damping zone
+         ! No incident wave -> damping zone.
+         ! HBB - If there is a current we damp to the current speed
          IF (RelaxZones(i)%PhiOnOff==1) THEN
             ! Relax both phi and eta
             DO j = k0,k1
                E(j0:j1,j) =  &
                     E(j0:j1,j)*(RelaxZones(i)%gam)
                P(j0:j1,j) =  &
-                    P(j0:j1,j)*(RelaxZones(i)%gam)
+                    P(j0:j1,j)*(RelaxZones(i)%gam) &
+                    + FAC*CurrentFlux%Q/tmph(j0)*tmpx(j0:j1)*(one-RelaxZones(i)%gam)
             END DO
          ELSE
             ! Relax only eta
