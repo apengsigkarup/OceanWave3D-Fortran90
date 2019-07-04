@@ -76,7 +76,7 @@ SUBROUTINE setupwavepaddle
   !
   dy_local=2*wave3DFlux%y(1); 
   flag=0
-  do i=2,n2-1
+  do i=2,n2-1 ! FIXME: why n2-1? Seems like the last paddle point is neglected (FP20190403)
      if(abs(wave3DFlux%y(i)-(wave3DFlux%y(i-1)+dy_local)).ge.1.e-5) then
         flag=1
      end if

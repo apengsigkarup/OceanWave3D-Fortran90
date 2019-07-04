@@ -31,6 +31,7 @@ OPEN (UNIT=FILEOP(1),FILE='LOG.txt',STATUS='UNKNOWN')
 ! Files 2:11 are possible kinematics output files opened and written to in 
 ! subroutine StoreKinematicData, called by the main line.
 fnt(1:10) = (/ '01','02','03','04','05','06','07','08','09','10' /)
+
 ! File 12 is 'local.smoothing' opened and written to by subroutine 'LocalSmoothing2D' 
 !         called by the main line.  
 ! File 13 is the file 'relax.chk' written to by subroutine PreprocessRelaxationZones 
