@@ -57,19 +57,29 @@ IF(FORMATTYPE/=22)THEN
   nz_save = Nz-GhostGridZ
 
   ! Set max dimensions for h5 writing
-
-  maxdims1 = (/H5S_UNLIMITED_F/)
-  maxdims2 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
-  maxdims3 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
+  ! FP 20190705: According to my tests, this syntax works on HDF5/1.8.17 and HDF5/1.8.5
+  maxdims1 = (/-1/)
+  maxdims2 = (/-1, -1, -1/)
+  maxdims3 = (/-1, -1, -1, -1/)
+  ! FP 20190705: According to my tests, this syntax works only on HDF5/1.8.5
+  ! maxdims1 = (/H5S_UNLIMITED_F/)
+  ! maxdims2 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
+  ! maxdims3 = (/H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F, H5S_UNLIMITED_F/)
+  
   ! Chunk dims
+  ! FP 20190705: The chunk dims is quite big in the time-axis.
+  ! This is done to facilitate the access of the data, which are usually read
+  ! as whole time series: usually, all the time steps of one dataset are read at one 
+  ! particular x,y,z location
+  
   chunkdims1 = (/30000*onei/)
   chunkdims2 = (/ny_save, nx_save, 30000*onei/)
   chunkdims3 = (/nz_save, ny_save, nx_save, 30000*onei/)
-  ! Dimensions of the extended dataset, when appending.
-
-   extdims1 = (/onei/)
-   extdims2 = (/ny_save, nx_save, onei/)
-   extdims3 = (/nz_save, ny_save, nx_save, onei/)
+  
+  ! Dimensions of the extended dataset, when appending to an existing dataset.
+  extdims1 = (/onei/)
+  extdims2 = (/ny_save, nx_save, onei/)
+  extdims3 = (/nz_save, ny_save, nx_save, onei/)
 
 ELSE
  ! PRINT*,'Storing kinematics data...'

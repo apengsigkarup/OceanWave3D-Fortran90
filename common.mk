@@ -15,23 +15,35 @@ LIBINSTALLDIR = $(HOME)/lib
 BUILDDIR = $(PWD)/buildDevelop
 
 FC = gfortran
-
+PLATFORM = gbar
 # Then the blocks for specific users (this clobbers the above info.)
+# -lma41  -lma27 -lmi24 -lhsl_mi20
+ifeq ($(PLATFORM),gbar)
+  LINLIB = 
+  DBFLAGS = -I/usr/lib64/gfortran/modules
+  OPTFLAGS = -I/usr/lib64/gfortran/modules
+endif
+ifeq ($(PLATFORM),jess)
+  LINLIB = -lma41
+  DBFLAGS = -I$(EBROOTHDF5)/include
+  OPTFLAGS = -I$(EBROOTHDF5)/include
+endif
+
 ifeq ($(FC),gfortran)
   # fabpi machine, gfortran
-  FC=gfortran
-  # LIBDIRS  = -L$(HOME)/lib/
   LIBDIRS  = -L$(HOME)/lib/  -L$(MODULE_OPENBLAS_LIB_DIR)
-  LINLIB   = -lharwell -lskit -lopenblas -lma41  -lma27 -lmi24 -lhsl_mi20 -lhdf5 -lhdf5_fortran -lhdf5_hl
-  DBFLAGS  = -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic -I/usr/lib64/gfortran/modules
-  OPTFLAGS = -pg -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow -I/usr/lib64/gfortran/modules
+  LINLIB   += -lharwell -lskit -lopenblas -lhdf5 -lhdf5_fortran -lhdf5_hl -lma41
+  DBFLAGS  += -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic 
+  OPTFLAGS += -pg -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow 
 endif
 
 ifeq ($(FC),ifort)
   # hbb work machine with intel compiler
   LIBDIRS  = -L$(HOME)/lib/  -L$(MODULE_OPENBLAS_LIB_DIR)
-#  LINLIB   = -mkl -lharwell_intel -lskit_intel -llapack_intel -lblas_intel
-  LINLIB   = -lopenblas -lma27 -lma41 
-  DBFLAGS  = -g -CB -fpe0 -fpstkchk  -traceback 
-  OPTFLAGS = -O3 -tpp7
+  #  LINLIB   = -mkl -lharwell_intel -lskit_intel -llapack_intel -lblas_intel
+  LINLIB   += -lopenblas -lma27 -lma41 
+  DBFLAGS  += -g -CB -fpe0 -fpstkchk  -traceback 
+  OPTFLAGS += -O3 -tpp7
 endif
+
+print-%  : ; @echo $* = $($*)
