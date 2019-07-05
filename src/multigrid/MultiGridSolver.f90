@@ -39,9 +39,11 @@ if (1==1) THEN
 !print*,'arrLevels(k)%PreconditioningMatrix%val     = ',arrLevels(k)%PreconditioningMatrix%val
 !print*,'arrLevels(k)%PreconditioningMatrix%col_ind = ',arrLevels(k)%PreconditioningMatrix%col_ind
 !print*,'arrLevels(k)%PreconditioningMatrix%row_ptr = ',arrLevels(k)%PreconditioningMatrix%row_ptr
-	CALL MA41AD(JOB, n_rows, nnz, arrLevels(k)%PreconditioningMatrix%row_ptr, &
-	    arrLevels(k)%PreconditioningMatrix%col_ind, arrLevels(k)%PreconditioningMatrix%val, x, COLSCA, ROWSCA, KEEP, &
-	    IS_HSL, MAXIS, SS, MAXS, CNTL, ICNTL, INFOHSL, RINFO)
+print *, 'MultiGrid solver not supported without HSL'
+stop
+	!CALL MA41AD(JOB, n_rows, nnz, arrLevels(k)%PreconditioningMatrix%row_ptr, &
+	 !   arrLevels(k)%PreconditioningMatrix%col_ind, arrLevels(k)%PreconditioningMatrix%val, x, COLSCA, ROWSCA, KEEP, &
+	 !   IS_HSL, MAXIS, SS, MAXS, CNTL, ICNTL, INFOHSL, RINFO)
 	IF (INFOHSL(1) .LT. 0) THEN ! Check for problems
 		PRINT *, 'Problems with MA41, JOB = 3 (Solution), direct LU solver on coarsest level of the Multigrid method.'
     END IF 

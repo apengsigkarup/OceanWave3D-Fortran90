@@ -5,7 +5,7 @@ USE Constants
 USE DataTypes
 IMPLICIT NONE
 INTEGER :: formattype
-TYPE (SparseArray_COO) :: SparseMatrix
+TYPE (SparseArray_CSR) :: SparseMatrix
 CHARACTER(len=40) :: filename,form
 SELECT CASE (formattype)
 	CASE (1)

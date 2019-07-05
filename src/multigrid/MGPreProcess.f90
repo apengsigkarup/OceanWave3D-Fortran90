@@ -354,6 +354,8 @@ END IF
 	ELSE
 		! Convert COO matrix to CSR matrix
 		CALL ConvertCOOtoCSR(arrLevels(k)%PreconditioningMatrix,arrLevels(k)%IterationMatrix)
+                arrLevels(k)%PreconditioningMatrix_CSR = arrLevels(k)%IterationMatrix
+
 		! reorder CSR matrix to prepare for gauss-seidel operations
 		CALL CSRdiaREORDER(arrLevels(k)%IterationMatrix%nrow,arrLevels(k)%IterationMatrix%nnz,&
 			arrLevels(k)%IterationMatrix%val,arrLevels(k)%IterationMatrix%col_ind,arrLevels(k)%IterationMatrix%row_ptr)

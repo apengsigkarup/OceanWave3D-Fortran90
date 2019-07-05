@@ -109,7 +109,7 @@ SELECT CASE (Precond)
 			DEALLOCATE(FineGrid%DiffStencils%FullRankStencilXZ)
 			DEALLOCATE(FineGrid%DiffStencils%FullRankStencilYZ)
 		ENDIF
-		CALL CleanSparseMatrixCOO(FineGrid%PreconditioningMatrix)
+		CALL CleanSparseMatrixCSR(FineGrid%PreconditioningMatrix,FineGrid%PreconditioningMatrix_CSR)
 !	filename = "SparseMatrix.bin"
 !CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename)
 !	filename = "dsigma.bin"

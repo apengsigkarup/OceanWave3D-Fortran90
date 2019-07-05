@@ -19,6 +19,7 @@ SOURCES += $(LDIR)/BuildPDampMatrices.f90
 SOURCES += $(LDIR)/BuildLinearSystemMatrix.f90
 SOURCES += $(LDIR)/CSRdiaREORDER.f90
 SOURCES += $(LDIR)/CleanSparseMatrixCOO.f90
+SOURCES += $(LDIR)/CleanSparseMatrixCSR.f90
 SOURCES += $(LDIR)/CleanSparseMatrixCOOold.f90
 SOURCES += $(LDIR)/ConstructTableCrossDerivatives.f90
 SOURCES += $(LDIR)/ConstructTableCrossDerivatives_Curvilinear.f90

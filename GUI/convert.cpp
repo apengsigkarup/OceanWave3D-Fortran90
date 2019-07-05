@@ -75,6 +75,13 @@ void convert::read(QString file, QProgressBar* Progressbar)
     // Open fstream
     fileStream.open(fileName.toLatin1().data(), std::ios::binary | std::ios::in);
 
+    if (!fileStream) // Verify that the file was open successfully
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Unknown input file");
+        msgBox.exec();
+        return;
+    }
     fileStream.read((char *)&junk,sizeof(junk));
     fileStream.read((char *)&xbeg,sizeof(xbeg));
     fileStream.read((char *)&xend,sizeof(xend));
@@ -142,6 +149,7 @@ void convert::read(QString file, QProgressBar* Progressbar)
 int updateInterval = nt/200>1 ? nt/200 : 1;
 
     for (int i=0;i<nt;i++){
+
         if (i % updateInterval == 0){
             Progressbar->setValue((i+2.0)/nt*100);
 
@@ -192,7 +200,7 @@ int updateInterval = nt/200>1 ? nt/200 : 1;
         fileStream.read((char *)&junk,2*sizeof(junk));
         for (int j=0;j<nx*ny*nz;j++){vz[j+i*nx*ny*nz]=tmp_xyz[j];}
 
-        t[i] = i*dt;
+        t[i] = (i+1)*dt;
     }
 
     fileStream.close();
@@ -585,7 +593,7 @@ std::ofstream oStream;
             for (int j=0;j<nx*ny;j++){oStream << h[j] << " ";}oStream << "\n";
 
 
-            for (int i=0;i<nt;i++){
+            for (int i=0;i<nt-1;i++){
                 oStream << t[i] << " ";
 
                 for (int j=0;j<nx*ny;j++){
@@ -603,7 +611,7 @@ std::ofstream oStream;
             oStream << "h = " << h[location] << "\n";
 
 
-            for (int i=0;i<nt;i++){
+            for (int i=0;i<nt-1;i++){
                 oStream << t[i] << " " << eta[location+i*nx*ny] << "\n";
             }
 

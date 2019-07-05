@@ -3,6 +3,7 @@ SUBROUTINE iterative_solution(rhss,n_rows,A_times_x,sol,CurrentGrid)
 USE MGlevels
 USE Precision
 USE Constants
+USE SPK
 USE GlobalVariables, ONLY: tstep, RKSTAGES, MINITER, MAXITER, TOTALITER, TOTALITERFS, MINITERNOFS, MAXITERNOFS, CYCLET, &
       MAXIT, RELTOL, RINFO, JOB, IS_HSL, MAXIS, SS, MAXS, CNTL, ICNTL, INFOHSL, alpha, beta, gamma, Precond, GhostGridZ, &
 	  FineGrid, COLSCA, ROWSCA, KEEP, workspace, ipar, fpar, RESETSOLVER, STAT, abstol, GMRESmaxiterations, solver, GhostGridX, &
@@ -75,14 +76,7 @@ iterations = 0
       ! LEFT PRECONDITIONING with the linear low-order matrix.
 	  IF (Precond==1) THEN
 		  ! Set right hand side for system A_2 u = r
-		  workspace(ipar(9):ipar(9)+n_rows-1) = workspace(ipar(8):ipar(8)+n_rows-1) ! INPUT residual
-		  ! ... solve to get u = A_2^{-1} r
-		  CALL MA41AD(JOB, n_rows, FineGrid%PreconditioningMatrix%nnz, FineGrid%PreconditioningMatrix%row_ptr,&
-		         FineGrid%PreconditioningMatrix%col_ind, FineGrid%PreconditioningMatrix%val, workspace(ipar(9)),&
-				 COLSCA, ROWSCA, KEEP, IS_HSL, MAXIS, SS, MAXS, CNTL, ICNTL, INFOHSL, RINFO)
-		  IF (INFOHSL(1) .LT. 0) THEN ! Check for problems
-			PRINT *, 'Problems with MA41, JOB = 3 (Solution), in left precondining.'
-	      END IF
+                  CALL LUSOL(n_rows,workspace(ipar(8)),workspace(ipar(9)),alu,jlu,ju)
 	  ELSE IF (Precond==2) THEN
 		  ! Gauss-Seidel
 !		  CALL GaussSeidel(workspace(ipar(9)),workspace(ipar(8)),arrLevels(MG_N_levels)%IterationMatrix)		  		

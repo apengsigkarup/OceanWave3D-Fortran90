@@ -16,6 +16,7 @@
 #include <vector>
 #include "QTwidgets/qcustomplot.h"
 #include <QHBoxLayout>
+#include <QMessageBox>
 
 #if MATLAB>0
     #include "mat.h"

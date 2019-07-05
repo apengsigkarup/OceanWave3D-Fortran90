@@ -111,7 +111,6 @@ SUBROUTINE random_wave_coefficients(i_spec, nt, beta0, dt, dx, Tp, Hs, depth, &
   !Print out the wave maker elevation.
   !
   CALL drealft (eta0, nt, -1)
-
   open(21,file='eta0_irregular',status='unknown')
   IF(i_spec==30)THEN
      write(21,32)Hs,Tp,twopi/((n_cut-1)*domega),kh_max,beta0
