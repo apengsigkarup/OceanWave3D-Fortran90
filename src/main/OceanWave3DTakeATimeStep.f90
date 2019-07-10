@@ -127,7 +127,6 @@ SUBROUTINE OceanWave3DTakeATimeStep
  !    WRITE (6,334) '    STEP : ',tstep,', Step. iterations = ', &
  !         REAL(TOTALITER,long)-REAL(TOTALITEROLD,long)
  ! endif
-
   IF (StoreDataONOFF>0) THEN
      IF (MOD(tstep,StoreDataONOFF)==0) THEN		
         ! GD: SWENSE storage if necessary
@@ -191,15 +190,21 @@ SUBROUTINE OceanWave3DTakeATimeStep
   ! If kinematics output is requested save it
   !
   IF(iKinematics/=0)THEN
-     DO i=1,nOutFiles
-        IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
-             mod(tstep,Output(i)%tstride)==0 )THEN
-              
-           !WRITE(*,FMT='(A)') 'Writing kinematics output'
-           CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-                FineGrid%Nz+GhostGridZ,i,tstep+1)
-        END IF
-     END DO
+
+      IF (iKinematics.NE.30) THEN! Store binary kinematics files
+         Do i=1,nOutFiles
+            IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
+                  mod(tstep,Output(i)%tstride)==0 )THEN
+                  CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                  FineGrid%Nz+GhostGridZ,i,tstep+1)
+            ENDIF 
+         ENDDO
+      ELSEIF (iKinematics==30) THEN ! Store wave gauges in ASCII format
+            
+               CALL StoreWaveGauges(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,2,tstep+1)
+      ENDIF
+        
   END IF
   !
 !

@@ -42,6 +42,7 @@ void MainWindow::geometryType_changed(int geometryType){
                 for (int j = 0; j < 2 ; j++) {
                     ui->geometry_table->setCellWidget(j,i,new QDoubleSpinBox(ui->geometry_table));
                     sp = (QDoubleSpinBox*)ui->geometry_table->cellWidget(j,i);
+                    sp->setDecimals(3);
                     sp->setMaximum(9999999);
                     if ((j==0) & (i == 0)){sp->setEnabled(false);}
 

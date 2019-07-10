@@ -102,7 +102,7 @@ TYPE (RelaxZone), DIMENSION(:), ALLOCATABLE :: RelaxZones ! Array with relaxatio
 
 ! Pressure damping ZONES
 INTEGER          :: PDampingONOFF, NDampZones
-TYPE (PDampZone), DIMENSION(:), ALLOCATABLE :: PDampZones ! Array with Pressure damping zone definitions
+TYPE (PDampZone_CSR), DIMENSION(:), ALLOCATABLE :: PDampZones ! Array with Pressure damping zone definitions
 
 ! Output Data Parameters
 INTEGER :: StoreDataONOFF, formattype, iKinematics, nOutFiles

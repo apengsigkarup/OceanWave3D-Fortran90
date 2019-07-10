@@ -32,7 +32,8 @@ endif
 ifeq ($(FC),gfortran)
   # fabpi machine, gfortran
   LIBDIRS  = -L$(HOME)/lib/  -L$(MODULE_OPENBLAS_LIB_DIR)
-  LINLIB   += -lharwell -lskit -lopenblas -lhdf5 -lhdf5_fortran -lhdf5_hl -lma41
+  # LINLIB   += -lharwell -lskit -lopenblas -lhdf5 -lhdf5_fortran -lhdf5_hl
+  LINLIB   += -lskit -lopenblas -lhdf5 -lhdf5_fortran -lhdf5_hl
   DBFLAGS  += -pg -g -fbounds-check -ffpe-trap=invalid,zero,overflow -ffree-line-length-none  -fno-automatic 
   OPTFLAGS += -pg -O3 -ffree-line-length-none -fno-automatic -ffpe-trap=invalid,zero,overflow 
 endif

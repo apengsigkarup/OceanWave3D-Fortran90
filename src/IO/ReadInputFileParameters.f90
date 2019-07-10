@@ -334,7 +334,7 @@ SUBROUTINE ReadInputFileParameters
              STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
      END Do
 
-  elseif(formattype==30) THEN ! h5 files save
+  elseif(formattype==40) THEN ! h5 files save
    BACKSPACE(FILEIP(1))
    READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
    Allocate (Output(nOutFiles))
@@ -450,6 +450,45 @@ SUBROUTINE ReadInputFileParameters
            stop
         end if
      END DO
+  ELSEIF(formattype==30)THEN
+     BACKSPACE(FILEIP(1))
+     READ (FILEIP(1),*) StoreDataONOFF, iKinematics, formattype, nOutFiles
+     Allocate (Output(nOutFiles))
+     IF (nOutFiles>10)THEN
+        print *, 'Max. 10 wave gauge files at this point.'
+        stop
+     END IF
+     print *, nOutFiles,' wave gauge(s) requested in file(s) named "waveGauges.dat".'
+     print *, ' '
+     Do i=1,nOutFiles
+        READ (FILEIP(1),*,err=110)Output(i)%xbeg,Output(i)%xend,Output(i)%xstride,Output(i)%ybeg, &
+             Output(i)%yend,Output(i)%ystride,Output(i)%tbeg,Output(i)%tend,Output(i)%tstride
+        !
+        ! Check that the requested output ranges exist on this grid.
+        !
+        if ( Output(i)%xbeg<1 .or. Output(i)%xend>FineGrid%Nx .or. Output(i)%xbeg > Output(i)%xend) THEN
+           Print *, 'ReadInputFileParameters: Kinematics xrange is invalid'
+           stop
+        end if
+        if(Output(i)%ybeg<1 .or. Output(i)%yend>FineGrid%Ny .or. Output(i)%ybeg > Output(i)%yend ) THEN
+           Print *, 'ReadInputFileParameters: Kinematics yrange is invalid'
+           stop
+        end if
+        IF (Output(i)%xbeg /= Output(i)%xend) THEN
+                PRINT *, 'x_begin not equal x_end: Wave gauges only 1 point per             &
+                probe'
+                stop
+        END IF
+        IF (Output(i)%ybeg /= Output(i)%yend) THEN
+                PRINT *, 'y_begin not equal y_end: Wave gauges only 1 point per             &
+                probe'
+                stop
+        END IF
+
+     END Do
+        ! Open the required output files
+        OPEN (UNIT=FILEOP(2),FILE='waveGauges.dat',          &
+             STATUS='UNKNOWN',FORM='FORMATTED')
   ELSE
      iKinematics=0
   END IF

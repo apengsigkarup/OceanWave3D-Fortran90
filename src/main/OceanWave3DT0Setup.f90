@@ -24,6 +24,7 @@ SUBROUTINE OceanWave3DT0Setup
   ! Read in the run parameters 
   CALL ReadInputFileParameters
 
+  print *, 'format type 1:',formattype
   !CALL SetupCompDomain
   !GD: test for the curvilinear domain (definition of initial grid) (to uncomment and to FIX later)
   !
@@ -389,7 +390,7 @@ SUBROUTINE OceanWave3DT0Setup
      !    filename = "SparseMatrix.bin"
      !     CALL StoreSparseMatrix(FineGrid%PreconditioningMatrix,filename,formattype)
      !     print*,'Preconditioningmatrix stored in SparseMatrix.bin.'		
-     CALL FactorPreconditioner(FineGrid%PreconditioningMatrix, &
+     CALL FactorPreconditioner(FineGrid%PreconditioningMatrix_CSR, &
           (FineGrid%Nx+2*GhostGridX)*(FineGrid%Ny+2*GhostGridY)*(FineGrid%Nz+GhostGridZ),fileop(1))
 
   ELSE IF (Precond==3) THEN
@@ -554,10 +555,15 @@ SUBROUTINE OceanWave3DT0Setup
   !
   If(iKinematics/=0)THEN
      Print *, 'Initial t=0 data to kinematics file...'
-     Do i=1,nOutFiles
-        CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-             FineGrid%Nz+GhostGridZ,i,0)
-     END Do
+        IF (formattype.NE.40) THEN ! Store binary kinematics files or hdf5 files
+             DO i=1,nOutFiles
+                        CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                     FineGrid%Nz+GhostGridZ,i,0)
+             END DO
+        ELSEIF (formattype==30) THEN ! Store wave gauges in ASCII format
+               CALL StoreWaveGauges(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                     FineGrid%Nz+GhostGridZ,2,0) 
+        ENDIF
   END If
 
   ! IF SIMULATION IS LINEAR THEN DETERMINE THE SIGMA-COEFFICIENTS FOR THE TRANSFORMED LAPLACE PROBLEM
@@ -578,17 +584,23 @@ SUBROUTINE OceanWave3DT0Setup
   !
   tstep=0
   IF(iKinematics/=0)THEN
-     Do i=1,nOutFiles
-        IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
-             mod(tstep,Output(i)%tstride)==0 )THEN
-           CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-                FineGrid%Nz+GhostGridZ,i,1)
-        END IF
-     END Do
+       IF (iKinematics.NE.30) THEN ! Store binary kinematics files
+             Do i=1,nOutFiles
+                IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
+                     mod(tstep,Output(i)%tstride)==0 )THEN
+                           CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                                FineGrid%Nz+GhostGridZ,i,tstep)
+                END IF
+             END Do
+       ELSEIF (iKinematics==30) THEN ! Store wave gauges in ASCII format
+               CALL StoreWaveGauges(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                     FineGrid%Nz+GhostGridZ,2,tstep) 
+                       
+       ENDIF
   END IF
 
   ! For coupling OceanWave3D with OpenFOAM we need the velocities and free
-  ! surface elevation to be availible at all times.
+  ! surface elevation to be available at all times.
   ! FIXME: Is there a better solution where fields are only allocated if needed?
   ! General problem!!
   !botp

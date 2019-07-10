@@ -37,7 +37,9 @@ SOURCES += main.cpp\
            MainWindow/errorMSG.cpp \
            MainWindow/check.cpp \
            checkdialog.cpp \
-           MainWindow/externaloutput.cpp
+           MainWindow/externaloutput.cpp \
+    MainWindow/outputLocations.cpp \
+    advForce.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -47,7 +49,8 @@ HEADERS  += mainwindow.h \
             checkdialog.h \
             versions.h \
             versions.h \
-    MainWindow/externaloutput.h
+    MainWindow/externaloutput.h \
+advForce.h
 
 FORMS    += mainwindow.ui \
             checkdialog.ui \

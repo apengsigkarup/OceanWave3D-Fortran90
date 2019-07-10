@@ -13,6 +13,7 @@
 #include <QShortcut>
 #include <QHBoxLayout>
 #include <QKeySequence>
+#include "advForce.h"
 
 #include "QTwidgets/qcustomplot.h"
 #include "customgrid.h"
@@ -65,6 +66,8 @@ private slots:
     void selectWaveFile();
     void selectWaveFile_eta();
     void selectGridFile();
+    void WaveTypeSelected();
+    void advancedMorison();
 
 
     // use constant
@@ -72,11 +75,13 @@ private slots:
     void breakingWidget();
     void FDWidget();
     void preconWidget();
+
     // error messages
     void error_grid_checkDomainLength();
     void error_matlab();
     void errorMsgParameterCheck();
     void errorMsgSFhZero();
+    void errorMsgUnknownFile();
     // check case
     bool checkCase();
 
@@ -87,7 +92,8 @@ private:
     double dispersion_T(double,double);
     double dispersion_L(double,double);
     double round(double);
-
+    QSize QTableWidgetSize(QTableWidget*);
+    void readAndSplit(QFile &,QStringList &);
 
     // variables
     double SF_H;

@@ -25,7 +25,7 @@ DEALLOCATE(rhsE,rhsP,PHI,RHS)
 IF (Precond==3) THEN
 	DEALLOCATE(arrLevels) ! From Multigrid part
 ENDIF
-DEALLOCATE(COLSCA, ROWSCA,workspace)
+DEALLOCATE(workspace)
 ! Deallocate grid information (FIXME)
 IF (relaxONOFF==1) THEN
 	DEALLOCATE(RelaxZones)

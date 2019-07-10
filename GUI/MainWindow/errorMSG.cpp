@@ -31,3 +31,12 @@ void MainWindow::errorMsgSFhZero(){
     msgBox.exec();
 
 }
+
+void MainWindow::errorMsgUnknownFile(){
+
+    QMessageBox msgBox;
+    msgBox.setText("Unknown input file");
+    msgBox.exec();
+
+
+}

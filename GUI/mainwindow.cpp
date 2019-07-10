@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     checkDialog c;
     c.show();
-//    this->setStyleSheet("background-color:white");
+
     // shortcuts
     ui->actionOpen->setShortcut(Qt::Key_O | Qt::CTRL);
     ui->actionChange_directory->setShortcut(Qt::Key_D | Qt::CTRL);
@@ -37,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionWrite_input_file_F4->setShortcut(Qt::Key_F4);
     ui->actionCheck->setShortcut(Qt::Key_F7);
     QSignalMapper *signalMapper = new QSignalMapper(this);
-
     for( int index=0; index < ui->output->count() ; ++index ){
         QShortcut *shortcut  =new QShortcut( QKeySequence(QString("Ctrl+%1").arg( index +1 ) ), this );
         connect( shortcut, SIGNAL(activated() ), signalMapper, SLOT( map() ) );
@@ -56,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->widget_waveFile->setGeometry(SFwidget_geo);
     ui->widget_customSpectrum->setVisible(false);
     ui->widget_customSpectrum->setGeometry(SFwidget_geo);
+
     // About
     ui->aboutText_OCW3dGUI->setVisible(false);
     ui->aboutText_OCW3D_publications->setVisible(false);
@@ -64,7 +64,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // Post processing
     ui->readProgressBar->setVisible(false);
     ui->tableWidget->setColumnCount(6);
-    ui->tableWidget->setHorizontalHeaderLabels(QString("Xmin;Xmax;Ymin;Ymax;tmin;tmax").split(";"));
     ui->tableWidget->setVisible(false);
     ui->SelectOutput->setEnabled(false);
     ui->convert->setEnabled(false);
@@ -105,8 +104,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->selectWaveFile,SIGNAL(clicked()),this,SLOT(selectWaveFile()));
     connect(ui->selectGridFile,SIGNAL(clicked()),this,SLOT(selectGridFile()));
     connect(ui->selectWaveFile_eta,SIGNAL(clicked()),this,SLOT(selectWaveFile_eta()));
-
-
+    connect(ui->DropDownListOutputType,SIGNAL(currentIndexChanged(int)),this,SLOT(WaveTypeSelected()));
+    connect(ui->pushButton_advancedMorison,SIGNAL(clicked()),this,SLOT(advancedMorison()));
     // default
     connect(ui->checkBox_constantWidget,SIGNAL(stateChanged(int)),this,SLOT(constantWidget()));
     connect(ui->checkBox_breakingWidget,SIGNAL(stateChanged(int)),this,SLOT(breakingWidget()));
@@ -128,6 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #if externalOutputClass
     ui->SelectOutput->addItem("External output");
 #endif
+
 
 }
 

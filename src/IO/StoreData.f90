@@ -9,6 +9,8 @@ REAL(KIND=long), DIMENSION(nx*ny) :: E,P
 TYPE (Level_def) :: FineGrid
 CHARACTER(len=30) :: filename,form
 WRITE(unit=filename, FMT="(A,I5.5,A)") "EP_",nr,".bin"
+print *, '!!!!!!!!! DB3'
+print *, 'Format type:',formattype
 SELECT CASE (formattype)
 	CASE (1)
 		! Relatively efficient for large data storage
