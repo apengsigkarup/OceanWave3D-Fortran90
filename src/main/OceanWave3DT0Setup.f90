@@ -560,7 +560,7 @@ SUBROUTINE OceanWave3DT0Setup
                         CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                      FineGrid%Nz+GhostGridZ,i,0)
              END DO
-        ELSEIF (formattype==40) THEN ! Store wave gauges in ASCII format
+        ELSEIF (formattype==30) THEN ! Store wave gauges in ASCII format
                CALL StoreWaveGauges(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                      FineGrid%Nz+GhostGridZ,2,0) 
         ENDIF
@@ -584,7 +584,7 @@ SUBROUTINE OceanWave3DT0Setup
   !
   tstep=0
   IF(iKinematics/=0)THEN
-       IF (iKinematics==20) THEN ! Store binary kinematics files
+       IF (iKinematics.NE.30) THEN ! Store binary kinematics files
              Do i=1,nOutFiles
                 IF (tstep+1 >= Output(i)%tbeg .and. tstep+1 <= Output(i)%tend .and.  &
                      mod(tstep,Output(i)%tstride)==0 )THEN

@@ -144,7 +144,7 @@ ELSE IF(formattype==22)THEN
    FOUT = 22 ! file handle
    OPEN (unit=FOUT, file=filename,form=form)
    WRITE(*,FMT='(A,A)') '  File output = ',filename
-ELSE IF(formattype==30)THEN   
+ELSE IF(formattype==40)THEN   
    WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
    WRITE(*,FMT='(A,A)') '  File output of h5 file number = ',h5file
 ELSE
@@ -188,7 +188,7 @@ IF(it==0)THEN
      IF(curvilinearOnOff/=0)THEN
         Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
      END IF
-   ELSEIF (formattype == 30) THEN !hdf5 file
+   ELSEIF (formattype == 40) THEN !hdf5 file
          ! FabioPierella 20190319
          ! Output in HDF5 files. We need some preparation on the dataset before
          ! we can output it to file.
@@ -501,7 +501,7 @@ ELSE !IF(it==0)THEN
       ! sigs ends lines
 
          ! After computation, store according to user choice
-         IF (formattype==30)THEN
+         IF (formattype==40)THEN
 
             ! Save the velocity information in the array of Kinematics, for later
             ! computation of the kinematic acceleration

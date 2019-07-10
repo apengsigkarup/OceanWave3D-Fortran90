@@ -334,7 +334,7 @@ SUBROUTINE ReadInputFileParameters
              STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
      END Do
 
-  elseif(formattype==30) THEN ! h5 files save
+  elseif(formattype==40) THEN ! h5 files save
    BACKSPACE(FILEIP(1))
    READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
    Allocate (Output(nOutFiles))
@@ -450,7 +450,7 @@ SUBROUTINE ReadInputFileParameters
            stop
         end if
      END DO
-  ELSEIF(formattype==40)THEN
+  ELSEIF(formattype==30)THEN
      BACKSPACE(FILEIP(1))
      READ (FILEIP(1),*) StoreDataONOFF, iKinematics, formattype, nOutFiles
      Allocate (Output(nOutFiles))
