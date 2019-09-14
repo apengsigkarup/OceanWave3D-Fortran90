@@ -671,7 +671,7 @@ SUBROUTINE ReadInputFileParameters
            !
            ! Check that the Eulerian velocity is consistent with the current flux if turned on
            !
-           IF(SFsol%i_euler_or_stokes/=0 .or. abs(SFsol%e_or_s_vel - CurrentFlux%Q/SFsol%h) >= 1.E-8) THEN
+           IF(SFsol%i_euler_or_stokes/=0 .or. abs(SFsol%e_or_s_vel - CurrentFlux%Q/SFsol%h) >= 1.E-6) THEN
               print *, ' '
               print *, '************************************************'
               print *, '*** Your current flux and stream function solution are not consistent with each other!! ****'
