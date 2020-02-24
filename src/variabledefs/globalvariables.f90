@@ -11,8 +11,8 @@ USE OFmodule
 IMPLICIT NONE 
 
 ! I/O File handle arrays
-INTEGER           :: FILEIP(4), FILEOP(16)
-CHARACTER(len=2) fnt(10)
+INTEGER           :: FILEIP(4), FILEOP(26)
+CHARACTER(len=2) fnt(20)
 CHARACTER(LEN=40) :: filenameINPUT, filename, fname_bottom
 INTEGER           :: STAT
 

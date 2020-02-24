@@ -32,10 +32,10 @@ SUBROUTINE OceanWave3DTakeATimeStep
   !
   IF(FineGrid%ny==1)THEN
      CALL LocalSmoothing2D( FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
-          FineGrid%Nz+GhostGridZ,tstep,fileop(12) )
+          FineGrid%Nz+GhostGridZ,tstep,fileop(22) )
   ELSE
      CALL LocalSmoothing3D( FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY, &
-          FineGrid%Nz+GhostGridZ,tstep,fileop(12) )
+          FineGrid%Nz+GhostGridZ,tstep,fileop(22) )
   END IF
   !
   ! Check for wave breaking at this step and if found update 
@@ -45,7 +45,7 @@ SUBROUTINE OceanWave3DTakeATimeStep
   IF(BreakMod%i_breaking>0 .and. FineGrid%ny==1) THEN
      ! Call the breaking routine to evolve the rollers and output their geometry.
      ! This is only implemented in 2D.  
-     CALL detect_breaking(fileop(14),FineGrid%Nx+2*GhostGridX,Wavefield,1)
+     CALL detect_breaking(fileop(24),FineGrid%Nx+2*GhostGridX,Wavefield,1)
   end IF
   !
   ! Check for an unstable solution and abort if found 

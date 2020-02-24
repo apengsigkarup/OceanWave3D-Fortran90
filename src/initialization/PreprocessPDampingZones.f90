@@ -170,16 +170,16 @@ END Do
 !
 ! Write out the damping functions for inspection.  
 !
-Open(fileop(15),file='Pdamp.chk',status='unknown')
-write(fileop(15),790)'% Pressure damping coefficients:  x,y,gammaPhi,gammaEta'
+Open(fileop(25),file='Pdamp.chk',status='unknown')
+write(fileop(25),790)'% Pressure damping coefficients:  x,y,gammaPhi,gammaEta'
 Do i=1,NDampZones
    Do j=1,nx
-      write(fileop(15),792)tmpx(j),tmpy(1),PDampZones(i)%gamPhi(j),PDampZones(i)%gamEta(j)
+      write(fileop(25),792)tmpx(j),tmpy(1),PDampZones(i)%gamPhi(j),PDampZones(i)%gamEta(j)
    END Do
 END Do
 790 FORMAT(A)
 792 FORMAT(4E16.6)
-close(fileop(15))
+close(fileop(25))
 
 
 CONTAINS

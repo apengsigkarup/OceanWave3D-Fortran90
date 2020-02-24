@@ -25,7 +25,11 @@ Pressure='no';
 Plots='no';
 %
 % Open the file
-fname=['Kinematics0',num2str(idn),'.bin'];
+if idn<10
+    fname=['Kinematics0',num2str(idn),'.bin'];
+else
+    fname=['Kinematics',num2str(idn),'.bin'];
+end
 fid1 = fopen(fname); % File ID number for kinematics data
 
 % Check for problems
@@ -131,7 +135,9 @@ for it=1:nt
     w(it,:)=tmp;
     junk = fread(fid1,2,int_nbit);
     %
-    tmp=fread(fid1,nx*ny*nz,'double');
+    [tmp,count]=fread(fid1,nx*ny*nz,'double');
+    % Check for an incomplete run.
+    if count==0, it=it-1; break; end
     uz(it,:)=tmp;
     junk = fread(fid1,2,int_nbit);
     %

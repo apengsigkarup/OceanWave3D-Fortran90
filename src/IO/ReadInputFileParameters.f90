@@ -302,8 +302,8 @@ SUBROUTINE ReadInputFileParameters
      BACKSPACE(FILEIP(1))
      READ (FILEIP(1),*) StoreDataONOFF, formattype, iKinematics, nOutFiles
      Allocate (Output(nOutFiles))
-     IF (nOutFiles>10)THEN
-        print *, 'Max. 10 kinematics output files at this point.'
+     IF (nOutFiles>20)THEN
+        print *, 'Max. 20 kinematics output files at this point.'
         stop
      END IF
      print *, 'Kinematics output requested in ',nOutFiles,' file(s) named "Kinematics_**.bin".'
@@ -585,7 +585,7 @@ SUBROUTINE ReadInputFileParameters
         stop
      END IF
 
-  ELSEIF (IncWaveType == 2) THEN ! irregular waves
+  ELSEIF (IncWaveType == 2) THEN ! Monochromatic or irregular waves
      ! For irregular waves we have four options: 
      ! 0) PM, 
      ! 1) Normal JONSWAP with gamma = 3.3, 
@@ -596,7 +596,7 @@ SUBROUTINE ReadInputFileParameters
 
      READ(FILEIP(1),*,IOSTAT=ios) ispec
      Backspace(FILEIP(1)) 
-     IF (ispec==0 .or. ispec==1) THEN !Normal PM or JONSWAP spectrum
+     IF (ispec>-2 .and. ispec<2) THEN !Mono-chromatic, normal PM or JONSWAP spectrum
         READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
              kh_max,  seed,  seed2,  x0,  y0
         gamma_jonswap = 3.3
@@ -610,7 +610,7 @@ SUBROUTINE ReadInputFileParameters
         READ(FILEIP(1),*,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   &
              kh_max,  seed,  seed2,  x0,  y0, gamma_jonswap
 
-     ELSEIF (ispec>=30) THEN ! multi-directional irregular waves
+     ELSEIF (abs(ispec)>=30) THEN ! multi-directional regular or irregular waves
         READ(FILEIP(1),*,ERR=37,END=37,IOSTAT=ios) ispec,  Tp,  Hs,  h0,   & 
              kh_max,  seed,  seed2,  x0,  y0, &
              inc_wave_file, beta0, s0, gamma_jonswap

@@ -7,7 +7,7 @@ A linear random wave shoaling nonlinearly in 2D on a sloping bottom
 1 0 23 1e-8 1e-6 1 V 1 1 2  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), absolute tol, maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
 4. 100. 100. 9. 0  0. 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter (This line is not used unless IncWaveType==1)
 -50 20 1 1   <- StoreDataOnOff, formattype, (StoreDataOnOff=0 -> no output, StoreDataOnOff=+stride-> binary, StoreDataOnOff=-stride -> ascii every stride time steps.  formattype=0, binary; =1, unformatted) If formattype=20, then the line should read: StoreDataOnOff, iKinematics, formattype, nOutFiles; and nOutFiles lines should appear below defining  [xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride] for each file.      
-1 137 1 1 1 1 1 1024 1  <- xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride    
+80 80 1 1 1 1 1 1024 1  <- xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride    
 1 0    <- 0/1=linear/nonlinear computations, Applied surface pressure:  0=none, 1=2D Gaussian.
 0 6 10 0.08 0.08 0.4  <- SG-filtering on/off, filter half width, poly order
 1 18. 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(= +/- 9,10; sign gives direction) param XorY WavegenONOFF XorYgen degrees(=IC rotation)
