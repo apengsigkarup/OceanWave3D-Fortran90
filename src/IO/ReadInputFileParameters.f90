@@ -376,7 +376,11 @@ SUBROUTINE ReadInputFileParameters
       ! Open the required output files
       ! Open the h5 files
       write(h5_wave_kin_file, "(A18,I3.3,A3)") "WaveKinematicsZone",(fntH5(i)),".h5"
-      call h5_file_create(h5_wave_kin_file, fidH5(i))
+      if (IC == -1) then
+         call h5_file_open(h5_wave_kin_file, fidH5(i))
+      else
+         call h5_file_create(h5_wave_kin_file, fidH5(i))
+      end if 
       !OPEN (UNIT=FILEOP(i+1),FILE='Kinematics'//fnt(i)//'.bin',          &
       !     STATUS='UNKNOWN',FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 

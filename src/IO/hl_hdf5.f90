@@ -12,6 +12,10 @@ module HL_HDF5 !High level HDF5 interface
         module procedure H5_write_3d
     end interface 
 
+    interface h5_read
+        module procedure h5_read_1d
+    end interface 
+
     interface h5_write_at_step
         module procedure h5_write_1d_at_step
         module procedure H5_write_2d_at_step
@@ -37,6 +41,22 @@ module HL_HDF5 !High level HDF5 interface
         print*, "This version of h5 is: ", major, ".", minor, ".", patch
 
     end subroutine h5_check_version
+
+    subroutine h5_file_open(file_name, file_id)
+       
+        CHARACTER(*), intent(IN) :: file_name
+        INTEGER(HID_T), intent(INOUT) :: file_id       ! File identifier
+        logical :: dummy
+
+        CALL h5open_f(hdferr)
+        dummy = check_return_value(hdferr, "h5_file_create", "h5fopen_f")
+        CALL h5fopen_f(file_name, H5F_ACC_RDWR_F, file_id, hdferr) 
+        !H5F_ACC_TRUNC_F overwrite existing file
+        dummy = check_return_value(hdferr, "h5_file_create", "h5fcreate_f")
+        CALL h5fclose_f(file_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_file_create", "h5fclose_f")
+
+    end subroutine h5_file_open
 
     subroutine h5_file_create(file_name, file_id)
        
@@ -91,7 +111,7 @@ module HL_HDF5 !High level HDF5 interface
         call h5sget_simple_extent_ndims_f(dataspace_id, rank, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sget_simple_extent_ndims")
 
-        allocate(dims(rank))
+        allocate(dims(rank), maxdims(rank))
         call h5sget_simple_extent_dims_f(dataspace_id, dims, maxdims, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sget_simple_extent_dims")
 
@@ -105,6 +125,8 @@ module HL_HDF5 !High level HDF5 interface
         dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5fclose")
 
         dataset_dimension = dims(dimId)
+
+        deallocate(dims, maxdims)
 
     end subroutine h5_dataset_dimension
 
@@ -264,6 +286,23 @@ end subroutine h5_write_2d_at_step
 
     end subroutine h5_write_1d
        
+    ! 1D routines
+    subroutine h5_read_1d(file_name, dataset_name, data)
+        ! We can also write a scalar as 1D array
+        character(*) :: file_name, dataset_name
+        real(kind=8),allocatable :: data(:)
+        integer(HSIZE_T) :: one, dataset_dimension
+        integer(HID_T) :: file_id, dataset_id, &
+            dataspace_id
+        logical :: dummy
+
+        ! Check the dimension
+        one = 1
+        call h5_dataset_dimension(file_name, dataset_name, one, dataset_dimension)
+        allocate(data(dataset_dimension))
+        include "h5_read.f90"
+
+    end subroutine h5_read_1d
 
     subroutine h5_write_1d_at_step(file_name, dataset_name, extended_dimension_id, &
         step, dims, data)
@@ -280,7 +319,8 @@ end subroutine h5_write_2d_at_step
 
     include "h5_write_at_step.f90"
 
-end subroutine h5_write_1d_at_step
+    end subroutine h5_write_1d_at_step
+
 
     subroutine h5_extend_1d(file_name, dataset_name, extended_dimension_id, &
             dims_ext, data)

@@ -19,7 +19,8 @@ IMPLICIT NONE
 INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
-INTEGER :: FOUT, i3
+INTEGER :: FOUT, i3, iWriteAt
+LOGICAL :: extend
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
 ! Automatic work space
@@ -36,9 +37,11 @@ INTEGER(HID_T) :: extended_dimension_id
 INTEGER(HSIZE_T), ALLOCATABLE :: dims_ext(:)
 INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
-                    extdims1(1), extdims2(3), extdims3(4)
+                    extdims1(1), extdims2(3), extdims3(4), &
+                    lenPreviousHDF5 = -1, lenCurrentHDF5
 INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 0
 REAL(KIND=long) :: x3d(Nz, Ny, Nx), y3d(Nz, Ny, Nx), z3d(Nz, Ny, Nx)
+REAL(KIND=long), ALLOCATABLE, SAVE :: timeStoredInHDF5(:)
 ! Assign the local pointers
 !
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; hx => FineGrid%hx
@@ -201,87 +204,92 @@ IF(it==0)THEN
          call allocatePointers(Zones(io), nx_save, ny_save, nz_save)
          call increment_timestep_counter(Zones(io))
 
-         ! Initialize all datasets
-         WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
-         ! Create
-         call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
-                  & extdims1, maxdims1, chunkdims1) 
-         ! Surface elevation variables
-         call h5_dataset_create_chunked(h5file, 'surface_elevation', INT(3, HID_T), &
-                  & extdims2, maxdims2, chunkdims2)
-         call h5_dataset_create_chunked(h5file, 'surface_elevation_derivative_etax', INT(3, HID_T), &
-                  & extdims2, maxdims2, chunkdims2)
-         call h5_dataset_create_chunked(h5file, 'surface_elevation_derivative_etay', INT(3, HID_T), &
-                  & extdims2, maxdims2, chunkdims2)
-         ! Position variables 
-         call h5_dataset_create_chunked(h5file, 'position_x', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'position_y', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'position_z', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         ! Velocity variables 
-         call h5_dataset_create_chunked(h5file, 'velocity_u', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'velocity_v', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'velocity_w', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         ! Velocity x-gradient variables 
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_ux', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_vx', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         ! Velocity y-gradient variables 
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_uy', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_vy', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)      
-         ! Velocity z-gradient variables 
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_uz', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_vz', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)      
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_wz', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)      
+         ! If the time is zero, then we consider we are starting the simulation from scratch
+         ! Otherwise we consider we do have these fields already
+         if (IC.NE.-1) then
 
-         ! Velocity kinematic accelerations
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_ut', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_vt', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)      
-         call h5_dataset_create_chunked(h5file, 'velocity_derivative_wt', INT(4, HID_T), &
-                  & extdims3, maxdims3, chunkdims3)      
+            ! Initialize all datasets
+            WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
+            ! Create
+            call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
+                     & extdims1, maxdims1, chunkdims1) 
+            ! Surface elevation variables
+            call h5_dataset_create_chunked(h5file, 'surface_elevation', INT(3, HID_T), &
+                     & extdims2, maxdims2, chunkdims2)
+            call h5_dataset_create_chunked(h5file, 'surface_elevation_derivative_etax', INT(3, HID_T), &
+                     & extdims2, maxdims2, chunkdims2)
+            call h5_dataset_create_chunked(h5file, 'surface_elevation_derivative_etay', INT(3, HID_T), &
+                     & extdims2, maxdims2, chunkdims2)
+            ! Position variables 
+            call h5_dataset_create_chunked(h5file, 'position_x', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'position_y', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'position_z', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            ! Velocity variables 
+            call h5_dataset_create_chunked(h5file, 'velocity_u', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'velocity_v', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'velocity_w', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            ! Velocity x-gradient variables 
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_ux', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_vx', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            ! Velocity y-gradient variables 
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_uy', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_vy', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)      
+            ! Velocity z-gradient variables 
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_uz', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_vz', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)      
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_wz', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)      
 
-         ! Write the first timestep
-         ! call h5_write(h5file, 'time', (/it*dt/))
-         ! allocate the position arrays
+            ! Velocity kinematic accelerations
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_ut', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_vt', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)      
+            call h5_dataset_create_chunked(h5file, 'velocity_derivative_wt', INT(4, HID_T), &
+                     & extdims3, maxdims3, chunkdims3)      
 
-         ! Fluid thickness
-         DO j=1,Ny
-            DO i=1,Nx
-                d(i,j)=h(i,j)+eta(i,j);
+            ! Write the first timestep
+            ! call h5_write(h5file, 'time', (/it*dt/))
+            ! allocate the position arrays
+
+            ! Fluid thickness
+            DO j=1,Ny
+               DO i=1,Nx
+                  d(i,j)=h(i,j)+eta(i,j);
+               END DO
             END DO
-         END DO
 
-         do k=1,Nz
-            do j=1,Ny
-               do i=1,Nx
-                  x3d(k,j,i) = x(i,j)
-                  y3d(k,j,i) = y(i,j)
-                  z3d(k,j,i)  = z(k)*d(i,j)-h(i,j)
+            do k=1,Nz
+               do j=1,Ny
+                  do i=1,Nx
+                     x3d(k,j,i) = x(i,j)
+                     y3d(k,j,i) = y(i,j)
+                     z3d(k,j,i)  = z(k)*d(i,j)-h(i,j)
+                  end do 
                end do 
-            end do 
-         end do
+            end do
 
-         extended_dimension_id = 4
-         call h5_write(h5file, 'position_x', x3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                  
-         call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                          
-         call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
+            extended_dimension_id = 4
+            call h5_write(h5file, 'position_x', x3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                  
+            call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                          
+            call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
 
-      IF(curvilinearOnOff/=0)THEN
-      Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
-      END IF
+           IF(curvilinearOnOff/=0)THEN
+            Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
+           end if ! if (time0 == 0.0)
+         END IF
    ELSE
      ! formattype /= 22
      write (FOUT) Output(io)%xbeg,Output(io)%xend,Output(io)%xstride, &
@@ -528,7 +536,40 @@ ELSE !IF(it==0)THEN
 
             WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
 
-            if (it == Output(io)%tbeg) then
+            ! if we reinitialize, we need to check if out time is 
+            if (IC==-1) then               
+               ! If there is a previous HDF5, get its length & values
+               if (lenPreviousHDF5 == -1) call h5_dataset_dimension(h5file, "time", onei, lenPreviousHDF5)
+               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)               
+               if (lenCurrentHDF5.GT.lenPreviousHDF5) then
+                  extend = .TRUE.
+               else
+                  if (allocated(timeStoredInHDF5)) deallocate(timeStoredInHDF5)               
+                  call h5_read(h5file, 'time', timeStoredInHDF5)
+
+                  if (((time0+it*dt).GE.timeStoredInHDF5(size(timeStoredInHDF5)))) then
+                     extend = .TRUE.
+                  else
+                     extend = .FALSE.
+                     do i=1,size(timeStoredInHDF5)
+                        if ((time0+it*dt).LE.timeStoredInHDF5(i)) then
+                           iWriteAt = i-1
+                           exit
+                        end if
+                     end do
+                  end if
+               end if 
+            elseif (IC==0) then
+               if (it == Output(io)%tbeg) then
+                  extend = .FALSE.
+                  iWriteAt = 0
+               else
+                  extend = .TRUE.
+               end if
+            end if
+
+            ! If we are starting from scratch, then we write the step 0
+            if (.NOT.(extend)) then
 
                ! FP20190420 Unfortunately this is a little cumbersome.
                ! At step 1 we need to overwrite what was written at step 0, where the dataset
@@ -536,84 +577,84 @@ ELSE !IF(it==0)THEN
                ! when we get to step 1 ther is already what was written in step 0.
                extended_dimension_id = 1
                ! call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
-               call h5_write_at_step(h5file, 'time', extended_dimension_id, 0, extdims1, (/it*dt/))
+               call h5_write_at_step(h5file, 'time', extended_dimension_id, iWriteAt, extdims1, (/time0+it*dt/))
 
                extended_dimension_id = 4
-               call h5_write_at_step(h5file, 'position_x', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'position_x', extended_dimension_id, iWriteAt, extdims3, &
                   & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
-               call h5_write_at_step(h5file, 'position_y', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'position_y', extended_dimension_id, iWriteAt, extdims3, &
                   & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is)) 
 
-               call h5_write_at_step(h5file, 'position_z', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'position_z', extended_dimension_id, iWriteAt, extdims3, &
                   & z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
 
                extended_dimension_id = 3
-               call h5_write_at_step(h5file, 'surface_elevation', extended_dimension_id,  0,extdims2, &
+               call h5_write_at_step(h5file, 'surface_elevation', extended_dimension_id,  iWriteAt,extdims2, &
                   & transpose(eta(i0:i1:is, j0:j1:js)))
                
                ! Write only if there is more than one point in the x direction
                if (FineGrid%Nx>1) then
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, 0, extdims2, &
+                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, iWriteAt, extdims2, &
                   & transpose(etax(i0:i1:is, j0:j1:js)))            
                else ! just write 0s
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, 0, extdims2, &
+                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, iWriteAt, extdims2, &
                   & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/)))     
                end if
 
                ! Write only if there is more than one point in the y direction
                if (FineGrid%Ny>1) then
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, 0, extdims2, &
+                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, iWriteAt, extdims2, &
                   & transpose(etay(i0:i1:is, j0:j1:js)))            
                else ! just write 0s
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, 0, extdims2, &
+                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, iWriteAt, extdims2, &
                   & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/))) 
                end if
             
                extended_dimension_id = 4
                ! velocities
-               call h5_write_at_step(h5file, 'velocity_u', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_u', extended_dimension_id, iWriteAt, extdims3, &
             & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_write_at_step(h5file, 'velocity_v', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_v', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_write_at_step(h5file, 'velocity_w', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_w', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%W, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
                ! Kinematics accelerations
                ! Writes a zero with the shape of (Nz_save, Ny_save, Nx_save), since we don't have enough
                ! information to compute a correct version of the acceleration.
-               call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, iWriteAt, extdims3, &
             & reshape(Zones(io)%Kinematics(3)%Ut * 0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Zones(io)%Kinematics(3)%Vt * 0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Zones(io)%Kinematics(3)%Wt * 0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
                ! velocity z gradients
-               call h5_write_at_step(h5file, 'velocity_derivative_uz', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_uz', extended_dimension_id, iWriteAt, extdims3, &
             & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vz', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_vz', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_wz', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_wz', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Wz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
 
 
                ! velocity x gradients
-               call h5_write_at_step(h5file, 'velocity_derivative_ux', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_ux', extended_dimension_id, iWriteAt, extdims3, &
             & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vx', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_vx', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
                ! velocity y gradients
-               call h5_write_at_step(h5file, 'velocity_derivative_uy', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_uy', extended_dimension_id, iWriteAt, extdims3, &
             & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vy', extended_dimension_id, 0, extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_vy', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
             
-            else ! if (it == 1) then
+            elseif(extend) then
 
                extended_dimension_id = 1
                ! call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
-               call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
+               call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/time0+it*dt/))
 
                extended_dimension_id = 4
                call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
