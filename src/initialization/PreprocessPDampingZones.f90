@@ -42,7 +42,9 @@ Do i=1,NDampZones
    END IF
    PDampZones(i)%idx(3) = i3!-GhostGridY
    PDampZones(i)%idx(4) = i4!+GhostGridY
-   nyd=i3-i4+1; PDampZones(i)%ny=nyd; nd=nxd*nyd
+   ! nyd=i3-i4+1; 
+   nyd=i4-i3+1; ! FP20200319
+   PDampZones(i)%ny=nyd; nd=nxd*nyd
    print *, ' '
    print *, 'Pressure damping zone ',i,' will be applied from x=',tmpx(i1),' to x=',tmpx(i2)
    print *, '                                        and from y=',tmpy(i3),' to y=',tmpy(i4)
