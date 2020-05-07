@@ -19,7 +19,7 @@ IMPLICIT NONE
 INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
-INTEGER :: FOUT, i3, iWriteAt
+INTEGER :: FOUT, iWriteAt, i3
 LOGICAL :: extend
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
@@ -540,7 +540,7 @@ ELSE !IF(it==0)THEN
             if (IC==-1) then               
                ! If there is a previous HDF5, get its length & values
                if (lenPreviousHDF5 == -1) call h5_dataset_dimension(h5file, "time", onei, lenPreviousHDF5)
-               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)               
+               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)             
                if (lenCurrentHDF5.GT.lenPreviousHDF5) then
                   extend = .TRUE.
                else
@@ -560,6 +560,7 @@ ELSE !IF(it==0)THEN
                   end if
                end if 
             elseif (IC==0) then
+               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)
                if (it == Output(io)%tbeg) then
                   extend = .FALSE.
                   iWriteAt = 0
@@ -622,12 +623,12 @@ ELSE !IF(it==0)THEN
                ! Kinematics accelerations
                ! Writes a zero with the shape of (Nz_save, Ny_save, Nx_save), since we don't have enough
                ! information to compute a correct version of the acceleration.
-               call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, iWriteAt, extdims3, &
-            & reshape(Zones(io)%Kinematics(3)%Ut * 0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(3)%Vt * 0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(3)%Wt * 0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+               call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, iWriteAt-2, extdims3, &
+            & reshape(Zones(io)%Kinematics(3)%Ut , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, iWriteAt-2, extdims3, &
+               & reshape(Zones(io)%Kinematics(3)%Vt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, iWriteAt-2, extdims3, &
+               & reshape(Zones(io)%Kinematics(3)%Wt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
                ! velocity z gradients
                call h5_write_at_step(h5file, 'velocity_derivative_uz', extended_dimension_id, iWriteAt, extdims3, &
@@ -712,7 +713,11 @@ ELSE !IF(it==0)THEN
                ! reason behind MAX((/it-3, 0/): it-3 < 0 until we are at step 3, where we can start writing at the 
                ! right place (0 to N)
                
-               i3 = (((it-2*Output(io)%tstride)-Output(io)%tbeg)/Output(io)%tstride)
+               ! i3 = (((it-2*Output(io)%tstride)-Output(io)%tbeg)/Output(io)%tstride)
+               i3 = lenCurrentHDF5 -2*onei
+
+               ! Expalantion: current length of the DHDF5 -1 1 since we have extended it in the above lines,
+               ! minust two steps
                call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, MAXVAL((/i3, 0/)), extdims3, &
             & reshape(Zones(io)%Kinematics(3)%Ut, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, MAXVAL((/i3, 0/)), extdims3, &
