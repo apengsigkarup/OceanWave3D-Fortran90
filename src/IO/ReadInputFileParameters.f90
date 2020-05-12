@@ -15,6 +15,7 @@ SUBROUTINE ReadInputFileParameters
   REAL(kind=long) :: xtankIC, ytankIC, t0IC, Tp, Hs, h0, kh_max, x0, &
        y0, beta0, s0, gamma_jonswap
   CHARACTER(len=30):: inc_wave_file, h5_wave_kin_file
+  LOGICAL :: hdf5_file_exists
 
   READ (FILEIP(1),'(A)',ERR=100,IOSTAT=ios) HEAD(1)
   WRITE (*,FMT='(A,A/)') '   Input file with model parameters : ', filenameINPUT
@@ -376,8 +377,9 @@ SUBROUTINE ReadInputFileParameters
       ! Open the required output files
       ! Open the h5 files
       write(h5_wave_kin_file, "(A18,I3.3,A3)") "WaveKinematicsZone",(fntH5(i)),".h5"
-      if (IC == -1) then
-         call h5_file_open(h5_wave_kin_file, fidH5(i))
+      inquire(FILE=h5_wave_kin_file, EXIST=hdf5_file_exists)
+      if ((IC == -1).AND.(hdf5_file_exists)) then
+         call h5_file_open(h5_wave_kin_file, fidH5(i)) ! TODO: stop if not present?
       else
          call h5_file_create(h5_wave_kin_file, fidH5(i))
       end if 
@@ -819,7 +821,7 @@ SUBROUTINE ReadInputFileParameters
 
 
   RETURN
-
+  
   ! ERROR CONTROL MESSAGES
 
 100 WRITE (*,'(A)') 'Error: Cannot read file header of input file.'; STOP

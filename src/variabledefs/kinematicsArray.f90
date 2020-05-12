@@ -26,7 +26,7 @@ type kinArray
 end type kinArray
 
 type zoneKin
-    type(kinArray), dimension(5) :: Kinematics
+    type(kinArray), dimension(5) :: Kinematics !5: newest, 1:oldest
     integer :: number_of_saved_timesteps = 0
     integer :: id
 end type zoneKin

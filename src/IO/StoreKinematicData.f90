@@ -19,8 +19,8 @@ IMPLICIT NONE
 INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
-INTEGER :: FOUT, iWriteAt, i3
-LOGICAL :: extend
+INTEGER :: FOUT, iWriteAt, i3, iRestartLocation
+LOGICAL :: extend, hdf5_file_exists
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
 ! Automatic work space
@@ -39,9 +39,10 @@ INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
                     extdims1(1), extdims2(3), extdims3(4), &
                     lenPreviousHDF5 = -1, lenCurrentHDF5
-INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 0
+INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 0, n_overwrites
 REAL(KIND=long) :: x3d(Nz, Ny, Nx), y3d(Nz, Ny, Nx), z3d(Nz, Ny, Nx)
-REAL(KIND=long), ALLOCATABLE, SAVE :: timeStoredInHDF5(:)
+REAL(KIND=long), ALLOCATABLE, SAVE :: timeStoredInHDF5(:), dummy2d(:,:), &
+   dummy3d(:,:,:), dummy4d(:,:,:,:)
 ! Assign the local pointers
 !
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; hx => FineGrid%hx
@@ -202,14 +203,15 @@ IF(it==0)THEN
          ! They will be used to compute the kinematic acceleration at the location
          ! so that we can save it in the .h5 file.
          call allocatePointers(Zones(io), nx_save, ny_save, nz_save)
-         call increment_timestep_counter(Zones(io))
 
          ! If the time is zero, then we consider we are starting the simulation from scratch
          ! Otherwise we consider we do have these fields already
-         if (IC.NE.-1) then
+         ! Initialize all datasets
+         WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
 
-            ! Initialize all datasets
-            WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
+         ! I want to do this also if we are restarting but the HDF5 file did not exist from before
+         inquire(FILE=h5file, EXIST=hdf5_file_exists)
+         if ((IC.NE.-1).OR.(.NOT.(hdf5_file_exists))) then
             ! Create
             call h5_dataset_create_chunked(h5file, 'time', INT(1, HID_T), &
                      & extdims1, maxdims1, chunkdims1) 
@@ -286,9 +288,49 @@ IF(it==0)THEN
             call h5_write(h5file, 'position_y', y3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))                          
             call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
 
+            call increment_timestep_counter(Zones(io))
+            n_overwrites = 0 ! we do not expect to overwrite any sample here since we only append
+
            IF(curvilinearOnOff/=0)THEN
             Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
            end if ! if (time0 == 0.0)
+         else
+            ! Here I want to read in the previous kinematics into my kin array file.
+            ! need to read: U,V,W,Ut,Vt,Wt,Uz,Vz,Wz,Eta
+            ! I can use one of the static arrays (e.g. U) as dummy
+            ! I can't just read any random 5 last samples, I have to know
+            ! which ones to read depending on the restarting time
+            ! By reading the previous time base, I am able to find all of the 
+            ! information to go forward
+            ! call h5_dataset_dimension(h5file, "time", onei, lenPreviousHDF5)
+            ! the first time step I will write is the t0 + 1 step
+            call h5_read(h5file, 'time', timeStoredInHDF5)
+            iRestartLocation = minloc(abs(timeStoredInHDF5 - time0), 1)
+            ! I have to overwrite the hdf5 file n_overwrites times
+            ! then start appending
+            n_overwrites = size(timeStoredInHDF5, 1) - i
+            deallocate(timeStoredInHDF5)
+            ! I need to read the stored values in the hdf5 file and copy them
+            ! over in the kinematicsarray
+            ! Allocate a dummy array
+            allocate(dummy4d(Nz,Nx,Ny,1))
+            allocate(dummy3d(Nx,Ny,1))
+            do i=1,5
+               ! I have to re-read the last 5 steps to fill in the kinematics
+               ! Kinematics(5) is the most recent
+               call h5_read_block(h5file, 'velocity_u', dummy4d, int((/0,0,0,iRestartLocation-5+i/), 8))
+               Zones(io)%Kinematics(i)%U = dummy4d(:,:,:,1)
+               call h5_read_block(h5file, 'velocity_v', dummy4d, int((/0,0,0,iRestartLocation-5+i/), 8))
+               Zones(io)%Kinematics(i)%V = dummy4d(:,:,:,1)
+               call h5_read_block(h5file, 'velocity_w', dummy4d, int((/0,0,0,iRestartLocation-5+i/), 8))
+               Zones(io)%Kinematics(i)%W = dummy4d(:,:,:,1)
+
+               call h5_read_block(h5file, 'surface_elevation', dummy3d, int((/0,0,iRestartLocation-5+i/), 8))
+               Zones(io)%Kinematics(i)%Eta = dummy3d(:,:,1)
+               
+               call increment_timestep_counter(Zones(io))
+            end do
+
          END IF
    ELSE
      ! formattype /= 22
@@ -540,7 +582,7 @@ ELSE !IF(it==0)THEN
             if (IC==-1) then               
                ! If there is a previous HDF5, get its length & values
                if (lenPreviousHDF5 == -1) call h5_dataset_dimension(h5file, "time", onei, lenPreviousHDF5)
-               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)             
+               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)      
                if (lenCurrentHDF5.GT.lenPreviousHDF5) then
                   extend = .TRUE.
                else

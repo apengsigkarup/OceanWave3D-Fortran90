@@ -10,8 +10,5 @@ dummy = check_return_value(hdferr, "h5_read", "h5read")
 call h5dclose_f(dataset_id, hdferr)
 dummy = check_return_value(hdferr, "h5_write", "h5dclose")
 
-!call h5sclose_f(dataspace_id, hdferr)
-!dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sclose")
-
 call h5fclose_f(file_id, hdferr)
 dummy = check_return_value(hdferr, "h5_write", "h5fclose")
