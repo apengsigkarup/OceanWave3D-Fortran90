@@ -353,7 +353,7 @@ SUBROUTINE ReadInputFileParameters
    write(fileop(1),*) ' '
 
    allocate(fidH5(nOutFiles)) ! allocate the outputfiles file ids
-
+   allocate(iRestartLocation(nOutFiles), n_overwrites(nOutFiles))
    allocate(Zones(nOutFiles)) ! allocate the kinematics for the N of zones we need to save.
 
    Do i=1,nOutFiles

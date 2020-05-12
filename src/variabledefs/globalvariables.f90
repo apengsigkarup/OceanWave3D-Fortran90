@@ -44,6 +44,9 @@ REAL(KIND=long), DIMENSION(:,:),   POINTER :: tmp2D, rhsE, rhsP
 ! Necessary to apply a 4th order forward stencil and calculate the kinematics acceleration at the 
 ! current timestep.
 type(zoneKin), allocatable :: Zones(:)
+! These values are important for restarting the simulations.
+! THey tell us how much of the old hdf5 array we need to overwrite
+INTEGER, allocatable:: iRestartLocation(:), n_overwrites(:)
 
 ! Initial condition and wave generation flags
 Integer :: IC, IncWaveType

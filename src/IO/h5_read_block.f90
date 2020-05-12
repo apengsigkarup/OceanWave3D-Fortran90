@@ -81,9 +81,6 @@
             h5start(i) = block_offset(i)
         end do
 
-        deallocate(dimsr)
-        deallocate(maxdims)
-
         h5block(rank) = 1 ! We want to read one timestep at a time.
         ! allocate buffer for reading the file
         ! allocate(data(h5block(1), h5block(2), h5block(3), h5block(4)))
@@ -106,3 +103,6 @@
 
         call h5fclose_f(file_id, hdferr)
         dummy = check_return_value(hdferr, "h5_read_block", "h5fclose")
+
+        
+        deallocate(dimsr, maxdims, h5count, h5stride, h5block, h5start)

@@ -19,7 +19,7 @@ IMPLICIT NONE
 INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
-INTEGER :: FOUT, iWriteAt, i3, iRestartLocation
+INTEGER :: FOUT, iWriteAt, i3
 LOGICAL :: extend, hdf5_file_exists
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
@@ -39,7 +39,7 @@ INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
                     extdims1(1), extdims2(3), extdims3(4), &
                     lenPreviousHDF5 = -1, lenCurrentHDF5
-INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 0, n_overwrites
+INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 0
 REAL(KIND=long) :: x3d(Nz, Ny, Nx), y3d(Nz, Ny, Nx), z3d(Nz, Ny, Nx)
 REAL(KIND=long), ALLOCATABLE, SAVE :: timeStoredInHDF5(:), dummy2d(:,:), &
    dummy3d(:,:,:), dummy4d(:,:,:,:)
@@ -289,7 +289,7 @@ IF(it==0)THEN
             call h5_write(h5file, 'position_z', z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
 
             call increment_timestep_counter(Zones(io))
-            n_overwrites = 0 ! we do not expect to overwrite any sample here since we only append
+            n_overwrites(io) = 0 ! we do not expect to overwrite any sample here since we only append
 
            IF(curvilinearOnOff/=0)THEN
             Print *, 'StoreKinematicData:  Saving horizontal fluid velocities is not yet implemented for curvilinear grids.'
@@ -305,10 +305,10 @@ IF(it==0)THEN
             ! call h5_dataset_dimension(h5file, "time", onei, lenPreviousHDF5)
             ! the first time step I will write is the t0 + 1 step
             call h5_read(h5file, 'time', timeStoredInHDF5)
-            iRestartLocation = minloc(abs(timeStoredInHDF5 - time0), 1)
+            iRestartLocation(io) = minloc(abs(timeStoredInHDF5 - time0), 1)
             ! I have to overwrite the hdf5 file n_overwrites times
             ! then start appending
-            n_overwrites = size(timeStoredInHDF5, 1) - i
+            n_overwrites(io) = size(timeStoredInHDF5, 1) - iRestartLocation(io)
             deallocate(timeStoredInHDF5)
             ! I need to read the stored values in the hdf5 file and copy them
             ! over in the kinematicsarray
@@ -318,18 +318,20 @@ IF(it==0)THEN
             do i=1,5
                ! I have to re-read the last 5 steps to fill in the kinematics
                ! Kinematics(5) is the most recent
-               call h5_read_block(h5file, 'velocity_u', dummy4d, int((/0,0,0,iRestartLocation-5+i/), 8))
-               Zones(io)%Kinematics(i)%U = dummy4d(:,:,:,1)
-               call h5_read_block(h5file, 'velocity_v', dummy4d, int((/0,0,0,iRestartLocation-5+i/), 8))
-               Zones(io)%Kinematics(i)%V = dummy4d(:,:,:,1)
-               call h5_read_block(h5file, 'velocity_w', dummy4d, int((/0,0,0,iRestartLocation-5+i/), 8))
-               Zones(io)%Kinematics(i)%W = dummy4d(:,:,:,1)
+               call h5_read_block(h5file, 'velocity_u', dummy4d, int((/0,0,0,iRestartLocation(io)-5+i/), 8))
+               Zones(io)%Kinematics(5)%U = dummy4d(:,:,:,1)
+               call h5_read_block(h5file, 'velocity_v', dummy4d, int((/0,0,0,iRestartLocation(io)-5+i/), 8))
+               Zones(io)%Kinematics(5)%V = dummy4d(:,:,:,1)
+               call h5_read_block(h5file, 'velocity_w', dummy4d, int((/0,0,0,iRestartLocation(io)-5+i/), 8))
+               Zones(io)%Kinematics(5)%W = dummy4d(:,:,:,1)
 
-               call h5_read_block(h5file, 'surface_elevation', dummy3d, int((/0,0,iRestartLocation-5+i/), 8))
-               Zones(io)%Kinematics(i)%Eta = dummy3d(:,:,1)
+               call h5_read_block(h5file, 'surface_elevation', dummy3d, int((/0,0,iRestartLocation(io)-5+i/), 8))
+               Zones(io)%Kinematics(5)%Eta = dummy3d(:,:,1)
                
+               call cycle(Zones(io)%Kinematics)
                call increment_timestep_counter(Zones(io))
             end do
+            deallocate(dummy4d, dummy3d)
 
          END IF
    ELSE
@@ -578,37 +580,13 @@ ELSE !IF(it==0)THEN
 
             WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
 
-            ! if we reinitialize, we need to check if out time is 
-            if (IC==-1) then               
-               ! If there is a previous HDF5, get its length & values
-               if (lenPreviousHDF5 == -1) call h5_dataset_dimension(h5file, "time", onei, lenPreviousHDF5)
-               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)      
-               if (lenCurrentHDF5.GT.lenPreviousHDF5) then
-                  extend = .TRUE.
-               else
-                  if (allocated(timeStoredInHDF5)) deallocate(timeStoredInHDF5)               
-                  call h5_read(h5file, 'time', timeStoredInHDF5)
 
-                  if (((time0+it*dt).GE.timeStoredInHDF5(size(timeStoredInHDF5)))) then
-                     extend = .TRUE.
-                  else
-                     extend = .FALSE.
-                     do i=1,size(timeStoredInHDF5)
-                        if ((time0+it*dt).LE.timeStoredInHDF5(i)) then
-                           iWriteAt = i-1
-                           exit
-                        end if
-                     end do
-                  end if
-               end if 
-            elseif (IC==0) then
-               call h5_dataset_dimension(h5file, "time", onei, lenCurrentHDF5)
-               if (it == Output(io)%tbeg) then
-                  extend = .FALSE.
-                  iWriteAt = 0
-               else
-                  extend = .TRUE.
-               end if
+            if (n_overwrites(io)>0) then
+               extend = .true.
+               iWriteAt = iRestartLocation(io)+it
+               n_overwrites(io) = n_overwrites(io) - 1
+            else
+               extend = .false.
             end if
 
             ! If we are starting from scratch, then we write the step 0
