@@ -19,7 +19,7 @@ IMPLICIT NONE
 INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
-INTEGER :: FOUT, iWriteAt, i3
+INTEGER :: FOUT, i3, iWriteAt
 LOGICAL :: extend, hdf5_file_exists
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
@@ -37,8 +37,8 @@ INTEGER(HID_T) :: extended_dimension_id
 INTEGER(HSIZE_T), ALLOCATABLE :: dims_ext(:)
 INTEGER(HSIZE_T), SAVE :: maxdims1(1), maxdims2(3), maxdims3(4), &
                     chunkdims1(1), chunkdims2(3), chunkdims3(4), &
-                    extdims1(1), extdims2(3), extdims3(4), &
-                    lenPreviousHDF5 = -1, lenCurrentHDF5
+                    extdims1(1), extdims2(3), extdims3(4), lenTime
+                    
 INTEGER(HSIZE_T):: nx_save, ny_save, nz_save, onei = 1, zeroi = 0
 REAL(KIND=long) :: x3d(Nz, Ny, Nx), y3d(Nz, Ny, Nx), z3d(Nz, Ny, Nx)
 REAL(KIND=long), ALLOCATABLE, SAVE :: timeStoredInHDF5(:), dummy2d(:,:), &
@@ -307,32 +307,42 @@ IF(it==0)THEN
             call h5_read(h5file, 'time', timeStoredInHDF5)
             iRestartLocation(io) = minloc(abs(timeStoredInHDF5 - time0), 1)
             ! I have to overwrite the hdf5 file n_overwrites times
-            ! then start appending
+            ! then start appending            
             n_overwrites(io) = size(timeStoredInHDF5, 1) - iRestartLocation(io)
             deallocate(timeStoredInHDF5)
             ! I need to read the stored values in the hdf5 file and copy them
             ! over in the kinematicsarray
             ! Allocate a dummy array
-            allocate(dummy4d(Nz,Nx,Ny,1))
-            allocate(dummy3d(Nx,Ny,1))
+            allocate(dummy4d(Nz_save,Nx_save,Ny_save,1))
+            allocate(dummy3d(Nx_save,Ny_save,1))
             do i=1,5
                ! I have to re-read the last 5 steps to fill in the kinematics
                ! Kinematics(5) is the most recent
-               call h5_read_block(h5file, 'velocity_u', dummy4d, int((/0,0,0,iRestartLocation(io)-5+i/), 8))
-               Zones(io)%Kinematics(5)%U = dummy4d(:,:,:,1)
-               call h5_read_block(h5file, 'velocity_v', dummy4d, int((/0,0,0,iRestartLocation(io)-5+i/), 8))
-               Zones(io)%Kinematics(5)%V = dummy4d(:,:,:,1)
-               call h5_read_block(h5file, 'velocity_w', dummy4d, int((/0,0,0,iRestartLocation(io)-5+i/), 8))
-               Zones(io)%Kinematics(5)%W = dummy4d(:,:,:,1)
+               call h5_read_block(h5file, 'velocity_u', dummy4d, int((/0,0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%U(:,:,:) = dummy4d(:,:,:,1)
+               
+               call h5_read_block(h5file, 'velocity_v', dummy4d, int((/0,0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%V(:,:,:) = dummy4d(:,:,:,1)
+               
+               call h5_read_block(h5file, 'velocity_w', dummy4d, int((/0,0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%W(:,:,:) = dummy4d(:,:,:,1)
+               
+               call h5_read_block(h5file, 'velocity_derivative_uz', dummy4d, int((/0,0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%uz(:,:,:) = dummy4d(:,:,:,1)
 
-               call h5_read_block(h5file, 'surface_elevation', dummy3d, int((/0,0,iRestartLocation(io)-5+i/), 8))
-               Zones(io)%Kinematics(5)%Eta = dummy3d(:,:,1)
+               call h5_read_block(h5file, 'velocity_derivative_vz', dummy4d, int((/0,0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%vz(:,:,:) = dummy4d(:,:,:,1)
+
+               call h5_read_block(h5file, 'velocity_derivative_wz', dummy4d, int((/0,0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%wz(:,:,:) = dummy4d(:,:,:,1)
+               
+               call h5_read_block(h5file, 'surface_elevation', dummy3d, int((/0,0,iRestartLocation(io)-6+i/), 8))
+               Zones(io)%Kinematics(1)%Eta(:,:) = dummy3d(:,:,1)
                
                call cycle(Zones(io)%Kinematics)
                call increment_timestep_counter(Zones(io))
             end do
             deallocate(dummy4d, dummy3d)
-
          END IF
    ELSE
      ! formattype /= 22
@@ -582,11 +592,11 @@ ELSE !IF(it==0)THEN
 
 
             if (n_overwrites(io)>0) then
-               extend = .true.
+               extend = .false.
                iWriteAt = iRestartLocation(io)+it
                n_overwrites(io) = n_overwrites(io) - 1
             else
-               extend = .false.
+               extend = .true.
             end if
 
             ! If we are starting from scratch, then we write the step 0
@@ -634,7 +644,7 @@ ELSE !IF(it==0)THEN
                extended_dimension_id = 4
                ! velocities
                call h5_write_at_step(h5file, 'velocity_u', extended_dimension_id, iWriteAt, extdims3, &
-            & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+               & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                call h5_write_at_step(h5file, 'velocity_v', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                call h5_write_at_step(h5file, 'velocity_w', extended_dimension_id, iWriteAt, extdims3, &
@@ -644,7 +654,7 @@ ELSE !IF(it==0)THEN
                ! Writes a zero with the shape of (Nz_save, Ny_save, Nx_save), since we don't have enough
                ! information to compute a correct version of the acceleration.
                call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, iWriteAt-2, extdims3, &
-            & reshape(Zones(io)%Kinematics(3)%Ut , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Zones(io)%Kinematics(3)%Ut , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, iWriteAt-2, extdims3, &
                & reshape(Zones(io)%Kinematics(3)%Vt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, iWriteAt-2, extdims3, &
@@ -652,7 +662,7 @@ ELSE !IF(it==0)THEN
 
                ! velocity z gradients
                call h5_write_at_step(h5file, 'velocity_derivative_uz', extended_dimension_id, iWriteAt, extdims3, &
-            & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_vz', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_wz', extended_dimension_id, iWriteAt, extdims3, &
@@ -661,13 +671,13 @@ ELSE !IF(it==0)THEN
 
                ! velocity x gradients
                call h5_write_at_step(h5file, 'velocity_derivative_ux', extended_dimension_id, iWriteAt, extdims3, &
-            & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_vx', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
                ! velocity y gradients
                call h5_write_at_step(h5file, 'velocity_derivative_uy', extended_dimension_id, iWriteAt, extdims3, &
-            & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_write_at_step(h5file, 'velocity_derivative_vy', extended_dimension_id, iWriteAt, extdims3, &
                & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
             
@@ -711,7 +721,7 @@ ELSE !IF(it==0)THEN
                extended_dimension_id = 4
                ! velocities
                call h5_extend(h5file, 'velocity_u', extended_dimension_id, extdims3, &
-            & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+               & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                call h5_extend(h5file, 'velocity_v', extended_dimension_id, extdims3, &
                & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                call h5_extend(h5file, 'velocity_w', extended_dimension_id, extdims3, &
@@ -723,31 +733,30 @@ ELSE !IF(it==0)THEN
                ! as the other quantities.
                
                call h5_extend(h5file, 'velocity_derivative_ut', extended_dimension_id, extdims3, &
-            & reshape(Zones(io)%Kinematics(5)%Ut *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Zones(io)%Kinematics(5)%Ut *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_extend(h5file, 'velocity_derivative_vt', extended_dimension_id, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Vt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_extend(h5file, 'velocity_derivative_wt', extended_dimension_id, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Wt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
-               ! But then, if we are beyond it = 3, we start writing the centered scheme to (it-3)
-               ! reason behind MAX((/it-3, 0/): it-3 < 0 until we are at step 3, where we can start writing at the 
-               ! right place (0 to N)
                
-               ! i3 = (((it-2*Output(io)%tstride)-Output(io)%tbeg)/Output(io)%tstride)
-               i3 = lenCurrentHDF5 -2*onei
+               call h5_dataset_dimension(h5file, "time", onei, lenTime)
+               ! when you write at offset, if you f.ex have 6 points N=6
+               ! then your array looks like 0..1..2..3..4..5
+               ! If you want to write at offset = 0, you'd write on top of 0
+               ! If you want to write at offset = 3, you'd write on top of 3
+               !T
 
-               ! Expalantion: current length of the DHDF5 -1 1 since we have extended it in the above lines,
-               ! minust two steps
-               call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, MAXVAL((/i3, 0/)), extdims3, &
-            & reshape(Zones(io)%Kinematics(3)%Ut, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, MAXVAL((/i3, 0/)), extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, int(lenTime,4)-3, extdims3, &
+               & reshape(Zones(io)%Kinematics(3)%Ut, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
                & reshape(Zones(io)%Kinematics(3)%Vt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, MAXVAL((/i3, 0/)), extdims3, &
+               call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
                & reshape(Zones(io)%Kinematics(3)%Wt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
                ! velocity z gradients
                call h5_extend(h5file, 'velocity_derivative_uz', extended_dimension_id, extdims3, &
-            & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_extend(h5file, 'velocity_derivative_vz', extended_dimension_id, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_extend(h5file, 'velocity_derivative_wz', extended_dimension_id, extdims3, &
@@ -756,13 +765,13 @@ ELSE !IF(it==0)THEN
 
                ! velocity x gradients
                call h5_extend(h5file, 'velocity_derivative_ux', extended_dimension_id, extdims3, &
-            & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_extend(h5file, 'velocity_derivative_vx', extended_dimension_id, extdims3, &
                & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
                ! velocity y gradients
                call h5_extend(h5file, 'velocity_derivative_uy', extended_dimension_id, extdims3, &
-            & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+               & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                call h5_extend(h5file, 'velocity_derivative_vy', extended_dimension_id, extdims3, &
                & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
             end if ! if (it == 1) then

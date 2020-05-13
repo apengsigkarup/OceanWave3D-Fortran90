@@ -96,7 +96,7 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
 
     implicit none
     type(zoneKin)  :: inZone
-    real(kind=8)   :: dt
+    real(kind=8)   :: dt, dummy(5), dummy2
     real(kind=8)   :: sigma(:)
     real(kind=8)   :: time(5), Eta_t, &
                       Ut_nocorr, Vt_nocorr, Wt_nocorr        ! Accelerations without the correction
@@ -142,7 +142,7 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
                 inZone%Kinematics(3)%Vt(k,i,j) = Vt_nocorr - &
                     sigma(k)*inZone%Kinematics(3)%Vz(k,i,j)*Eta_t
                 inZone%Kinematics(3)%Wt(k,i,j) = Wt_nocorr - &
-                    sigma(k)*inZone%Kinematics(3)%Wz(k,i,j)*Eta_t                
+                    sigma(k)*inZone%Kinematics(3)%Wz(k,i,j)*Eta_t        
             END DO
         END DO
     END Do
