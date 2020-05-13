@@ -593,7 +593,7 @@ ELSE !IF(it==0)THEN
 
             if (n_overwrites(io)>0) then
                extend = .false.
-               iWriteAt = iRestartLocation(io)+it
+               iWriteAt = iRestartLocation(io) +it - 1
                n_overwrites(io) = n_overwrites(io) - 1
             else
                extend = .true.
