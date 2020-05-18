@@ -22,6 +22,8 @@ type kinArray
     real(kind=8), allocatable :: Ut(:,:,:)
     real(kind=8), allocatable :: Vt(:,:,:)
     real(kind=8), allocatable :: Wt(:,:,:)
+    real(kind=8), allocatable :: phit(:,:,:)
+    real(kind=8), allocatable :: phi(:,:,:)
     real(kind=8), allocatable :: Eta(:,:)
 end type kinArray
 
@@ -63,7 +65,9 @@ subroutine allocatePointers(inZone, nx_save, ny_save, nz_save)
         ALLOCATE(inZone%Kinematics(i)%Wt(nz_save, nx_save, ny_save))            
         ALLOCATE(inZone%Kinematics(i)%Uz(nz_save, nx_save, ny_save))
         ALLOCATE(inZone%Kinematics(i)%Vz(nz_save, nx_save, ny_save))
-        ALLOCATE(inZone%Kinematics(i)%Wz(nz_save, nx_save, ny_save))            
+        ALLOCATE(inZone%Kinematics(i)%Wz(nz_save, nx_save, ny_save))
+        ALLOCATE(inZone%Kinematics(i)%phi(nz_save, nx_save, ny_save))
+        ALLOCATE(inZone%Kinematics(i)%phit(nz_save, nx_save, ny_save))
         ALLOCATE(inZone%Kinematics(i)%Eta(nx_save, ny_save))
 
         inZone%Kinematics(i)%U = 0.;
@@ -75,6 +79,8 @@ subroutine allocatePointers(inZone, nx_save, ny_save, nz_save)
         inZone%Kinematics(i)%Uz = 0.;
         inZone%Kinematics(i)%Vz = 0.;
         inZone%Kinematics(i)%Wz = 0.;
+        inZone%Kinematics(i)%phit = 0.;
+        inZone%Kinematics(i)%phi = 0.; 
         inZone%Kinematics(i)%Eta = 0.
 
     END DO
@@ -99,7 +105,8 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
     real(kind=8)   :: dt, dummy(5), dummy2
     real(kind=8)   :: sigma(:)
     real(kind=8)   :: time(5), Eta_t, &
-                      Ut_nocorr, Vt_nocorr, Wt_nocorr        ! Accelerations without the correction
+                      Ut_nocorr, Vt_nocorr, Wt_nocorr, &      ! Accelerations without the correction
+                      phit_nocorr                             ! Uncorrected dyn pressure
     integer        :: i, j, k, ii, it, &
                       time_steps, &     ! size of the stencil we use for time differenciation
                       alpha, &          ! half-width of the stencil
@@ -136,13 +143,17 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
                 Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%V(k,i,j),it=1,5)/))                        
                 Wt_nocorr = &
                 Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%W(k,i,j),it=1,5)/))
+                phit_nocorr = &
+                Dot_Product(FDStencil(3,:), (/(inZone%Kinematics(it)%phi(k,i,j),it=1,5)/))
 
                 inZone%Kinematics(3)%Ut(k,i,j) = Ut_nocorr - &
                     sigma(k)*inZone%Kinematics(3)%Uz(k,i,j)*Eta_t
                 inZone%Kinematics(3)%Vt(k,i,j) = Vt_nocorr - &
                     sigma(k)*inZone%Kinematics(3)%Vz(k,i,j)*Eta_t
                 inZone%Kinematics(3)%Wt(k,i,j) = Wt_nocorr - &
-                    sigma(k)*inZone%Kinematics(3)%Wz(k,i,j)*Eta_t        
+                    sigma(k)*inZone%Kinematics(3)%Wz(k,i,j)*Eta_t
+                inZone%Kinematics(3)%phit(k,i,j) = phit_nocorr - &
+                    sigma(k)*inZone%Kinematics(3)%W(k,i,j)*Eta_t
             END DO
         END DO
     END Do
