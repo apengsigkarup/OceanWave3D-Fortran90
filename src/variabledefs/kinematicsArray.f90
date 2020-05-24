@@ -22,7 +22,7 @@ type kinArray
     real(kind=8), allocatable :: Ut(:,:,:)
     real(kind=8), allocatable :: Vt(:,:,:)
     real(kind=8), allocatable :: Wt(:,:,:)
-    real(kind=8), allocatable :: phit(:,:,:)
+    real(kind=8), allocatable :: pdyn(:,:,:)
     real(kind=8), allocatable :: phi(:,:,:)
     real(kind=8), allocatable :: Eta(:,:)
 end type kinArray
@@ -67,7 +67,7 @@ subroutine allocatePointers(inZone, nx_save, ny_save, nz_save)
         ALLOCATE(inZone%Kinematics(i)%Vz(nz_save, nx_save, ny_save))
         ALLOCATE(inZone%Kinematics(i)%Wz(nz_save, nx_save, ny_save))
         ALLOCATE(inZone%Kinematics(i)%phi(nz_save, nx_save, ny_save))
-        ALLOCATE(inZone%Kinematics(i)%phit(nz_save, nx_save, ny_save))
+        ALLOCATE(inZone%Kinematics(i)%pdyn(nz_save, nx_save, ny_save))
         ALLOCATE(inZone%Kinematics(i)%Eta(nx_save, ny_save))
 
         inZone%Kinematics(i)%U = 0.;
@@ -79,8 +79,8 @@ subroutine allocatePointers(inZone, nx_save, ny_save, nz_save)
         inZone%Kinematics(i)%Uz = 0.;
         inZone%Kinematics(i)%Vz = 0.;
         inZone%Kinematics(i)%Wz = 0.;
-        inZone%Kinematics(i)%phit = 0.;
         inZone%Kinematics(i)%phi = 0.; 
+        inZone%Kinematics(i)%pdyn = 0.;
         inZone%Kinematics(i)%Eta = 0.
 
     END DO
@@ -96,17 +96,17 @@ subroutine cycle(inKinArray)
     inKinArray = cshift(inKinArray, 1)
 end subroutine cycle
 
-subroutine calculateKinAcceleration(inZone, dt, sigma)
+subroutine calculateKinAcceleration(inZone, dt, sigma, rho)
     ! This subroutine calculate the derivative
     ! of eta in time for a certain zone
 
     implicit none
     type(zoneKin)  :: inZone
     real(kind=8)   :: dt, dummy(5), dummy2
-    real(kind=8)   :: sigma(:)
+    real(kind=8)   :: sigma(:), rho
     real(kind=8)   :: time(5), Eta_t, &
                       Ut_nocorr, Vt_nocorr, Wt_nocorr, &      ! Accelerations without the correction
-                      phit_nocorr                             ! Uncorrected dyn pressure
+                      phit_nocorr, phi_t                            ! Uncorrected dyn pressure
     integer        :: i, j, k, ii, it, &
                       time_steps, &     ! size of the stencil we use for time differenciation
                       alpha, &          ! half-width of the stencil
@@ -122,9 +122,12 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
         time(i)=dt*(i-1)
     END DO
 
-    if (.NOT.(allocated(FDStencil))) allocate(FDStencil(time_steps, time_steps))
-
-    CALL BuildStencilsGridX(alpha,1,time,FDStencil,5,1)
+    if (.NOT.(allocated(FDStencil))) then
+        allocate(FDStencil(time_steps, time_steps))
+        ! this works only if the computation is done at all time steps
+        ! as it is the "ideal" situation (and then save every tstride iterations)
+        CALL BuildStencilsGridX(alpha,1,time,FDStencil,5,1)
+    end if
 
     nz_save = size(inZone%Kinematics(1)%U, 1) ! How many points in the z-direction we are saving
     nx_save = size(inZone%Kinematics(1)%U, 2) ! How many points in the x-direction we are saving
@@ -152,8 +155,14 @@ subroutine calculateKinAcceleration(inZone, dt, sigma)
                     sigma(k)*inZone%Kinematics(3)%Vz(k,i,j)*Eta_t
                 inZone%Kinematics(3)%Wt(k,i,j) = Wt_nocorr - &
                     sigma(k)*inZone%Kinematics(3)%Wz(k,i,j)*Eta_t
-                inZone%Kinematics(3)%phit(k,i,j) = phit_nocorr - &
+                ! dynamic pressure
+                phi_t = phit_nocorr - &
                     sigma(k)*inZone%Kinematics(3)%W(k,i,j)*Eta_t
+                inZone%Kinematics(3)%pdyn(k,i,j) = -rho*(phi_t + &
+                    inZone%Kinematics(3)%U(k,i,j)**2 + & 
+                    inZone%Kinematics(3)%V(k,i,j)**2 + &
+                    inZone%Kinematics(3)%W(k,i,j)**2)
+
             END DO
         END DO
     END Do

@@ -595,7 +595,8 @@ ELSE !IF(it==0)THEN
 
             if (Zones(io)%number_of_saved_timesteps == 5) then 
                ! if we have saved more than 5 timesteps  then we calculate the centered 5-points derivative
-               call calculateKinAcceleration(Zones(io), dt*Output(io)%tstride, z(1+GhostGridZ:))
+               ! and also the dynamic pressure
+               call calculateKinAcceleration(Zones(io), dt*Output(io)%tstride, z(1+GhostGridZ:), rho)
             end if 
 
             WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
@@ -698,7 +699,7 @@ ELSE !IF(it==0)THEN
                & reshape(Zones(io)%Kinematics(5)%phi, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                if (iWriteAt.GE.2) then
                   call h5_write_at_step(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, iWriteAt-2, extdims3, &
-                  & -rho*reshape(Zones(io)%Kinematics(3)%phit, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
+                  & reshape(Zones(io)%Kinematics(3)%pdyn, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
                end if 
 
             elseif(extend) then
@@ -763,7 +764,7 @@ ELSE !IF(it==0)THEN
                call h5_extend(h5file, 'velocity_derivative_wt', extended_dimension_id, extdims3, &
                & reshape(Zones(io)%Kinematics(5)%Wt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                call h5_extend(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, extdims3, &
-               & reshape(-rho*Zones(io)%Kinematics(5)%phit*0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+               & reshape(Zones(io)%Kinematics(5)%pdyn*0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                
                call h5_dataset_dimension(h5file, "time", onei, lenTime)
                ! when you write at offset, if you f.ex have 6 points N=6
@@ -780,7 +781,7 @@ ELSE !IF(it==0)THEN
                   call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
                   & reshape(Zones(io)%Kinematics(3)%Wt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
                   call h5_write_at_step(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, int(lenTime,4)-3, extdims3, &
-                  & -rho*reshape(Zones(io)%Kinematics(3)%phit, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  & reshape(Zones(io)%Kinematics(3)%pdyn, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
                end if
 
                ! velocity z gradients
