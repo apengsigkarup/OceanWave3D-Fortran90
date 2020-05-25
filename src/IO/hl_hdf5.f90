@@ -176,9 +176,10 @@ module HL_HDF5 !High level HDF5 interface
 
         character(*) :: file_name, dataset_name
         integer(HID_T) :: file_id, dataset_id, &
-            dataspace_id, prop_id
+            dataspace_id, prop_id, plist_id
         logical :: dummy
-        integer(HSIZE_T) :: dims(:), maxdims(:), chunk_dims(:)
+        integer(HSIZE_T) :: dims(:), maxdims(:), chunk_dims(:), &
+            n_bytes_chunk
 
         integer :: rank
         ! real(kind=8) :: data(:,:,:,:)
@@ -186,18 +187,26 @@ module HL_HDF5 !High level HDF5 interface
         call h5fopen_f(file_name, H5F_ACC_RDWR_F, file_id, hdferr);
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5fopen")
 
-
         call h5screate_simple_f(rank, dims, dataspace_id, hdferr, maxdims)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5screate_simple_f")
 
         call h5pcreate_f(H5P_DATASET_CREATE_F, prop_id, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5p_create_f")        
         call h5pset_chunk_f(prop_id, size(chunk_dims), chunk_dims, hdferr)
-        dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5pset_chunk")   
+        dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5pset_chunk")
 
         call h5dcreate_f(file_id, dataset_name, H5T_NATIVE_DOUBLE, dataspace_id, dataset_id, hdferr, &
                     &prop_id, H5P_DEFAULT_F, H5P_DEFAULT_F)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5dcreate_f")
+
+        ! Storage in double precision: 8 bytes * 2 times the chunk in the cache * 
+        ! the size of the chunk
+        n_bytes_chunk = 8*5*product(chunk_dims) 
+
+        call h5dget_access_plist_f(dataset_id, plist_id, hdferr)
+
+        call h5pset_chunk_cache_f(plist_id, int(100,8), n_bytes_chunk, 1.0 , hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5pset_chunk_cache")
 
         call h5dclose_f(dataset_id, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5dclose")

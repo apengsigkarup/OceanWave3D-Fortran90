@@ -192,12 +192,12 @@ SUBROUTINE OceanWave3DTakeATimeStep
   IF(iKinematics/=0)THEN
       IF (formattype.NE.30) THEN! Store binary kinematics files
          Do i=1,nOutFiles
-            IF (tstep >= Output(i)%tbeg .and. tstep <= Output(i)%tend .and.  &
-                  mod(tstep-1,Output(i)%tstride)==0 )THEN ! tstep-1 so at step 1 it always enters
-                  CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            CALL StoreKinematicData(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
                   FineGrid%Nz+GhostGridZ,i,tstep)
-            ENDIF 
          ENDDO
+      ELSEIF (formattype==30) THEN ! Store wave gauges in ASCII format
+         CALL StoreWaveGauges(FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                  FineGrid%Nz+GhostGridZ,2,tstep+1)         
       ENDIF
         
   END IF

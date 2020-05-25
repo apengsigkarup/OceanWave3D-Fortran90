@@ -20,7 +20,7 @@ INTEGER :: Nx, Ny, Nz, io, it
 ! Local variables
 INTEGER ::  i, j, k, i0, i1, is, j0, j1, js
 INTEGER :: FOUT, i3, iWriteAt
-LOGICAL :: extend, hdf5_file_exists
+LOGICAL :: extend, hdf5_file_exists, write_kinematics
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
 ! Automatic work space
@@ -47,6 +47,15 @@ REAL(KIND=long), ALLOCATABLE, SAVE :: timeStoredInHDF5(:), dummy2d(:,:), &
 !
 x => FineGrid%x; y => FineGrid%y; z => FineGrid%z; h => FineGrid%h; hx => FineGrid%hx
 hy => FineGrid%hy; eta => WaveField%E; etax => WaveField%Ex; etay => WaveField%Ey
+
+! Determine if we have to write at this timestep
+IF (it >= Output(io)%tbeg .and. it <= Output(io)%tend .and.  &
+   mod(it,Output(io)%tstride)==0 ) THEN !
+      write_kinematics = .TRUE.
+else
+      write_kinematics = .FALSE.
+end if 
+
 !
 ! Shift the horizontal grid point position to account for the ghost points.  
 !
@@ -76,9 +85,9 @@ IF(FORMATTYPE/=22)THEN
   ! as whole time series: usually, all the time steps of one dataset are read at one 
   ! particular x,y,z location
   
-  chunkdims1 = (/30000*onei/)
-  chunkdims2 = (/ny_save, nx_save, 30000*onei/)
-  chunkdims3 = (/nz_save, ny_save, nx_save, 30000*onei/)
+  chunkdims1 = (/50*onei/)
+  chunkdims2 = (/ny_save, nx_save, 50*onei/)
+  chunkdims3 = (/nz_save, ny_save, nx_save, 50*onei/)
   
   ! Dimensions of the extended dataset, when appending to an existing dataset.
   extdims1 = (/onei/)
@@ -150,7 +159,9 @@ ELSE IF(formattype==22)THEN
    WRITE(*,FMT='(A,A)') '  File output = ',filename
 ELSE IF(formattype==40)THEN   
    WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
-   WRITE(*,FMT='(A,A)') '  File output of h5 file number = ',h5file
+   if ((write_kinematics).and.(it < 100)) then
+      WRITE(*,FMT='(A,A)') '  File output of h5 file number = ',h5file
+   end if
 ELSE
    FOUT = FILEOP(io+1)
 !   WRITE(*,FMT='(A,I2)') '  File output unit number = ',FOUT
@@ -201,12 +212,12 @@ IF(it==0)THEN
 
          ! The kinematicsArray will hold 5 kinematics timesteps.
          ! They will be used to compute the kinematic acceleration at the location
-         ! so that we can save it in the .h5 file.
+         ! and the dynamics pressure, so that we can save it in the .h5 file.
          call allocatePointers(Zones(io), nx_save, ny_save, nz_save)
 
-         ! If the time is zero, then we consider we are starting the simulation from scratch
-         ! Otherwise we consider we do have these fields already
-         ! Initialize all datasets
+         ! If the time is zero, then we consider we are starting the simulation from scratch.
+         ! If we restart, we consider we do have these fields already.
+         ! Initialize all datasets.
          WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
 
          ! I want to do this also if we are restarting but the HDF5 file did not exist from before
@@ -372,82 +383,84 @@ ELSE !IF(it==0)THEN
    !
    IF(curvilinearOnOff == 0)THEN
       IF(formattype==22)THEN
-         !
-         ! Dump free surface elevation, still water depth and kinematics to the output file.
-         ! Minimal no of variables and storage is output.
-         !
-         ! WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js)
-         ! WRITE (FOUT) ( ( h(i,j), i=i0,i1,is ), j=j0,j1,js) 
-         !                                                                  
-         ! The fluid thickness d=h+eta
-         !            
-         DO j=1,Ny
-            DO i=1,Nx
-                d(i,j)=h(i,j)+eta(i,j);
+         if (write_kinematics) then
+            !
+            ! Dump free surface elevation, still water depth and kinematics to the output file.
+            ! Minimal no of variables and storage is output.
+            !
+            ! WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js)
+            ! WRITE (FOUT) ( ( h(i,j), i=i0,i1,is ), j=j0,j1,js) 
+            !                                                                  
+            ! The fluid thickness d=h+eta
+            !            
+            DO j=1,Ny
+               DO i=1,Nx
+                  d(i,j)=h(i,j)+eta(i,j);
+               END DO
             END DO
-         END DO
-        !  CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-         !  FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-         ! Compute dphi/dsigma
-         !
-         CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
-         IF (FineGrid%Nx>1) THEN
-         !
-         ! Compute dphi/dx 
-         !	
-            CALL DiffXEven(phi,U,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-              FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
-            IF ( LinearOnOff /= 0) THEN
-               !
-               ! Add in the chain rule contribution to get the velocity
-               !
-               Do j=1,Ny
-                  Do i=1,Nx
-                     Do k=1,Nz
-                        U(k,i,j) = U(k,i,j) + ((1-z(k))/d(i,j)*hx(i,j)-z(k)/d(i,j)*etax(i,j))*W(k,i,j)
+         !  CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            !  FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+            ! Compute dphi/dsigma
+            !
+            CALL DiffZArbitrary(phi,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+            IF (FineGrid%Nx>1) THEN
+            !
+            ! Compute dphi/dx 
+            !	
+               CALL DiffXEven(phi,U,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,alpha)
+               IF ( LinearOnOff /= 0) THEN
+                  !
+                  ! Add in the chain rule contribution to get the velocity
+                  !
+                  Do j=1,Ny
+                     Do i=1,Nx
+                        Do k=1,Nz
+                           U(k,i,j) = U(k,i,j) + ((1-z(k))/d(i,j)*hx(i,j)-z(k)/d(i,j)*etax(i,j))*W(k,i,j)
+                        END Do
                      END Do
                   END Do
-               END Do
+               END IF
+            ELSE
+               U=zero
             END IF
-         ELSE
-            U=zero
-         END IF
-         ! Interpolate to point in question
-         DO k = 1, FineGrid%Nz+GhostGridZ
-            DO j=j0,j1
-               Uint(k) = DOT_PRODUCT( Output(io)%stencilx,U(k,i0:i1,j) )
-            END DO
-         END DO
-         WRITE (FOUT) Uint
-         ! print*,'Uint:stencilx=',Output(io)%stencilx
-         ! print*,'Uint = ',Uint
-         ! WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-         ! 
-         IF (FineGrid%Ny>1) THEN
-            ! dphi/dy
-            CALL DiffYEven(phi,V,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
-               FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
-            IF ( LinearOnOff /= 0) THEN
-               Do j=1,Ny
-                  Do i=1,Nx
-                     Do k=1,Nz
-                        V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
-                     END Do
-                  END Do
-               END Do
-            END IF
-            ! WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
             ! Interpolate to point in question
             DO k = 1, FineGrid%Nz+GhostGridZ
                DO j=j0,j1
-                  Vint(k) = DOT_PRODUCT( Output(io)%stencilx,V(k,i0:i1,j) )
+                  Uint(k) = DOT_PRODUCT( Output(io)%stencilx,U(k,i0:i1,j) )
                END DO
             END DO
-            WRITE (FOUT) Vint
-         ELSE
-            V=zero
-         END IF
+            WRITE (FOUT) Uint
+            ! print*,'Uint:stencilx=',Output(io)%stencilx
+            ! print*,'Uint = ',Uint
+            ! WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+            ! 
+            IF (FineGrid%Ny>1) THEN
+               ! dphi/dy
+               CALL DiffYEven(phi,V,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+                  FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,beta)
+               IF ( LinearOnOff /= 0) THEN
+                  Do j=1,Ny
+                     Do i=1,Nx
+                        Do k=1,Nz
+                           V(k,i,j) = V(k,i,j)+((1-z(k))/d(i,j)*hy(i,j)-z(k)/d(i,j)*etay(i,j))*W(k,i,j)
+                        END Do
+                     END Do
+                  END Do
+               END IF
+               ! WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+               ! Interpolate to point in question
+               DO k = 1, FineGrid%Nz+GhostGridZ
+                  DO j=j0,j1
+                     Vint(k) = DOT_PRODUCT( Output(io)%stencilx,V(k,i0:i1,j) )
+                  END DO
+               END DO
+               WRITE (FOUT) Vint
+            ELSE
+               V=zero
+            END IF
+         end if ! if (write_kinematics)
       !
       ! Write the vertical velocity
       !
@@ -569,7 +582,7 @@ ELSE !IF(it==0)THEN
             Vx=zero
          END IF
 
-      ! sigs ends lines
+         ! sigs ends lines
 
          ! After computation, store according to user choice
          IF (formattype==40)THEN
@@ -599,251 +612,258 @@ ELSE !IF(it==0)THEN
                call calculateKinAcceleration(Zones(io), dt*Output(io)%tstride, z(1+GhostGridZ:), rho)
             end if 
 
-            WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
+            if (write_kinematics) then
+
+               WRITE(h5file, "(A18,I3.3,A3)") "WaveKinematicsZone",fntH5(io),".h5"
 
 
-            if (n_overwrites(io)>0) then
-               extend = .false.
-               iWriteAt = iRestartLocation(io) +it - 1
-               n_overwrites(io) = n_overwrites(io) - 1
-            else
-               extend = .true.
-            end if
+               if (n_overwrites(io)>0) then
+                  extend = .false.
+                  iWriteAt = iRestartLocation(io) +it - 1
+                  n_overwrites(io) = n_overwrites(io) - 1
+               else
+                  extend = .true.
+               end if
 
-            ! If we are starting from scratch, then we write the step 0
-            if (.NOT.(extend)) then
+               ! If we are starting from scratch, then we write the step 0
+               if (.NOT.(extend)) then
 
-               ! FP20190420 Unfortunately this is a little cumbersome.
-               ! At step 1 we need to overwrite what was written at step 0, where the dataset
-               ! was created. This is because we cannot create a dataset without writing in it, so
-               ! when we get to step 1 ther is already what was written in step 0.
-               extended_dimension_id = 1
-               ! call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
-               call h5_write_at_step(h5file, 'time', extended_dimension_id, iWriteAt, extdims1, (/time0+it*dt/))
+                  ! FP20190420 Unfortunately this is a little cumbersome.
+                  ! At step 1 we need to overwrite what was written at step 0, where the dataset
+                  ! was created. This is because we cannot create a dataset without writing in it, so
+                  ! when we get to step 1 ther is already what was written in step 0.
+                  extended_dimension_id = 1
+                  ! call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
+                  call h5_write_at_step(h5file, 'time', extended_dimension_id, iWriteAt, extdims1, (/time0+it*dt/))
 
-               extended_dimension_id = 4
-               call h5_write_at_step(h5file, 'position_x', extended_dimension_id, iWriteAt, extdims3, &
-                  & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
-               call h5_write_at_step(h5file, 'position_y', extended_dimension_id, iWriteAt, extdims3, &
-                  & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is)) 
+                  extended_dimension_id = 4
+                  call h5_write_at_step(h5file, 'position_x', extended_dimension_id, iWriteAt, extdims3, &
+                     & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
+                  call h5_write_at_step(h5file, 'position_y', extended_dimension_id, iWriteAt, extdims3, &
+                     & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is)) 
 
-               call h5_write_at_step(h5file, 'position_z', extended_dimension_id, iWriteAt, extdims3, &
-                  & z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
+                  call h5_write_at_step(h5file, 'position_z', extended_dimension_id, iWriteAt, extdims3, &
+                     & z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
 
-               extended_dimension_id = 3
-               call h5_write_at_step(h5file, 'surface_elevation', extended_dimension_id,  iWriteAt,extdims2, &
-                  & transpose(eta(i0:i1:is, j0:j1:js)))
+                  extended_dimension_id = 3
+                  call h5_write_at_step(h5file, 'surface_elevation', extended_dimension_id,  iWriteAt,extdims2, &
+                     & transpose(eta(i0:i1:is, j0:j1:js)))
+                  
+                  ! Write only if there is more than one point in the x direction
+                  if (FineGrid%Nx>1) then
+                     call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, iWriteAt, extdims2, &
+                     & transpose(etax(i0:i1:is, j0:j1:js)))            
+                  else ! just write 0s
+                     call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, iWriteAt, extdims2, &
+                     & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/)))     
+                  end if
+
+                  ! Write only if there is more than one point in the y direction
+                  if (FineGrid%Ny>1) then
+                     call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, iWriteAt, extdims2, &
+                     & transpose(etay(i0:i1:is, j0:j1:js)))            
+                  else ! just write 0s
+                     call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, iWriteAt, extdims2, &
+                     & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/))) 
+                  end if
                
-               ! Write only if there is more than one point in the x direction
-               if (FineGrid%Nx>1) then
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, iWriteAt, extdims2, &
-                  & transpose(etax(i0:i1:is, j0:j1:js)))            
-               else ! just write 0s
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, iWriteAt, extdims2, &
-                  & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/)))     
-               end if
+                  extended_dimension_id = 4
+                  ! velocities
+                  call h5_write_at_step(h5file, 'velocity_u', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  call h5_write_at_step(h5file, 'velocity_v', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  call h5_write_at_step(h5file, 'velocity_w', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%W, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
 
-               ! Write only if there is more than one point in the y direction
-               if (FineGrid%Ny>1) then
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, iWriteAt, extdims2, &
-                  & transpose(etay(i0:i1:is, j0:j1:js)))            
-               else ! just write 0s
-                  call h5_write_at_step(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, iWriteAt, extdims2, &
-                  & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/))) 
-               end if
-            
-               extended_dimension_id = 4
-               ! velocities
-               call h5_write_at_step(h5file, 'velocity_u', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_write_at_step(h5file, 'velocity_v', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_write_at_step(h5file, 'velocity_w', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%W, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  ! Kinematics accelerations
+                  ! Writes a zero with the shape of (Nz_save, Ny_save, Nx_save), since we don't have enough
+                  ! information to compute a correct version of the acceleration.
+                  if (iWriteAt.GE.2) then ! otherwise we have no timestep to overwrite
+                     call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, iWriteAt-2, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%Ut , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                     call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, iWriteAt-2, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%Vt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                     call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, iWriteAt-2, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%Wt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  end if
 
-               ! Kinematics accelerations
-               ! Writes a zero with the shape of (Nz_save, Ny_save, Nx_save), since we don't have enough
-               ! information to compute a correct version of the acceleration.
-               if (iWriteAt.GE.2) then ! otherwise we have no timestep to overwrite
-                  call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, iWriteAt-2, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%Ut , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-                  call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, iWriteAt-2, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%Vt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-                  call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, iWriteAt-2, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%Wt , shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               end if
-
-               ! velocity z gradients
-               call h5_write_at_step(h5file, 'velocity_derivative_uz', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vz', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_wz', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Wz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
+                  ! velocity z gradients
+                  call h5_write_at_step(h5file, 'velocity_derivative_uz', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_write_at_step(h5file, 'velocity_derivative_vz', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_write_at_step(h5file, 'velocity_derivative_wz', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Wz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
 
 
-               ! velocity x gradients
-               call h5_write_at_step(h5file, 'velocity_derivative_ux', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vx', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  ! velocity x gradients
+                  call h5_write_at_step(h5file, 'velocity_derivative_ux', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_write_at_step(h5file, 'velocity_derivative_vx', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
-               ! velocity y gradients
-               call h5_write_at_step(h5file, 'velocity_derivative_uy', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_write_at_step(h5file, 'velocity_derivative_vy', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
-            
-               ! potential and dynamic pressure
-               call h5_write_at_step(h5file, 'potential_phi', extended_dimension_id, iWriteAt, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%phi, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               if (iWriteAt.GE.2) then
-                  call h5_write_at_step(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, iWriteAt-2, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%pdyn, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
-               end if 
-
-            elseif(extend) then
-
-               extended_dimension_id = 1
-               ! call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
-               call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/time0+it*dt/))
-
-               extended_dimension_id = 4
-               call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
-                  & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
-               call h5_extend(h5file, 'position_y', extended_dimension_id, extdims3, &
-                  & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is)) 
-
-               call h5_extend(h5file, 'position_z', extended_dimension_id, extdims3, &
-                  & z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
-
-               extended_dimension_id = 3
-               call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
-                  & transpose(eta(i0:i1:is, j0:j1:js)))
+                  ! velocity y gradients
+                  call h5_write_at_step(h5file, 'velocity_derivative_uy', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_write_at_step(h5file, 'velocity_derivative_vy', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
                
-               ! Write only if there is more than one point in the x direction
-               if (FineGrid%Nx>1) then
-                  call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
-                  & transpose(etax(i0:i1:is, j0:j1:js)))            
-               else ! just write 0s
-                  call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
-                  & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/)))     
-               end if
+                  ! potential and dynamic pressure
+                  call h5_write_at_step(h5file, 'potential_phi', extended_dimension_id, iWriteAt, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%phi, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  if (iWriteAt.GE.2) then
+                     call h5_write_at_step(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, iWriteAt-2, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%pdyn, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/))) 
+                  end if 
 
-               ! Write only if there is more than one point in the y direction
-               if (FineGrid%Ny>1) then
-                  call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
-                  & transpose(etay(i0:i1:is, j0:j1:js)))            
-               else ! just write 0s
-                  call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
-                  & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/))) 
-               end if
-            
-               extended_dimension_id = 4
-               ! velocities
-               call h5_extend(h5file, 'velocity_u', extended_dimension_id, extdims3, &
-               & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_extend(h5file, 'velocity_v', extended_dimension_id, extdims3, &
-               & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_extend(h5file, 'velocity_w', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%W, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+               elseif(extend) then
+
+                  extended_dimension_id = 1
+                  ! call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/it*dt/))
+                  call h5_extend(h5file, 'time', extended_dimension_id, extdims1, (/time0+it*dt/))
+
+                  extended_dimension_id = 4
+                  call h5_extend(h5file, 'position_x', extended_dimension_id, extdims3, &
+                     & x3d(1+GhostGridZ:,j0:j1:js, i0:i1:is))         
+                  call h5_extend(h5file, 'position_y', extended_dimension_id, extdims3, &
+                     & y3d(1+GhostGridZ:,j0:j1:js, i0:i1:is)) 
+
+                  call h5_extend(h5file, 'position_z', extended_dimension_id, extdims3, &
+                     & z3d(1+GhostGridZ:, j0:j1:js, i0:i1:is))
+
+                  extended_dimension_id = 3
+                  call h5_extend(h5file, 'surface_elevation', extended_dimension_id, extdims2, &
+                     & transpose(eta(i0:i1:is, j0:j1:js)))
+                  
+                  ! Write only if there is more than one point in the x direction
+                  if (FineGrid%Nx>1) then
+                     call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
+                     & transpose(etax(i0:i1:is, j0:j1:js)))            
+                  else ! just write 0s
+                     call h5_extend(h5file, 'surface_elevation_derivative_etax', extended_dimension_id, extdims2, &
+                     & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/)))     
+                  end if
+
+                  ! Write only if there is more than one point in the y direction
+                  if (FineGrid%Ny>1) then
+                     call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
+                     & transpose(etay(i0:i1:is, j0:j1:js)))            
+                  else ! just write 0s
+                     call h5_extend(h5file, 'surface_elevation_derivative_etay', extended_dimension_id, extdims2, &
+                     & reshape((/(zero, i=1,nx_save*ny_save)/), shape=(/nx_save, ny_save/))) 
+                  end if
                
-               ! Potential
-               call h5_extend(h5file, 'potential_phi', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%phi, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  extended_dimension_id = 4
+                  ! velocities
+                  call h5_extend(h5file, 'velocity_u', extended_dimension_id, extdims3, &
+                  & reshape(U(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  call h5_extend(h5file, 'velocity_v', extended_dimension_id, extdims3, &
+                  & reshape(V(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  call h5_extend(h5file, 'velocity_w', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%W, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  
+                  ! Potential
+                  call h5_extend(h5file, 'potential_phi', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%phi, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
-               ! Kinematics accelerations and dynamics pressure
-               ! They are a little different from the others. Since we compute them with a centered scheme with 5 points
-               ! We need always to first extend the file, writing a "zero" value, so that it has the same nr. of points
-               ! as the other quantities.
-               
-               call h5_extend(h5file, 'velocity_derivative_ut', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Ut *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_extend(h5file, 'velocity_derivative_vt', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Vt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_extend(h5file, 'velocity_derivative_wt', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Wt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               call h5_extend(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%pdyn*0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-               
-               call h5_dataset_dimension(h5file, "time", onei, lenTime)
-               ! when you write at offset, if you f.ex have 6 points N=6
-               ! then your array looks like 0..1..2..3..4..5
-               ! If you want to write at offset = 0, you'd write on top of 0
-               ! If you want to write at offset = 3, you'd write on top of 3
-               !T
+                  ! Kinematics accelerations and dynamics pressure
+                  ! They are a little different from the others. Since we compute them with a centered scheme with 5 points
+                  ! We need always to first extend the file, writing a "zero" value, so that it has the same nr. of points
+                  ! as the other quantities.
+                  
+                  call h5_extend(h5file, 'velocity_derivative_ut', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Ut *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_extend(h5file, 'velocity_derivative_vt', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Vt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_extend(h5file, 'velocity_derivative_wt', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Wt *0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  call h5_extend(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%pdyn*0., shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                  
+                  call h5_dataset_dimension(h5file, "time", onei, lenTime)
+                  ! when you write at offset, if you f.ex have 6 points N=6
+                  ! then your array looks like 0..1..2..3..4..5
+                  ! If you want to write at offset = 0, you'd write on top of 0
+                  ! If you want to write at offset = 3, you'd write on top of 3
+                  !T
 
-               if (lenTime.GE.3) then ! otherwise we have no time steps to overwrite
-                  call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, int(lenTime,4)-3, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%Ut, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-                  call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%Vt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-                  call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%Wt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
-                  call h5_write_at_step(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, int(lenTime,4)-3, extdims3, &
-                  & reshape(Zones(io)%Kinematics(3)%pdyn, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               end if
+                  if (lenTime.GE.3) then ! otherwise we have no time steps to overwrite
+                     call h5_write_at_step(h5file, 'velocity_derivative_ut', extended_dimension_id, int(lenTime,4)-3, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%Ut, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                     call h5_write_at_step(h5file, 'velocity_derivative_vt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%Vt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                     call h5_write_at_step(h5file, 'velocity_derivative_wt', extended_dimension_id, int(lenTime,4)-3, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%Wt, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))
+                     call h5_write_at_step(h5file, 'dynamic_pressure_pdyn', extended_dimension_id, int(lenTime,4)-3, extdims3, &
+                     & reshape(Zones(io)%Kinematics(3)%pdyn, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  end if
 
-               ! velocity z gradients
-               call h5_extend(h5file, 'velocity_derivative_uz', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_extend(h5file, 'velocity_derivative_vz', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_extend(h5file, 'velocity_derivative_wz', extended_dimension_id, extdims3, &
-               & reshape(Zones(io)%Kinematics(5)%Wz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
+                  ! velocity z gradients
+                  call h5_extend(h5file, 'velocity_derivative_uz', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Uz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_extend(h5file, 'velocity_derivative_vz', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Vz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_extend(h5file, 'velocity_derivative_wz', extended_dimension_id, extdims3, &
+                  & reshape(Zones(io)%Kinematics(5)%Wz, shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                            
 
 
-               ! velocity x gradients
-               call h5_extend(h5file, 'velocity_derivative_ux', extended_dimension_id, extdims3, &
-               & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_extend(h5file, 'velocity_derivative_vx', extended_dimension_id, extdims3, &
-               & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  ! velocity x gradients
+                  call h5_extend(h5file, 'velocity_derivative_ux', extended_dimension_id, extdims3, &
+                  & reshape(Ux(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_extend(h5file, 'velocity_derivative_vx', extended_dimension_id, extdims3, &
+                  & reshape(Vx(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
 
-               ! velocity y gradients
-               call h5_extend(h5file, 'velocity_derivative_uy', extended_dimension_id, extdims3, &
-               & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
-               call h5_extend(h5file, 'velocity_derivative_vy', extended_dimension_id, extdims3, &
-               & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
-            end if ! if (it == 1) then
+                  ! velocity y gradients
+                  call h5_extend(h5file, 'velocity_derivative_uy', extended_dimension_id, extdims3, &
+                  & reshape(Uy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))    
+                  call h5_extend(h5file, 'velocity_derivative_vy', extended_dimension_id, extdims3, &
+                  & reshape(Vy(1+GhostGridZ:, i0:i1:is, j0:j1:js), shape=(/nz_save, ny_save, nx_save/), order=(/1,3,2/)))                
+               end if ! if (extend)
+            end if !if (write_kinematics)
          else
 
-            ! Dump the surface elevation and its gradients
-            WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js) 
-            IF(Nx > 1) THEN
-               WRITE (FOUT) ( ( etax(i,j), i=i0,i1,is ), j=j0,j1,js) 
-            ELSE
-               WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
-            END IF
-      
-            IF(Ny > 1) THEN
-               WRITE (FOUT) ( ( etay(i,j), i=i0,i1,is ), j=j0,j1,js) 
-            ELSE
-               WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
-            END IF
+            if (write_kinematics) then
 
-            ! Then the velocity potential at all points in this horizontal slice and at all sigma 
-            ! (vertical) locations.  
-            !
-            WRITE (FOUT) ( ( ( phi(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+               ! Dump the surface elevation and its gradients
+               WRITE (FOUT) ( ( eta(i,j), i=i0,i1,is ), j=j0,j1,js) 
+               IF(Nx > 1) THEN
+                  WRITE (FOUT) ( ( etax(i,j), i=i0,i1,is ), j=j0,j1,js) 
+               ELSE
+                  WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
+               END IF
+         
+               IF(Ny > 1) THEN
+                  WRITE (FOUT) ( ( etay(i,j), i=i0,i1,is ), j=j0,j1,js) 
+               ELSE
+                  WRITE (FOUT) ( ( zero, i=i0,i1,is ), j=j0,j1,js) 
+               END IF
 
-      !  
-            ! Then the U, V, W velocity   
-            WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-            WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-            WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+               ! Then the velocity potential at all points in this horizontal slice and at all sigma 
+               ! (vertical) locations.  
+               !
+               WRITE (FOUT) ( ( ( phi(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
 
-            ! Then the U, V, W velocity   z  gradients
-            WRITE (FOUT) ( ( ( Uz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
-            WRITE (FOUT) ( ( ( Vz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)             
-            WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)             
+         !  
+               ! Then the U, V, W velocity   
+               WRITE (FOUT) ( ( ( U(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+               WRITE (FOUT) ( ( ( V(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+               WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
 
-            ! Then the U, V velocity   y gradients
-            WRITE (FOUT) ( ( ( Uy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)                  
-            WRITE (FOUT) ( ( ( Vy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)            
+               ! Then the U, V, W velocity   z  gradients
+               WRITE (FOUT) ( ( ( Uz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
+               WRITE (FOUT) ( ( ( Vz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)             
+               WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)             
 
-            ! Then the U, V velocity   x gradients
-            WRITE (FOUT) ( ( ( Ux(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
-            WRITE (FOUT) ( ( ( Vx(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+               ! Then the U, V velocity   y gradients
+               WRITE (FOUT) ( ( ( Uy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)                  
+               WRITE (FOUT) ( ( ( Vy(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)            
+
+               ! Then the U, V velocity   x gradients
+               WRITE (FOUT) ( ( ( Ux(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+               WRITE (FOUT) ( ( ( Vx(k,i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js)
+
+            end if ! if (write_kinematics)
 
          end if    
 
