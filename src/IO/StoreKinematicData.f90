@@ -609,7 +609,7 @@ ELSE !IF(it==0)THEN
             if (Zones(io)%number_of_saved_timesteps == 5) then 
                ! if we have saved more than 5 timesteps  then we calculate the centered 5-points derivative
                ! and also the dynamic pressure
-               call calculateKinAcceleration(Zones(io), dt*Output(io)%tstride, z(1+GhostGridZ:), rho)
+               call calculateKinAcceleration(Zones(io), dt, z(1+GhostGridZ:), rho)
             end if 
 
             if (write_kinematics) then
@@ -619,7 +619,7 @@ ELSE !IF(it==0)THEN
 
                if (n_overwrites(io)>0) then
                   extend = .false.
-                  iWriteAt = iRestartLocation(io) +it - 1
+                  iWriteAt = iRestartLocation(io) + it/Output(io)%tstride - 1
                   n_overwrites(io) = n_overwrites(io) - 1
                else
                   extend = .true.
