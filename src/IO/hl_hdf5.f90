@@ -12,6 +12,15 @@ module HL_HDF5 !High level HDF5 interface
         module procedure H5_write_3d
     end interface 
 
+    interface h5_read
+        module procedure h5_read_1d
+    end interface 
+
+    interface h5_read_block
+        module procedure h5_read_block_4d
+        module procedure h5_read_block_3d
+    end interface 
+
     interface h5_write_at_step
         module procedure h5_write_1d_at_step
         module procedure H5_write_2d_at_step
@@ -37,6 +46,22 @@ module HL_HDF5 !High level HDF5 interface
         print*, "This version of h5 is: ", major, ".", minor, ".", patch
 
     end subroutine h5_check_version
+
+    subroutine h5_file_open(file_name, file_id)
+       
+        CHARACTER(*), intent(IN) :: file_name
+        INTEGER(HID_T), intent(INOUT) :: file_id       ! File identifier
+        logical :: dummy
+
+        CALL h5open_f(hdferr)
+        dummy = check_return_value(hdferr, "h5_file_create", "h5fopen_f")
+        CALL h5fopen_f(file_name, H5F_ACC_RDWR_F, file_id, hdferr) 
+        !H5F_ACC_TRUNC_F overwrite existing file
+        dummy = check_return_value(hdferr, "h5_file_create", "h5fopen_f")
+        CALL h5fclose_f(file_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_file_create", "h5fclose_f")
+
+    end subroutine h5_file_open
 
     subroutine h5_file_create(file_name, file_id)
        
@@ -71,6 +96,43 @@ module HL_HDF5 !High level HDF5 interface
 
     end function h5_dataset_exists
 
+    subroutine h5_dataset_dimension_all(file_name, dataset_name, dataset_dimension)
+        ! Returns the dataset dimension in a certain direction
+        character(*) :: file_name, dataset_name
+        integer(HID_T) :: file_id, dataset_id, dataspace_id, rank
+        logical :: dummy
+        integer(HSIZE_T),allocatable :: maxdims(:), dataset_dimension(:)
+        integer(HSIZE_T) :: dimId
+        
+        call h5fopen_f(file_name, H5F_ACC_RDWR_F, file_id, hdferr);
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5fopen")
+
+        call h5dopen_f(file_id, dataset_name, dataset_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5dopen")
+
+        call h5dget_space_f(dataset_id, dataspace_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5dget_space")
+
+        call h5sget_simple_extent_ndims_f(dataspace_id, rank, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sget_simple_extent_ndims")
+
+        allocate(dataset_dimension(rank), maxdims(rank))
+        
+        call h5sget_simple_extent_dims_f(dataspace_id, dataset_dimension, maxdims, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sget_simple_extent_dims")
+
+        call h5dclose_f(dataset_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5dclose")
+
+        call h5sclose_f(dataspace_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sclose")
+
+        call h5fclose_f(file_id, hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5fclose")
+
+
+    end subroutine h5_dataset_dimension_all
+
     subroutine h5_dataset_dimension(file_name, dataset_name, dimId, dataset_dimension)
         ! Returns the dataset dimension in a certain direction
         character(*) :: file_name, dataset_name
@@ -91,7 +153,7 @@ module HL_HDF5 !High level HDF5 interface
         call h5sget_simple_extent_ndims_f(dataspace_id, rank, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sget_simple_extent_ndims")
 
-        allocate(dims(rank))
+        allocate(dims(rank), maxdims(rank))
         call h5sget_simple_extent_dims_f(dataspace_id, dims, maxdims, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_dimensions", "h5sget_simple_extent_dims")
 
@@ -106,15 +168,18 @@ module HL_HDF5 !High level HDF5 interface
 
         dataset_dimension = dims(dimId)
 
+        deallocate(dims, maxdims)
+
     end subroutine h5_dataset_dimension
 
     subroutine h5_dataset_create_chunked(file_name, dataset_name, rank, dims, maxdims, chunk_dims)
 
         character(*) :: file_name, dataset_name
         integer(HID_T) :: file_id, dataset_id, &
-            dataspace_id, prop_id
+            dataspace_id, prop_id, plist_id
         logical :: dummy
-        integer(HSIZE_T) :: dims(:), maxdims(:), chunk_dims(:)
+        integer(HSIZE_T) :: dims(:), maxdims(:), chunk_dims(:), &
+            n_bytes_chunk
 
         integer :: rank
         ! real(kind=8) :: data(:,:,:,:)
@@ -122,18 +187,26 @@ module HL_HDF5 !High level HDF5 interface
         call h5fopen_f(file_name, H5F_ACC_RDWR_F, file_id, hdferr);
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5fopen")
 
-
         call h5screate_simple_f(rank, dims, dataspace_id, hdferr, maxdims)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5screate_simple_f")
 
         call h5pcreate_f(H5P_DATASET_CREATE_F, prop_id, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5p_create_f")        
         call h5pset_chunk_f(prop_id, size(chunk_dims), chunk_dims, hdferr)
-        dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5pset_chunk")   
+        dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5pset_chunk")
 
         call h5dcreate_f(file_id, dataset_name, H5T_NATIVE_DOUBLE, dataspace_id, dataset_id, hdferr, &
                     &prop_id, H5P_DEFAULT_F, H5P_DEFAULT_F)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5dcreate_f")
+
+        ! Storage in double precision: 8 bytes * 2 times the chunk in the cache * 
+        ! the size of the chunk
+        n_bytes_chunk = 8*5*product(chunk_dims) 
+
+        call h5dget_access_plist_f(dataset_id, plist_id, hdferr)
+
+        call h5pset_chunk_cache_f(plist_id, int(100,8), n_bytes_chunk, 1.0 , hdferr)
+        dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5pset_chunk_cache")
 
         call h5dclose_f(dataset_id, hdferr)
         dummy = check_return_value(hdferr, "h5_dataset_create_chunked", "h5dclose")
@@ -264,6 +337,59 @@ end subroutine h5_write_2d_at_step
 
     end subroutine h5_write_1d
        
+    ! 1D routines
+    subroutine h5_read_1d(file_name, dataset_name, data)
+        ! We can also write a scalar as 1D array
+        character(*) :: file_name, dataset_name
+        real(kind=8),allocatable :: data(:)
+        integer(HSIZE_T) :: one, dataset_dimension
+        integer(HID_T) :: file_id, dataset_id, &
+            dataspace_id
+        logical :: dummy
+
+        ! Check the dimension
+        one = 1
+        call h5_dataset_dimension(file_name, dataset_name, one, dataset_dimension)
+        allocate(data(dataset_dimension))
+        include "h5_read.f90"
+
+    end subroutine h5_read_1d
+
+    subroutine h5_read_block_4d(file_name, dataset_name, data, block_offset)
+        ! We can also write a scalar as 1D array
+        character(*) :: file_name, dataset_name
+        real(kind=8) :: data(:,:,:,:)
+        integer(HSIZE_T) :: one
+        integer(HSIZE_T) :: block_offset(:) !, block_size(:)
+        integer(HSIZE_T), allocatable ::dataset_dimension(:), &
+            h5count(:), h5block(:), h5stride(:), h5start(:), dimsr(:), &
+            maxdims(:)
+        integer(HID_T) :: file_id, dataset_id, &
+            dataspace_id, creation_id, rank, memspace
+        logical :: dummy
+        integer :: layout, i
+
+        include "h5_read_block.f90"
+
+    end subroutine h5_read_block_4d
+
+    subroutine h5_read_block_3d(file_name, dataset_name, data, block_offset)
+        ! We can also write a scalar as 1D array
+        character(*) :: file_name, dataset_name
+        real(kind=8) :: data(:,:,:)
+        integer(HSIZE_T) :: one
+        integer(HSIZE_T) :: block_offset(:) !, block_size(:)
+        integer(HSIZE_T), allocatable ::dataset_dimension(:), &
+            h5count(:), h5block(:), h5stride(:), h5start(:), dimsr(:), &
+            maxdims(:)
+        integer(HID_T) :: file_id, dataset_id, &
+            dataspace_id, creation_id, rank, memspace
+        logical :: dummy
+        integer :: layout, i
+
+        include "h5_read_block.f90"  
+
+    end subroutine h5_read_block_3d
 
     subroutine h5_write_1d_at_step(file_name, dataset_name, extended_dimension_id, &
         step, dims, data)
@@ -280,7 +406,8 @@ end subroutine h5_write_2d_at_step
 
     include "h5_write_at_step.f90"
 
-end subroutine h5_write_1d_at_step
+    end subroutine h5_write_1d_at_step
+
 
     subroutine h5_extend_1d(file_name, dataset_name, extended_dimension_id, &
             dims_ext, data)

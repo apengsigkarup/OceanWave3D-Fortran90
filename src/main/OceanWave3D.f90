@@ -21,7 +21,7 @@ PROGRAM OceanWave3D
   !
   print *, '  Starting to time step.'
   write(fileop(1),*) '  Starting to time step.'
-  DO tstep=1,Nsteps-1 
+  DO tstep=1,Nsteps
      CALL OceanWave3DTakeATimeStep 
   END DO  
   !
