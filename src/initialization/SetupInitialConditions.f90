@@ -361,7 +361,7 @@ SUBROUTINE SetupInitialConditions
         ! FIXME: to add
      ELSE
         CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,GhostGridY,GhostGridZ,  &
-             alpha,beta,gamma)
+             alpha,beta,gamma,fileop(1))
         IF (FineGrid%Nx>1) THEN
            CALL DiffXEven(Wavefield%E,Wavefield%Ex,1,FineGrid%Nx,FineGrid%Ny,1,FineGrid%DiffStencils,alpha)
            CALL DiffXEven(Wavefield%E,Wavefield%Exx,2,FineGrid%Nx,FineGrid%Ny,1,FineGrid%DiffStencils,alpha)
@@ -871,7 +871,7 @@ SUBROUTINE SetupInitialConditions
     ! Calculate the derivatives of the initial condition numerically:
     !---------------------------------------------------------------------------
     CALL PreProcessDiffStencils(FineGrid,FineGrid%DiffStencils,GhostGridX,  &
-    GhostGridY,GhostGridZ,alpha,beta,gamma)
+    GhostGridY,GhostGridZ,alpha,beta,gamma,fileop(1))
     CALL DiffXEven(Wavefield%E,Wavefield%Ex,1,FineGrid%Nx,FineGrid%Ny,1,    &
     FineGrid%DiffStencils,alpha)
     CALL DiffXEven(Wavefield%E,Wavefield%Exx,2,                             &
