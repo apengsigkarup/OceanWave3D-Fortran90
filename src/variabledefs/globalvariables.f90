@@ -16,7 +16,7 @@ INTEGER           :: FILEIP(4), FILEOP(26)
 CHARACTER(len=2) fnt(20)
 CHARACTER(LEN=40) :: filenameINPUT, filename, fname_bottom
 INTEGER           :: STAT
-INTEGER, DIMENSION(:), ALLOCATABLE :: fidH5(:)
+INTEGER, DIMENSION(:), ALLOCATABLE :: fidH5(:), fntH5(:)
 
 ! DUMMY VARIABLES
 REAL(KIND=long) :: dum
