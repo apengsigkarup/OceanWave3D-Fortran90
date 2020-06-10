@@ -42,9 +42,7 @@ Do i=1,NDampZones
    END IF
    PDampZones(i)%idx(3) = i3!-GhostGridY
    PDampZones(i)%idx(4) = i4!+GhostGridY
-   ! nyd=i3-i4+1; 
-   nyd=i4-i3+1; ! FP20200319
-   PDampZones(i)%ny=nyd; nd=nxd*nyd
+   nyd=i4-i3+1; PDampZones(i)%ny=nyd; nd=nxd*nyd
    print *, ' '
    print *, 'Pressure damping zone ',i,' will be applied from x=',tmpx(i1),' to x=',tmpx(i2)
    print *, '                                        and from y=',tmpy(i3),' to y=',tmpy(i4)
@@ -97,16 +95,16 @@ END DO
 !
 ! Write out the damping functions for inspection.  
 !
-Open(fileop(15),file='Pdamp.chk',status='unknown')
-write(fileop(15),790)'% Pressure damping coefficients:  x,y,gammaPhi,gammaEta'
+Open(fileop(25),file='Pdamp.chk',status='unknown')
+write(fileop(25),790)'% Pressure damping coefficients:  x,y,gammaPhi,gammaEta'
 Do i=1,NDampZones
    Do j=1,nx
-      write(fileop(15),792)tmpx(j),tmpy(1),PDampZones(i)%gamPhi(j),PDampZones(i)%gamEta(j)
+      write(fileop(25),792)tmpx(j),tmpy(1),PDampZones(i)%gamPhi(j),PDampZones(i)%gamEta(j)
    END Do
 END Do
 790 FORMAT(A)
 792 FORMAT(4E16.6)
-close(fileop(15))
+close(fileop(25))
 
 
 CONTAINS

@@ -367,8 +367,8 @@ SUBROUTINE OceanWave3DT0Setup
 !
 ! Now that we are sure that we have all bottom gradients, save the bathymetry data file.
 !
-  Open(FILEOP(16),file='bathymetry.chk',status='unknown')
-  Write(FILEOP(16),81)
+  Open(FILEOP(26),file='bathymetry.chk',status='unknown')
+  Write(FILEOP(26),81)
 81 FORMAT('% Bottom bathymetry: ((x(i,j), y(i,j), h(i,j),h_x,h_xx,h_y,h_yy),j=1,Ny),i=1,Nx)')
    Do j=1,FineGrid%Ny+2*GhostGridY
      Do i=1,FineGrid%Nx+2*GhostGridX
@@ -376,8 +376,8 @@ SUBROUTINE OceanWave3DT0Setup
              FineGrid%hy(i,j),FineGrid%hyy(i,j)
      end Do
   end Do
-  close(FILEOP(16))
-82 FORMAT(5e16.6)
+  close(FILEOP(26))
+82 FORMAT(7e16.6)
 
   IF (Precond==1) THEN ! PREPARE FOR PRECONDITIONING
      ! DETERMINE LOW-ORDER FINITE DIFFERENCE STENCILS

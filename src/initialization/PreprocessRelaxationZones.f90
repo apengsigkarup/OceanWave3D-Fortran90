@@ -105,24 +105,24 @@ END DO
 !
 ! Write out the relaxation functions for inspection.  
 !
-Open(fileop(13),file='relax.chk',status='unknown')
+Open(fileop(23),file='relax.chk',status='unknown')
 Do i=1,relaxNo
 IF (RelaxZones(i)%XorY=='X') THEN
    k=0
    Do j=RelaxZones(i)%idx(1),RelaxZones(i)%idx(2)
       k=k+1
-      write(fileop(13),792)j,RelaxZones(i)%idx(3),RelaxZones(i)%gam(k)
+      write(fileop(23),792)j,RelaxZones(i)%idx(3),RelaxZones(i)%gam(k)
    END Do
 ELSE
    k=0
    Do j=RelaxZones(i)%idx(3),RelaxZones(i)%idx(4)
       k=k+1
-      write(fileop(13),792)RelaxZones(i)%idx(1),j,RelaxZones(i)%gam(k)
+      write(fileop(23),792)RelaxZones(i)%idx(1),j,RelaxZones(i)%gam(k)
    END Do
 END IF
 END Do
 792 FORMAT(2i8,1E16.6)
-Close(fileop(13))
+Close(fileop(23))
 
 CONTAINS
 
