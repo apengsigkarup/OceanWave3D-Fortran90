@@ -58,8 +58,8 @@ SUBROUTINE SetupInitialConditions
            Print *, ' Reading h and computing derivatives of h numerically.'
            write(fileop(1),*) ' Reading h and computing derivatives of h numerically.'
            ! Read in h(x,y)
-           do j=1,ny
-              DO i=1,nx
+           do j=1+GhostGridY,ny+GhostGridY
+              DO i=1+GhostGridX,nx+GhostGridX
                  READ(fileip(4),*) FineGrid%h(i,j)
               END DO
            END do
