@@ -1,0 +1,87 @@
+A stream function wave shoaling in 2D on a sloping bottom. Absorption by a pressure damping zone.
+0  1                           <- Initial condition (0=defined by funPressureTerm.f90, 1=NL standing wave, 2=shoaling on a smooth beach, 3=Whalin bar, ... see Initialization.f90:SetupInitialConditions); IncWaveType (0=none, 1=stream function, 2=linear irregular waves)
+800. 1. 0 137 1 9 0 0 1 1 1 1 SF_Shoaling_BottomFile   <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ (0=even,1=clustering) GhostGrid (0=off,1=on), for Lz<=0 read bathymetry from a file.  
+3 3 3 1 1 1                   <- alpha, beta, gamma, alphaprecond, betaprecond, gammaprecond
+1024 .25 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, c based on the incident wave), RK4-ExtrapolationON/OFF
+9.82                          <- gravitational acceleration constant
+1 0 23 1e-8 1e-6 1 V 1 1 2  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), absolute tol, maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+4. 50. 50. 9. 1  0. 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter (This line is not used unless IncWaveType==1)
+-50 20 1 1   <- StoreDataOnOff, formattype, (StoreDataOnOff=0 -> no output, StoreDataOnOff=+stride-> binary, StoreDataOnOff=-stride -> ascii every stride time steps.  formattype=0, binary; =1, unformatted) If formattype=20, then the line should read: StoreDataOnOff, iKinematics, formattype, nOutFiles; and nOutFiles lines should appear below defining  [xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride] for each file.      
+100 100 1 1 1 1 1 1024 1  <- xbeg, xend, xstride, ybeg, yend, ystride, tbeg, tend, tstride    
+1 0    <- 0/1=linear/nonlinear computations, Applied surface pressure:  0=none, 1=2D Gaussian.
+10 6 10 0.08 0.08 0.4  <- SG-filtering on/off, filter half width, poly order
+1 18. 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(= +/- 9,10; sign gives direction) param XorY WavegenONOFF XorYgen degrees(=IC rotation)
+0. 50. 0. 1. 9 3.5 X 1 X 0.
+50. 100. 0. 1. 10 3.5 X 1 X 0.
+1  1 <- Damping pressure zone:  PDampingOnOff=0 (off), number of zones.  For each zone include the line: x1, x2, y1, y2 (bounds of the zone), gamma0 (dynamic FSBC), Gamma0 (kinematic FSBC), i_damperType (0=friction on the velocity, 1=friction on the potential).
+700. 800. 0. 0. 1. 1. 0 
+0 2.0 2 0 0 1 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+1  9. 4. 50. 20. -1 34 0. 0. run06.el <- i_spec, T_p, H_s, h0, kh_max, seed, seed2, inc_wave_file.  For a random wave, the spectrum:  0=P-M, 1=JONSWAP, 2=Read from a file
+
+Extra line for random wave generation should appear after Curvilinear on/off.
+1  9. 4. 50. 20. -1 34 100. 0. run06.el <- i_spec, T_p, H_s, h0, kh_max, seed, seed2, x0, y0, inc_wave_file.  For a random wave.  i_spec:  0=P-M, 1=JONSWAP, 2=Read from a file
+
+A relaxation zone line
+0. 100. 0. 1. 9 3.5 X 1 X 0.
+
+
+2D submerged bar test
+15                             <- Initial condition
+35 3 1 513 1 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on)
+3 3 3 1 1 1                          <- alpha, beta, gamma
+2000 0.025 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                          <- gravitational acceleration constant
+1 0 35 1e-6 1e-4 1 F 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+0.02 0.4 2.0 2.01 1 0 1 4 32         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1   <- StoreDataOnOff
+1 0   <- 0=linear, 1=nonlinear computations
+0 6 10 0.08 0.08 0.4 <- SG-filtering on/off, filter half width, poly order !1 5 2 0
+1 5 2 X 0             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0  5  0 3 -9 5 X 0 X 0 ! Zone 1: Wave absorber (left)  0  5  0 3 10 5 X 1 X 0 ! Zone 1: Wave maker 
+30 35 0 3 9  5 X 0 X 0 ! Zone 2: Wave absorber (right)
+1 5.0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on)
+0          <- Curvilinear on/off
+
+
+
+
+
+
+
+Linear standing wave (3D) Curvilinear
+8                               <- Initial condition
+2 2 1 17 17 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGridX, GhostGridY, GhostGridZ (0=off,1=on)
+3 3 3 1 1 1                    <- alpha, beta, gamma, (Preconditioner stencils:) alphaprecond,betaprecond,gammaprecond
+1 1.345946927933294e-002 1 0 1 <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF
+9.81                            <- gravitational acceleration constant
+1 0 500 1e-6 1e-4 1 F 1 1 4      <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven
+2 2 2.0 2.0 0 0 1 4 32     <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1        <- StoreDataOnOff
+0           <- 0=linear, 1=nonlinear computations
+0 9 6 0.08 0.08 0.4      <- SG-filtering on/off, filter half width, poly order
+0 0 0 X 0   <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation)
+0 2.0 1 1 1 1 1 <- SWENSE on/off, ramp in time, direction (1:+x ; -1:-x ; 2:+y ; -2:-y) (0=off,1=on)
+0          <- Curvilinear on/off
+
+
+
+Test on flat bottom
+7                             <- Initial condition 
+8 7.5 1 65 129 9 0 0 1 1 1 1         <- Lx Ly Lz Nx Ny Nz GridX GridY GridZ(0=even,1=clustering) GhostGrid (0=off,1=on) 
+3 3 3 1 1 1                          <- alpha, beta, gamma 
+640 0.0125 1 0 1               <- Nsteps, dt, timeintegration scheme (1=RK4,2=lowstorage-RK45), CFL (if CFL/=0 then dt=CFL*dxmin/c, assume c=sqrt(g*hdeep)), RK4-ExtrapolationON/OFF 
+9.81                          <- gravitational acceleration constant 
+3 0 100 1e-7 1e-5 1 F 1 1 5  <- GMRES Preconditioning (0=none (Matrix free,DIRECT),1=Linear LU(no elimination),2=Linear LU(ghostpoints eliminated),3=Multigrid (no elimination) ), Coarsening Strategy (0=Allan's, 1=Ole's), GMRESmaxiterations, relative tolerance (reltol), maxit, cyclet, pre-smoothings, post-smoothings, MGmaxgrids, DOF breakeven 
+0.1 1.0 1.0 3.0 0 0.0 1 4 24         <- Stream function solution parameters: H, h, L, T, WAVELorPER, uEorS, EorS, nsteps, maxiter 
+1 1   <- StoreDataOnOff 
+1    <- 0=linear, 1=nonlinear computations 
+0 6 10 0.02 0.02 0.2  <- SG-filtering on/off, filter half width, poly order !1 5 2 0 
+1 0.0 4 X 10             <- relaxation zones on/off, transient time, no. zones. For each zone define on following lines: x1 x2 y1 y2 ftype(=relaxation function) param XorY WavegenONOFF Degrees(=IC rotation) 
+0   2   0    7.5  10 5 X 1 X 10 ! Zone 1: Wave maker (west)
+0   8 0    2     10 5 Y 1 X 10 ! Zone 2: Wave maker (south)
+0   8 5.5 7.5 -10 5 Y 1 X 10 ! Zone 3: Wave maker (north)
+6 8 0    7.5 -10 5 X 1 X 10 ! Zone 4: Wave maker (east) 
+0 5.0 1 0 0 0 0       <- SWENSE on/off, ramp in time, wf direction (1:+x ; -1:-x ; 2:+y ; -2:-y ; >3: angle of the 3D wavefield), Reflexion of incident wf: West, East, North, South (0=off,1=on) 
+0          <- Curvilinear on/off
+
