@@ -21,7 +21,7 @@ INTEGER :: FOUT
 REAL(KIND=long), DIMENSION(:,:), POINTER :: x, y, h, hx, hy, eta, etax, etay
 REAL(KIND=long), DIMENSION(:), POINTER   :: z, tmpxval
 ! Automatic work space
-REAL(KIND=long) :: U(Nz,Nx,Ny), V(Nz,Nx,Ny), W(Nz,Nx,Ny), d(Nx,Ny)
+REAL(KIND=long) :: U(Nz,Nx,Ny), V(Nz,Nx,Ny), W(Nz,Nx,Ny), Wz(Nz,Nx,Ny), d(Nx,Ny)
 REAL(KIND=long) :: tmpx(Nx), tmpy(Ny)
 CHARACTER(len=30) :: form
 REAL(KIND=long) :: hint, etaint, dint
@@ -326,6 +326,10 @@ ELSE
       WRITE (FOUT) ( ( ( W(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
       !
       ! Compute du/dsigma and write du/dz to disc
+      !
+      CALL DiffZArbitrary(W,Wz,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
+           FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)
+      WRITE (FOUT) ( ( ( Wz(k,i,j)/d(i,j), k=1,FineGrid%Nz+GhostGridZ), i=i0,i1,is), j=j0,j1,js) 
       !
       CALL DiffZArbitrary(U,W,1,FineGrid%Nx+2*GhostGridX,FineGrid%Ny+2*GhostGridY,  &
            FineGrid%Nz+GhostGridZ,FineGrid%DiffStencils,gamma)

@@ -96,7 +96,7 @@ junk = fread(fid1,2,int_nbit);
 eta=zeros(nt,nx,ny); etax=zeros(nt,nx,ny); etay=zeros(nt,nx,ny); 
 phi=zeros(nt,nz,nx,ny); w=zeros(nt,nz,nx,ny); 
 u=zeros(nt,nz,nx,ny); uz=zeros(nt,nz,nx,ny);
-v=zeros(nt,nz,nx,ny); vz=zeros(nt,nz,nx,ny);
+v=zeros(nt,nz,nx,ny); vz=zeros(nt,nz,nx,ny); wz=zeros(nt,nz,nx,ny);
 t=[0:nt-1]*dt*tstride;   % The time axis
 %
 % Read in the solution variables eta, gradeta, phi, u, v, w, dudz, dvdz.  
@@ -138,6 +138,12 @@ for it=1:nt
     [tmp,count]=fread(fid1,nx*ny*nz,'double');
     % Check for an incomplete run.
     if count==0, it=it-1; break; end
+    wz(it,:)=tmp;
+    junk = fread(fid1,2,int_nbit);
+    %
+    [tmp,count]=fread(fid1,nx*ny*nz,'double');
+    % Check for an incomplete run.
+    if count==0, it=it-1; break; end
     uz(it,:)=tmp;
     junk = fread(fid1,2,int_nbit);
     %
@@ -169,7 +175,7 @@ switch Pressure
         % Compute time-derivatives of eta, phi, and u and eta_tt
         %
         % ip=input('x point index to work with?');
-        etat=zeros(nt,nx); etatt=etat; phit=zeros(nt,nx,nz); p=phit; ut=p;
+        etat=zeros(nt,nx); etatt=etat; phit=zeros(nt,nz,nx); p=phit; ut=p;
         for ip=1:nx
             etat(:,ip)=Dt*eta(:,ip); etatt(:,ip)=Dt*etat(:,ip);
             %
