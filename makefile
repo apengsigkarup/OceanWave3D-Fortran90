@@ -60,38 +60,34 @@ OBJECTS := $(OBJECTS:.f90=.o)
 OBJECTSNODIR = $(notdir $(OBJECTS))
 OBJECTSBUILDDIR = $(addprefix $(BUILDDIR)/,$(OBJECTSNODIR))
 
-#
-#test: $(OBJECTSBUILDDIR)
-#	@echo $(OBJECTSBUILDDIR)
-
 # default target creates directory
 default:
-	-@mkdir -p -v $(BUILDDIR)
 	@echo "To install OceanWave3D type 'make Debug|Release'"
 
 # Targets for linking
+.PHONY: Release
 Release: FFLAGS = $(OPTFLAGS)
-Release: $(OBJECTSBUILDDIR)
+Release: MODE = "Release"
+Release: $(INSTALLDIR)/$(PROGNAME)
+
+.PHONY: Debug
+Debug: FFLAGS = $(DBFLAGS)
+Debug: MODE = "Debug"
+Debug: $(INSTALLDIR)/$(PROGNAME)
+
+$(INSTALLDIR)/$(PROGNAME): $(OBJECTSBUILDDIR) $(INSTALLDIR)
 	@if ls *.mod &> /dev/null; then \
 	mv -v ./*.mod $(BUILDDIR); \
 	cp -v ./thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
 	fi
-	@echo "*** Starting linking of files for OceanWave3D (Release)... ***"
+	@echo "*** Starting linking of files for OceanWave3D ($(MODE))... ***"
 	@$(FC) $(FFLAGS) -o $(INSTALLDIR)/$(PROGNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
-	@echo "OceanWave3D has been built successfully."
+	@echo "OceanWave3D ($(MODE)) has been built successfully."
 
-Debug: FFLAGS = $(DBFLAGS)
-Debug: $(OBJECTSBUILDDIR) 
-	@if ls *.mod &> /dev/null; then \
-	mv -v *.mod $(BUILDDIR); \
-	cp -v thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
-	fi
-	@echo "*** Starting linking of files for OceanWave3D (Debug)... ***"
-	$(FC) $(FFLAGS) -o $(INSTALLDIR)/$(PROGNAME) $(OBJECTSBUILDDIR) $(LIBDIRS) $(LINLIB) $(INCLUDEDIRS) 	
-
+.PHONY: all
 all: Release
 
-
+.PHONY: sharedLlib
 sharedLib: FFLAGS = $(SHLIBFLAGS)
 sharedLib: $(OBJECTSBUILDDIR)
 	@if ls *.mod &> /dev/null; then \
@@ -103,14 +99,14 @@ sharedLib: $(OBJECTSBUILDDIR)
 	@echo "Shared library for OceanWave3D has been built successfully."
 
 
-
 # Compile only - compile all source file to build directory
+.PHONY: compile
 compile: $(OBJECTSBUILDDIR)
 
+.PHONY: clean
 clean:
-	rm -f $(BUILDDIR)/*.o 
-	rm -f $(BUILDDIR)/*.mod 
-	rm -f $(INSTALLDIR)/$(PROGNAME)
+	-rm -r $(BUILDDIR)
+	-rm $(INSTALLDIR)/$(PROGNAME)
 
 #
 # Special source dependencies
@@ -124,18 +120,24 @@ clean:
 # $< - A single changed dependency of the current target.
 
 # Generic compilation rules
-$(BUILDDIR)/%.o: %.f 
+$(BUILDDIR)/%.o: %.f $(BUILDDIR)
 	$(FC) $(FFLAGS) -c $< -o $@ $(INCLUDEDIRS)
 
-$(BUILDDIR)/%.o: %.f90
+$(BUILDDIR)/%.o: %.f90 $(BUILDDIR)
 	@if ls *.mod &> /dev/null; then \
 	mv -v *.mod $(BUILDDIR); \
 	cp -v thirdpartylibs/LIB_VTK_IO/static/lib_vtk_io.mod $(BUILDDIR); \
 	fi
 	$(FC) $(FFLAGS) -c $< -o $@ $(INCLUDEDIRS)
 
-$(BUILDDIR)/%.mod: %.f
+$(BUILDDIR)/%.mod: %.f $(BUILDDIR)
 	$(FC) $(FFLAGS) -c $< -o $@ $(INCLUDEDIRS)
 
-$(BUILDDIR)/%.mod: %.f90
+$(BUILDDIR)/%.mod: %.f90 $(BUILDDIR)
 	$(FC) $(FFLAGS) -c $< -o $@ $(INCLUDEDIRS)
+
+$(BUILDDIR):
+	@mkdir -p $@
+
+$(INSTALLDIR):
+	@mkdir -p $@
