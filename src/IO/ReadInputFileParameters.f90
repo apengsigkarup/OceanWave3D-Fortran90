@@ -429,6 +429,9 @@ SUBROUTINE ReadInputFileParameters
   ELSEIF(PressureTermOnOff==3)THEN
      WRITE(*,'(A/)') '   A 3D tanh surface pressure is being applied.  (See "funPressureTerm.f90".)'
      WRITE(fileop(1),'(A/)') '   A 3D tanh surface pressure is being applied.  (See "funPressureTerm.f90".)'
+  ELSEIF(PressureTermOnOff==4)THEN
+     WRITE(*,'(A/)') '   A 3D cos^2 surface pressure is being applied.  (See "funPressureTerm.f90".)'
+     WRITE(fileop(1),'(A/)') '   A 3D cos^2 surface pressure is being applied.  (See "funPressureTerm.f90".)'
   ELSE
      Print *, 'No pressure field defined for PressureTermOnOff=',PressureTermOnOff
      stop

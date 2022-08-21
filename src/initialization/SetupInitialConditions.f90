@@ -36,9 +36,17 @@ SUBROUTINE SetupInitialConditions
         ELSEIF(PressureTermOnOff==2)THEN
            print *, 'Initial condition determined by PressureTermOnOff is a 3D moving Gaussian hump'
            write(fileop(1),*) 'Initial condition determined by PressureTermOnOff is a 3D moving Gaussian hump'
+        ELSEIF(PressureTermOnOff==3)THEN
+           print *, 'Initial condition determined by PressureTermOnOff is a 3D moving tanh hump'
+           write(fileop(1),*) 'Initial condition determined by PressureTermOnOff is a 3D moving tanh hump'
+        ELSEIF(PressureTermOnOff==4)THEN
+           print *, 'Initial condition determined by PressureTermOnOff is a 3D moving cos^2 ship-like shape'
+           write(fileop(1),*) 'Initial condition determined by PressureTermOnOff is a 3D moving cos^2 ship-like shape'
         END IF
         Call funInitialFreeSurfaceElevation(g,FineGrid%Nx+2*GhostGridX,&
              FineGrid%Ny+2*GhostGridY,FineGrid,WaveField)
+        
+        
      END IF
      IF (Lz <= 0)THEN
         ! Read in the bottom contours from a file.
